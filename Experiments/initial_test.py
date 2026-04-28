@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     # Initialise optimiser
     # optimiser = CMA_ES(evaluate_ndp_on_cartpole, x0, sigma0, seed)
-    optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 4)
+    optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
 
     # Run optimisation
     print('Starting optimistaion!')
