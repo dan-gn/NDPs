@@ -37,6 +37,7 @@ def evaluate_ndp_on_xor(params):
 def evaluate_ndp_on_cartpole(params):
     ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
     n_cycles = 10
+    n_cycles = 5
     ndp.update_model_parameters(params)
 
     graph = ndp.develope(n_cycles)
@@ -44,7 +45,7 @@ def evaluate_ndp_on_cartpole(params):
 
     mean_reward, rewards = evaluate_graph_on_cartpole(
         graph,
-        n_rollouts=10
+        n_rollouts=5
     )
 
     return -mean_reward

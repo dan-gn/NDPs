@@ -82,7 +82,6 @@ class EvolutionaryAlgorithm:
         return population
     
     def run_initialise_individual(self, core_seed):
-        print(f'Core seed:{core_seed - self.n_core_seed}')
         self.set_seed(core_seed)
         individual = Individual(self.n_variables)
         individual.random_initialise()
@@ -207,6 +206,7 @@ class EvolutionaryAlgorithm:
     # This function creates a couple of offsprings by performing parent seletction, crossover, mutation and evaluation. 
     # When running in parallel, each core starts its own random generator, so I included the input "core_seed", so each time the iteration ensure a different random process.
     def run_single_crossover_and_mutation(self, core_seed):
+        print(f'Seed {core_seed - self.n_core_seed}')
         self.set_seed(core_seed)
 
         # Parent Selection
