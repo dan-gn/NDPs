@@ -53,6 +53,9 @@ class CMA_ES:
         self.es.result_pretty()
         # cma.plot()
         # plt.show(block=True)
+        self.best_params = self.es.result.xbest
+        self.best_loss = self.es.result.fbest
+        return self.best_params, self.best_loss
 
 
 '''

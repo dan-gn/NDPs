@@ -7,6 +7,7 @@ Libraries
 import numpy as np
 import torch 
 import torch.nn as nn
+import time
 
 import os
 import sys
@@ -23,7 +24,7 @@ Default parameters
 '''
 
 NDP_PARAMETERS = {
-    'state_dim' : 2,
+    'state_dim' : 8,
     'weighted_graph_flag' : True,
     'pruning_flag' : True,
     'pruning_threshold': 0.01,
@@ -34,7 +35,7 @@ NDP_PARAMETERS = {
 }
 
 TASK = {
-    'n_inputs' : 1,
+    'n_inputs' : 2,
     'n_outputs' : 1
 }
 
@@ -44,8 +45,8 @@ Utilities
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-def xor(x):
-    pass
+def get_number_of_model_parameters(model:nn.Module):
+    return sum(p.numel() for p in model.parameters())
 
 
 '''
@@ -134,6 +135,36 @@ class NeuralDevelopmentalProgram:
         self.replication_model = ReplicationModel(self.state_dim, ndp_parameters['rm_hidden_size'])
         self.weight_prediction_model = WeightPredictionModel(self.state_dim, ndp_parameters['wp_hidden_size'])
 
+    def get_total_number_of_parameters(self):
+        n_params = get_number_of_model_parameters(self.graph_cellular_automata)
+        n_params += get_number_of_model_parameters(self.replication_model)
+        if self.weighted_graph_flag:
+            n_params += get_number_of_model_parameters(self.weight_prediction_model)
+        return n_params
+
+    def update_model_parameters(self, new_parameters):
+        models = [
+            self.graph_cellular_automata,
+            self.replication_model,
+        ]
+        if self.weighted_graph_flag:
+            models.append(self.weight_prediction_model)
+
+        if isinstance(new_parameters, np.ndarray):
+            new_parameters = torch.tensor(new_parameters, dtype=torch.float32)
+
+        pointer = 0
+        for model in models:
+            for param in model.parameters():
+                n_params = param.numel()
+                
+                new_values = new_parameters[pointer:pointer + n_params]
+                new_values = new_values.view_as(param)
+                param.data.copy_(new_values)
+
+                pointer += n_params
+
+    
     """
     Generate an initial graph.
     There are two options available, either connect all input nodes to the otuput nodes,
@@ -146,11 +177,13 @@ class NeuralDevelopmentalProgram:
         # Add input nodes
         for _ in range(self.n_inputs):
             node = Node(state_dim=self.state_dim, node_type='input')
+            node.state = np.random.uniform(-1, 1, size=(1, self.state_dim)).astype(np.float32)
             graph.add_node(node)
 
         # Add output nodes
         for _ in range(self.n_outputs):
             node = Node(state_dim=self.state_dim, node_type='output')
+            node.state = np.random.uniform(-1, 1, size=(1, self.state_dim)).astype(np.float32)
             graph.add_node(node)
             if not self.initialise_graph_w_hidden_node:
                 for i in range(self.n_inputs):
@@ -159,6 +192,7 @@ class NeuralDevelopmentalProgram:
         # Add hidden node (if option was selected)
         if self.initialise_graph_w_hidden_node:
             node = Node(state_dim=self.state_dim, node_type='hidden')
+            node.state = np.random.uniform(-1, 1, size=(1, self.state_dim)).astype(np.float32)
             graph.add_node(node)
             for i in range(self.n_inputs):
                     graph.add_edge(i, graph.node_id_count - 1)
@@ -175,11 +209,13 @@ class NeuralDevelopmentalProgram:
     def graph_convolution(self, graph:Graph, steps:int) -> Graph:
         for _ in range(steps):
             updated_nodes = list(graph.nodes)
-            
+
             for i, node in enumerate(graph.nodes):
-                _, neighbors_states = graph.get_neighbors_states(node.node_id)
+                _, neighbors_states = graph.get_neighbors_states(node.node_id, update_adj=False)
                 node_state = torch.tensor(node.state)
                 neighbors_states = torch.tensor(neighbors_states)
+                if neighbors_states.size()[0] == 0:
+                    neighbors_states = node_state
                 updated_nodes[i].state = self.graph_cellular_automata(node_state, neighbors_states).numpy()
             
             graph.nodes = list(updated_nodes)
@@ -199,20 +235,26 @@ class NeuralDevelopmentalProgram:
                 # Use the Replication model to decide if a node should be replicated
                 state = torch.tensor(node.state, dtype=torch.float32)
                 replicate_node = self.replication_model(state)
+                # print(replicate_node)
                 # In case it does:
                 if replicate_node:
                     # Create a new node
                     new_node_id = graph.node_id_count + len(new_nodes)
                     new_node = Node(node_id=new_node_id, state_dim=self.state_dim, node_type='hidden')
                     # Compute the mean of the neighbors
-                    neighbor_ids, neighbors_states = graph.get_neighbors_states(node.node_id)
+                    neighbor_ids, neighbors_states = graph.get_neighbors_states(node.node_id, update_adj=False)
                     neighbors_states = np.vstack([neighbors_states, node.state])
                     mean_state = np.mean(neighbors_states, axis = 0)
                     new_node.state = np.expand_dims(mean_state, axis=0)
                     new_nodes.append(new_node)
                     # Add the edges to the new node
-                    for id in neighbor_ids:
-                        new_edges[(id, new_node_id)] = 1.0
+                    for id in neighbor_ids + [node.node_id]:
+                        neighbor_type = graph.nodes[id].node_type
+                        if neighbor_type == 'output':
+                            new_edges[(new_node_id, id)] = 1.0
+                        else:
+                            new_edges[(id, new_node_id)] = 1.0
+
 
         # Add the new nodes and edges to the graph
         graph.nodes.extend(new_nodes)
@@ -231,7 +273,6 @@ class NeuralDevelopmentalProgram:
         #     output_node_state = torch.tensor(output_node.state, dtype=torch.float32)
         #     new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
         #     graph.edges[(input_id, output_id)] = new_weight
-        # return graph
 
         # 2nd veresion: update values for all pair of nodes in the graph
         for input_node in graph.nodes:
@@ -242,6 +283,7 @@ class NeuralDevelopmentalProgram:
                 output_node_state = torch.tensor(output_node.state, dtype=torch.float32)
                 new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
                 graph.edges[(input_node.node_id, output_node.node_id)] = new_weight
+
         return graph
 
     def prune(self, graph:Graph) -> Graph:
@@ -264,56 +306,85 @@ class NeuralDevelopmentalProgram:
 
         return graph
 
-    def run_a_developmental_cycle(self, graph:Graph) -> Graph:
+    def run_a_developmental_cycle(self, graph:Graph, debug:bool=False) -> Graph:
         # Compute network diameter D
-        start_time = time.time()
-        # print('A')
+        if debug:
+            start_time = time.time()
+            print(f'A - n_nodes = {len(graph.nodes)}')
+
         diameter = graph.get_diameter()
-        # print(f'Time = {time.time() - start_time}')
-        # start_time = time.time()
-        # print(diameter)
+        # diameter = int(max(1, len(graph.nodes)))
 
+        if debug:
+            print(f'Time = {time.time() - start_time}')
+            start_time = time.time()
+            # print(diameter)
+
+            print('B')
         # Propagate nodes states En via graph convolution D steps
-        # print('B')
         graph = self.graph_convolution(graph, diameter)
-        # print(f'Time = {time.time() - start_time}')
-        # start_time = time.time()
-        # graph.summary()
+        
+        if debug:
+            print(f'Time = {time.time() - start_time}')
+            start_time = time.time()
+            # graph.summary()
 
+            print('C')
         # Replication model R determines nodes in growing state
         # New nodes are added to each of the growing nodes and their immediate neighbors
         # New nodes' embeddings are defined as the mean embeddings of their parent nodes
-        # print('C')
         graph = self.grow_graph(graph)
-        print(f'Time = {time.time() - start_time}')
-        start_time = time.time()
-        # graph.summary()
+        
+        if debug:
+            print(f'Time = {time.time() - start_time}')
+            start_time = time.time()
+            # graph.summary()
 
+            print(f'D - n_nodes = {len(graph.nodes)}')
         # If weighted network then:
-        print('D')
         if self.weighted_graph_flag:
             # Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings
             graph = self.predict_weights(graph)
-        print(f'Time = {time.time() - start_time}')
-        start_time = time.time()
-        # graph.summary()
+        if debug:
+            print(f'Time = {time.time() - start_time}')
+            start_time = time.time()
+            # graph.summary()
 
+            print('E')
         # If pruning then
         if self.pruning_flag:
             # Edges with weights below pruning threshold P are removed
             graph = self.prune(graph)
+        if debug:
+            print(f'Time = {time.time() - start_time}')
         return graph
 
     def develope(self, n_cycles:int) -> Graph:
         with torch.no_grad():
             graph = self.generate_initial_seed_graph()
-            print('Initial graph')
-            graph.summary()
+            # print('Initial graph')
+            # graph.summary()
+            # print(len(graph.nodes))
             for i in range(n_cycles):
-                graph = self.run_a_developmental_cycle(graph)
                 # print(f'Graph at cycle {i}')
+                graph = self.run_a_developmental_cycle(graph)
                 # graph.summary()
             return graph
+
+
+'''
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Policy network
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
+class GraphPolicyNetwork(nn.Module):
+    def __init__(self, graph:Graph):
+        super().__init__()
+
+        self.graph = graph
+
+
 
 
 '''
@@ -323,8 +394,8 @@ Main function (mainly for testing)
 '''
 if __name__ == '__main__':
 
-    import time
-    n_cycles = 5
+    n_cycles = 10
     ndp = NeuralDevelopmentalProgram()
     graph = ndp.develope(n_cycles)
-    graph.summary()
+    print(ndp.get_total_number_of_parameters())
+    # graph.summary()
