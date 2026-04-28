@@ -3,6 +3,8 @@
 Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
+
+from __future__ import annotations
 import numpy as np
 import random
 from collections import deque, defaultdict

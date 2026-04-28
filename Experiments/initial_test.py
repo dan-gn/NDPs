@@ -4,6 +4,7 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
+
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -71,9 +72,11 @@ if __name__ == '__main__':
 
 
     # Initial parameters
+    print('This is an initial test of the NDP!')
     ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
     n_cycles = 10
     n_params = ndp.get_total_number_of_parameters()
+    print(f'Number of NDP parameters {n_params}')
     x0 = np.random.uniform(-1, 1, n_params)
     sigma0 = 0.5
 
@@ -85,11 +88,15 @@ if __name__ == '__main__':
     optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 4)
 
     # Run optimisation
+    print('Starting optimistaion!')
     best_params, best_loss = optimiser.run(-5000, 0, 0)
+    print('Optimisation finished!')
 
+    print('Evaluating best model!')
     ndp.update_model_parameters(best_params)
     graph = ndp.develope(n_cycles)
     loss, predictions = evaluate_graph_on_cartpole(graph)
+    print('Evaluation finished!')
 
     print("\nBest CMA loss:", best_loss)
     print("Final loss:", loss)
