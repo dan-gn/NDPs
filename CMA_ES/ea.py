@@ -82,6 +82,7 @@ class EvolutionaryAlgorithm:
         return population
     
     def run_initialise_individual(self, core_seed):
+        print(f'Core seed:{core_seed - self.n_core_seed}')
         self.set_seed(core_seed)
         individual = Individual(self.n_variables)
         individual.random_initialise()
@@ -259,10 +260,12 @@ class EvolutionaryAlgorithm:
         self.env_initial_seed = env_initial_seed
         self.stagnment_iterations = 0
         self.n_core_seed = np.random.randint(1, 2**14)   # These is the seed for the cores in parallel computing
+        print('Initialising population...')
         if self.run_in_parallel:
             self.population = self.parallel_initialise_population()
         else:
             self.population = self.initialise_population()
+        print('Done!')
         for self.i in range(self.max_iterations):
             start_time = time.time()
             self.record[self.i] = self.best_individual.fitness
