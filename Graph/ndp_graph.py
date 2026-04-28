@@ -4,7 +4,8 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 import numpy as np
-from collections import deque
+import random
+from collections import deque, defaultdict
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,10 +54,7 @@ class Graph:
             'hidden' : 0
         }        
         
-        # This is IMPORTANT!!!! 
-        # So I chose a list instead of a dict because node.id pairs the indices on the self.nodes parameter. 
-        # If at any point, for some reason I start removing nodes, this will not make sense anymore. 
-        self.adjacency = [] 
+        self.adjacency = defaultdict(list)
 
     def add_node(self, node:Node):
         node.node_id = self.node_id_count
@@ -66,6 +64,14 @@ class Graph:
 
     def add_edge(self, input_node:int, output_node:int, weight:float = 1.0):
         self.edges[(input_node, output_node)] = weight if self.weighted_graph_flag else None
+        self.adjacency[input_node].append(output_node)
+        self.adjacency[output_node].append(input_node)
+
+    def delete_edge(self, input_node:int, output_node:int):
+        if (input_node, output_node) in self.edges:
+            del self.edges[(input_node, output_node)]
+            self.adjacency[input_node].remove(output_node)
+            self.adjacency[output_node].remove(input_node)
 
     def get_node(self, node_id:int) -> Node:
         for node in self.nodes:
@@ -97,18 +103,17 @@ class Graph:
         else:
             return np.array(states)
 
-    def get_neighbors_states(self, node_id:int, update_adj:bool = False) -> list[int]:
-        if update_adj:
-            self.update_adjacency()
+    def get_neighbors_states(self, node_id:int) -> list[int]:
         # neighbors_ids = self.get_neighbors(node_id)
         neighbors_ids = self.adjacency[node_id]
         return neighbors_ids, self.get_nodes_states_by_id(neighbors_ids)
 
-    def get_diameter(self, update_adj = True):
-        if update_adj:
-            self.update_adjacency()
-        longest_path = [self._get_longest_path(node) for node in self.nodes]
-        return max(longest_path)
+    def get_diameter(self):
+        if len(self.nodes) <= 10:
+            longest_path = max([self._get_longest_path(node) for node in self.nodes])
+        else:
+            longest_path = self.get_diameter_multi_sweep()
+        return longest_path
 
     def _get_longest_path(self, node:Node):
         distances = self._bfs_distances(node)
@@ -116,14 +121,46 @@ class Graph:
 
     def get_diameter_in_parallel(self):
         from concurrent.futures import ProcessPoolExecutor
-        CORES = 4
-        with ProcessPoolExecutor(max_workers=CORES) as executor:
+        cores = 4
+        with ProcessPoolExecutor(max_workers=cores) as executor:
             longest_path = list(executor.map(self._get_longest_path_in_parallel, range(len(self.nodes))))
         return max(longest_path)
 
     def _get_longest_path_in_parallel(self, idx):
         distances = self._bfs_distances(self.nodes[idx])
         return max(distances.values())
+    
+    def get_diameter_multi_sweep(self, k=10):
+        sample_nodes = random.sample(self.nodes, k=min(k, len(self.nodes)))
+        diameter_estimate = 0
+
+        for node in sample_nodes:
+            farthest_node, _ = self._bfs_farthest_node(node.node_id)
+            _, distance = self._bfs_farthest_node(farthest_node)
+            diameter_estimate = max(diameter_estimate, distance)
+
+        return diameter_estimate
+    
+    def _bfs_farthest_node(self, start_id):
+        distances = {start_id: 0}
+        queue = deque([start_id])
+        farthest_node = start_id
+        max_distance = 0
+
+        while queue:
+            current_id = queue.popleft()
+            current_distance = distances[current_id]
+
+            if current_distance > max_distance:
+                max_distance = current_distance
+                farthest_node = current_id
+
+            for neighbor_id in self.adjacency[current_id]:
+                if neighbor_id not in distances:
+                    distances[neighbor_id] = current_distance + 1
+                    queue.append(neighbor_id)
+
+        return farthest_node, max_distance
 
     def _bfs_distances(self, start_node:Node):
         start_node_id = start_node.node_id

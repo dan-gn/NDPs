@@ -211,7 +211,7 @@ class NeuralDevelopmentalProgram:
             updated_nodes = list(graph.nodes)
 
             for i, node in enumerate(graph.nodes):
-                _, neighbors_states = graph.get_neighbors_states(node.node_id, update_adj=False)
+                _, neighbors_states = graph.get_neighbors_states(node.node_id)
                 node_state = torch.tensor(node.state)
                 neighbors_states = torch.tensor(neighbors_states)
                 if neighbors_states.size()[0] == 0:
@@ -242,7 +242,7 @@ class NeuralDevelopmentalProgram:
                     new_node_id = graph.node_id_count + len(new_nodes)
                     new_node = Node(node_id=new_node_id, state_dim=self.state_dim, node_type='hidden')
                     # Compute the mean of the neighbors
-                    neighbor_ids, neighbors_states = graph.get_neighbors_states(node.node_id, update_adj=False)
+                    neighbor_ids, neighbors_states = graph.get_neighbors_states(node.node_id)
                     neighbors_states = np.vstack([neighbors_states, node.state])
                     mean_state = np.mean(neighbors_states, axis = 0)
                     new_node.state = np.expand_dims(mean_state, axis=0)
@@ -258,7 +258,9 @@ class NeuralDevelopmentalProgram:
 
         # Add the new nodes and edges to the graph
         graph.nodes.extend(new_nodes)
-        graph.edges |= new_edges
+        # graph.edges |= new_edges
+        for (input_node, output_node), weight in new_edges.items():
+            graph.add_edge(input_node, output_node, weight)
         # Update the node id count
         graph.node_id_count += len(new_nodes)
         return graph
@@ -282,7 +284,8 @@ class NeuralDevelopmentalProgram:
                 input_node_state = torch.tensor(input_node.state, dtype=torch.float32)
                 output_node_state = torch.tensor(output_node.state, dtype=torch.float32)
                 new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
-                graph.edges[(input_node.node_id, output_node.node_id)] = new_weight
+                # graph.edges[(input_node.node_id, output_node.node_id)] = new_weight
+                graph.add_edge(input_node.node_id, output_node.node_id, new_weight)
 
         return graph
 
@@ -297,16 +300,19 @@ class NeuralDevelopmentalProgram:
 
         # Remove edges
         for edge in edges_to_remove:
+            (input_node, output_node) = edge
             weight = graph.edges[edge]
-            del graph.edges[edge]
+            graph.delete_edge(input_node, output_node)
+            # del graph.edges[edge]
 
             # Check that removed edge does not disconnect the outputs from the inputs
             if not graph.is_there_a_path_to_the_output():
-                graph.edges[edge] = weight
+                # graph.edges[edge] = weight
+                graph.add_edge(input_node, output_node, weight)
 
         return graph
 
-    def run_a_developmental_cycle(self, graph:Graph, debug:bool=False) -> Graph:
+    def run_a_developmental_cycle(self, graph:Graph, debug:bool=True) -> Graph:
         # Compute network diameter D
         if debug:
             start_time = time.time()
@@ -359,15 +365,16 @@ class NeuralDevelopmentalProgram:
             print(f'Time = {time.time() - start_time}')
         return graph
 
-    def develope(self, n_cycles:int) -> Graph:
+    def develope(self, n_cycles:int, debug:bool=False) -> Graph:
         with torch.no_grad():
             graph = self.generate_initial_seed_graph()
             # print('Initial graph')
             # graph.summary()
             # print(len(graph.nodes))
             for i in range(n_cycles):
-                # print(f'Graph at cycle {i}')
-                graph = self.run_a_developmental_cycle(graph)
+                if debug:
+                    print(f'Graph at cycle {i}')
+                graph = self.run_a_developmental_cycle(graph, debug)
                 # graph.summary()
             return graph
 

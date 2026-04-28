@@ -55,15 +55,15 @@ Main function (mainly for testing)
 '''
 if __name__ == '__main__':
     
-    # n_cycles = 5
+    # n_cycles = 10
     # ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
 
     # n_params = ndp.get_total_number_of_parameters()
     # mlp_params = np.random.uniform(-5, 5, n_params)
     # ndp.update_model_parameters(mlp_params)
-    # graph = ndp.develope(n_cycles)
+    # graph = ndp.develope(n_cycles, debug=False)
     # # graph.summary()
-    # loss, predictions = evaluate_graph_on_cartpole(graph)
+    # loss, predictions = evaluate_graph_on_cartpole(graph, verbose=False)
 
     # print("Loss:", loss)
     # print("Predictions:")

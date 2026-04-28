@@ -33,6 +33,7 @@ class GraphANN(nn.Module):
         super().__init__()
         
         self.graph = graph
+        self.graph_diameter = self.graph.get_diameter()
 
         self.node_idx = {node.node_id:idx for idx, node in enumerate(graph.nodes)}
         self.n_nodes = len(self.node_idx)
@@ -53,7 +54,7 @@ class GraphANN(nn.Module):
     def forward(self, x, steps=None):
 
         if steps is None:
-            steps = max(1, self.graph.get_diameter())
+            steps = max(1, self.graph_diameter)
 
         batch_size = x.shape[0]
 

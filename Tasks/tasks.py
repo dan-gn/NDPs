@@ -66,7 +66,7 @@ CARTPOLE_PARAMETERS = {
     'n_outputs': 1
 }
 
-def evaluate_graph_on_cartpole(graph, n_rollouts=10, render=False):
+def evaluate_graph_on_cartpole(graph, n_rollouts=10, render=False, verbose=False):
     """
     Evaluates a developed NDP graph on CartPole-v1.
 
@@ -78,9 +78,12 @@ def evaluate_graph_on_cartpole(graph, n_rollouts=10, render=False):
     env = gym.make("CartPole-v1", render_mode="human" if render else None)
 
     rewards = []
-
     with torch.no_grad():
+        if verbose:
+            print('Creating ANN from graph')
         ann = GraphANN(graph)
+        if verbose:
+            print('Done!')
 
         for i in range(n_rollouts):
             actions_hist = []
@@ -107,6 +110,8 @@ def evaluate_graph_on_cartpole(graph, n_rollouts=10, render=False):
 
                 cumulative_reward += reward
             # print(np.mean(actions_hist))
+            if verbose:
+                print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
             rewards.append(cumulative_reward)
 
     env.close()
