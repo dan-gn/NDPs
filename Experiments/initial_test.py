@@ -36,7 +36,6 @@ def evaluate_ndp_on_xor(params):
 
 def evaluate_ndp_on_cartpole(params):
     ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
-    n_cycles = 10
     n_cycles = 5
     ndp.update_model_parameters(params)
 

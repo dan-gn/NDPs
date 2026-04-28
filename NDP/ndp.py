@@ -24,14 +24,14 @@ Default parameters
 '''
 
 NDP_PARAMETERS = {
-    'state_dim' : 8,
+    'state_dim' : 5,
     'weighted_graph_flag' : True,
-    'pruning_flag' : True,
+    'pruning_flag' : False,
     'pruning_threshold': 0.01,
     'initialise_graph_w_hidden_node_flag' : True,
-    'gca_hidden_size' : 32,
-    'rm_hidden_size' : 32,
-    'wp_hidden_size' : 32
+    'gca_hidden_size' : 5,
+    'rm_hidden_size' : 5,
+    'wp_hidden_size' : 5
 }
 
 TASK = {
