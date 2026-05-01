@@ -161,7 +161,7 @@ class EvolutionaryAlgorithm:
         self.population[self.elitism_index:] = offspring[:-self.elitism_index]
 
         if offspring[0].fitness < self.best_individual.fitness:
-            self.best_individual.genotype = offspring[0].genotype
+            self.best_individual.genotype = offspring[0].genotype.copy()
             self.best_individual.fitness = offspring[0].fitness
             self.best_individual.fitness_test = self.objective_function(self.best_individual.genotype) 
             self.stagnment_iterations = -1
@@ -206,7 +206,6 @@ class EvolutionaryAlgorithm:
     # This function creates a couple of offsprings by performing parent seletction, crossover, mutation and evaluation. 
     # When running in parallel, each core starts its own random generator, so I included the input "core_seed", so each time the iteration ensure a different random process.
     def run_single_crossover_and_mutation(self, core_seed):
-        print(f'Seed {core_seed - self.n_core_seed}')
         self.set_seed(core_seed)
 
         # Parent Selection
@@ -279,7 +278,7 @@ class EvolutionaryAlgorithm:
             else:
                 self.update_population()
             if self.i % 1 == 0:
-                print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population])}, Best fitness = {self.best_individual.fitness}, Best fitness testing = {self.best_individual.fitness_test}, Iteration time = {time.time() - start_time:.2f}')
+                print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best fitness testing = {self.best_individual.fitness_test:.4f}, Iteration time = {time.time() - start_time:.2f}')
             if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                 print('Stop criteria achieved!')
                 self.goal_achieved = True

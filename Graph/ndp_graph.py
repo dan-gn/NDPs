@@ -48,7 +48,6 @@ class Graph:
         self.edges = {}
 
         self.weighted_graph_flag = weighted_graph_flag
-        self.node_id_count = 0
 
         self.nodes_count = {
             'input' : 0,
@@ -59,9 +58,8 @@ class Graph:
         self.adjacency = defaultdict(list)
 
     def add_node(self, node:Node):
-        node.node_id = self.node_id_count
+        node.node_id = len(self.nodes)
         self.nodes.append(node)
-        self.node_id_count += 1
         self.nodes_count[node.node_type] += 1
 
     def add_edge(self, input_node:int, output_node:int, weight:float = 1.0):

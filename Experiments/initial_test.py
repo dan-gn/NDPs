@@ -4,10 +4,9 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-
 import numpy as np
+import random
 import torch
-import torch.nn.functional as F
 
 import os
 import sys
@@ -16,89 +15,105 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.ndp import NeuralDevelopmentalProgram
-from NDP.graph_ann import GraphANN
-from Tasks.tasks import XOR_PARAMETERS, evaluate_graph_on_xor
-from Tasks.tasks import CARTPOLE_PARAMETERS, evaluate_graph_on_cartpole
-from CMA_ES.cma_es import CMA_ES
-import cma
-from CMA_ES.ea import EvolutionaryAlgorithm
+from Tasks.tasks import xor, evaluate_graph_on_xor
+from Tasks.tasks import cartpole, evaluate_graph_on_cartpole
+from Optimisation.cma_es import CMA_ES
+from Optimisation.ea import EvolutionaryAlgorithm
 
 
-def evaluate_ndp_on_xor(params):
-    ndp = NeuralDevelopmentalProgram(task=XOR_PARAMETERS)
-    n_cycles = 10
-    ndp.update_model_parameters(params)
+'''
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Simple Test:
+* Runs an NDP.
+* MLP Parameters are optimised.
+* Test the generated graph on an environment (you need to define it, sorry)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
 
-    graph = ndp.develope(n_cycles)
-    loss, _ = evaluate_graph_on_xor(graph)
+def simple_test():
 
-    return loss
+    seed = 0
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    
+    ndp = NeuralDevelopmentalProgram(xor.parameters)
 
-def evaluate_ndp_on_cartpole(params):
-    ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
-    n_cycles = 5
-    ndp.update_model_parameters(params)
+    n_params = ndp.get_total_number_of_mlp_parameters()
+    mlp_params = np.random.uniform(-1, 1, n_params)
+    ndp.update_model_parameters(mlp_params)
 
-    graph = ndp.develope(n_cycles)
+    n_cycles = 1
+    graph = ndp.develope(n_cycles, debug=False)
     # graph.summary()
 
-    mean_reward, rewards = evaluate_graph_on_cartpole(
-        graph,
-        n_rollouts=5
-    )
+    loss, predictions = evaluate_graph_on_cartpole(graph)
+    print("Loss:", loss)
+    print("Predictions:")
+    print(predictions)
 
-    return -mean_reward
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Main function (mainly for testing)
+Simple Test with optimisation:
+* Runs an evolutionary algorithm to optimise the MLP parameters for an NDP.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
-if __name__ == '__main__':
-    
-    # n_cycles = 10
-    # ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
 
-    # n_params = ndp.get_total_number_of_parameters()
-    # mlp_params = np.random.uniform(-5, 5, n_params)
-    # ndp.update_model_parameters(mlp_params)
-    # graph = ndp.develope(n_cycles, debug=False)
-    # # graph.summary()
-    # loss, predictions = evaluate_graph_on_cartpole(graph, verbose=False)
+def test_with_optimisation():
+    # Task
+    task = cartpole
 
-    # print("Loss:", loss)
-    # print("Predictions:")
-    # print(predictions)
-
+    # Params
+    fitness_function = task.fitness_function
+    ndp_params = task.parameters
 
     # Initial parameters
     print('This is an initial test of the NDP!')
-    ndp = NeuralDevelopmentalProgram(task=CARTPOLE_PARAMETERS)
-    n_cycles = 10
-    n_params = ndp.get_total_number_of_parameters()
+    ndp = NeuralDevelopmentalProgram(ndp_params)
+    n_params = ndp.get_total_number_of_mlp_parameters()
     print(f'Number of NDP parameters {n_params}')
-    x0 = np.random.uniform(-1, 1, n_params)
-    sigma0 = 0.5
 
-    # Set random seed
-    seed = 0
 
-    # Initialise optimiser
-    # optimiser = CMA_ES(evaluate_ndp_on_cartpole, x0, sigma0, seed)
-    optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
+
+    optimisation_algorithm = 'EA'
 
     # Run optimisation
     print('Starting optimistaion!')
-    best_params, best_loss = optimiser.run(-5000, 0, 0)
+
+    if optimisation_algorithm == 'CMA':
+        # CMA
+        seed = 0
+        x0 = np.random.uniform(-1, 1, n_params)
+        sigma0 = 0.5
+        optimiser = CMA_ES(fitness_function, x0, sigma0, seed)  
+        best_params, best_loss = optimiser.run()
+
+    else:
+        # EA
+        population_size = 50
+        n_iterations = 10
+        # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
+        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 200, 'name', 'env', 10, 10, fitness_function, run_in_parallel=True, cores = 4)
+        best_params, best_loss = optimiser.run(-50000, 0, 0)
+
     print('Optimisation finished!')
 
     print('Evaluating best model!')
-    ndp.update_model_parameters(best_params)
-    graph = ndp.develope(n_cycles)
-    loss, predictions = evaluate_graph_on_cartpole(graph)
+    loss, predictions = fitness_function(best_params, True)
     print('Evaluation finished!')
 
     print("\nBest CMA loss:", best_loss)
     print("Final loss:", loss)
     print("Predictions:")
     print(predictions)
+
+
+'''
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Main function 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+if __name__ == '__main__':
+
+    test_with_optimisation()
