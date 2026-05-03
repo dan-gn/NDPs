@@ -22,7 +22,9 @@ from Optimisation.cma_es import CMA_ES
 from Optimisation.ea import EvolutionaryAlgorithm
 
 # Import tasks
+from Tasks.acrobot import Acrobot
 from Tasks.cartpole import CartPole
+from Tasks.mountaincar import MountainCar
 from Tasks.lunarlander import LunarLander
 from Tasks.xor import XOR
 
@@ -43,12 +45,12 @@ def simple_test():
     random.seed(seed)
     torch.manual_seed(seed)
 
-    task = LunarLander() 
+    task = XOR() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
-    mlp_params = np.random.uniform(-1, 1, n_params)
-    ndp.update_model_parameters(mlp_params)
+    mlp_weights = np.random.uniform(-1, 1, n_params)
+    ndp.update_mlp_weights(mlp_weights)
 
     n_cycles = 1
     graph = ndp.develope(n_cycles, debug=False)
@@ -69,19 +71,19 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = CartPole()
+    task = XOR()
 
     # Params
     ndp_params = task.parameters
     evaluate_ndp = task.evaluate_ndp
-    evaluate_grpah = task.evaluate_graph
-
 
     # Initial parameters
     print('This is an initial test of the NDP!')
     ndp = NeuralDevelopmentalProgram(ndp_params)
+    ndp.summary()
+
     n_params = ndp.get_total_number_of_mlp_parameters()
-    print(f'Number of NDP parameters {n_params}')
+    # print(f'Number of NDP parameters {n_params}')
 
     optimisation_algorithm = 'EA'
 
@@ -99,7 +101,7 @@ def test_with_optimisation():
     else:
         # EA
         population_size = 50
-        n_iterations = 10
+        n_iterations = 100
         # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
         optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 200, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = 4)
         best_params, best_loss = optimiser.run(-50000, 0, 0)
@@ -107,7 +109,7 @@ def test_with_optimisation():
     print('Optimisation finished!')
 
     print('Evaluating best model!')
-    loss, predictions = evaluate_ndp(best_params, return_rewards=True, render=True)
+    loss, predictions = evaluate_ndp(best_params, return_rewards=True)
     print('Evaluation finished!')
 
     print("\nBest CMA loss:", best_loss)

@@ -6,7 +6,6 @@ Libraries
 
 import numpy as np
 import torch
-import torch.nn.functional as F
 import gymnasium as gym
 
 import os
@@ -29,8 +28,6 @@ class Task:
     def __init__(self, parameters):
         self.parameters = dict(parameters)
         self.env_name = None
-        self.n_repeats = 5
-        self.n_rolloutts = 5
 
     def evaluate_graph(self, graph, n_rollouts=10, render=False, verbose=False):
         """
@@ -53,7 +50,7 @@ class Task:
 
             for i in range(n_rollouts):
                 actions_hist = []
-                obs, info = env.reset()
+                obs, _ = env.reset()
 
                 done = False
                 truncated = False
@@ -68,8 +65,7 @@ class Task:
                     action = self.compute_action(output)
                     actions_hist.append(action)
 
-                    # print(action)
-                    obs, reward, done, truncated, info = env.step(action)
+                    obs, reward, done, truncated, _ = env.step(action)
 
                     cumulative_reward += reward
 
@@ -80,19 +76,17 @@ class Task:
 
         env.close()
 
-        mean_reward = np.mean(rewards)
-
         return np.sum(rewards), rewards
 
     def evaluate_ndp(self, params, return_rewards=False, render=False):
         ndp = NeuralDevelopmentalProgram(self.parameters)
-        ndp.update_model_parameters(params)
+        ndp.update_mlp_weights(params)
 
         cummulative_rewards = []
         rollout_rewards = []
-        for i in range(self.n_repeats):
+        for i in range(self.parameters['n_repeats']):
             graph = ndp.develope(self.parameters['n_cycles'])
-            cummulative_r, rollout_r= self.evaluate_graph(graph, n_rollouts=self.n_rollouts, render=render)
+            cummulative_r, rollout_r= self.evaluate_graph(graph, n_rollouts=self.parameters['n_rollouts'], render=render)
             cummulative_rewards.append(-cummulative_r)
             rollout_rewards += rollout_r
 
@@ -100,8 +94,8 @@ class Task:
             return np.mean(cummulative_rewards), rollout_rewards
         else:
             return np.mean(cummulative_rewards)
-        
+
     def compute_action(self, output):
-        return output
+        raise NotImplementedError('Subclasses of Task should implement the method compute_action().')
 
         

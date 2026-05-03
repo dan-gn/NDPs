@@ -28,13 +28,15 @@ LUNARLANDER_PARAMETERS = {
     'wp_hidden_size' : 10,
     'graph_n_inputs': env.observation_space.shape[0],  # 4
     'graph_n_outputs': 4,
-    'n_cycles': 5
+    'n_cycles': 5,
+    'n_repeats': 5,
+    'n_rollouts' : 5,
 }
 
 class LunarLander(Task):
 
-    def __init__(self):
-        super().__init__(parameters=LUNARLANDER_PARAMETERS)
+    def __init__(self, parameters=LUNARLANDER_PARAMETERS):
+        super().__init__(parameters)
         self.env_name = 'LunarLander-v3'
 
     def compute_action(self, output):

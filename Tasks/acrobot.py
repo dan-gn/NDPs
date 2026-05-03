@@ -4,19 +4,19 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-import torch
+import torch.nn.functional as F
 import gymnasium as gym
 
 from Tasks.task import Task
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CartPole
+Acrobot
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
-env = gym.make("CartPole-v1")
+env = gym.make("Acrobot-v1")
 
-CARTPOLE_PARAMETERS = {
+ACROBOT_PARAMETERS = {
     'state_dim' : 5,
     'weighted_graph_flag' : True,
     'initial_graph': 'one_node',
@@ -33,12 +33,12 @@ CARTPOLE_PARAMETERS = {
     'n_rollouts' : 10,
 }
 
-class CartPole(Task):
+class Acrobot(Task):
 
-    def __init__(self, parameters=CARTPOLE_PARAMETERS):
+    def __init__(self, parameters=ACROBOT_PARAMETERS):
         super().__init__(parameters)
-        self.env_name = 'CartPole-v1'
+        self.env_name = 'Acrobot-v1'
 
     def compute_action(self, output):
-        action =  torch.sigmoid(output)
-        return int(torch.round(action))
+        probs = F.softmax(output, dim=0)  
+        return int(probs.argmax())
