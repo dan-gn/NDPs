@@ -14,11 +14,17 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+# Import NDP Class
 from NDP.ndp import NeuralDevelopmentalProgram
-from Tasks.tasks import xor, evaluate_graph_on_xor
-from Tasks.tasks import cartpole, evaluate_graph_on_cartpole
+
+# Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
 from Optimisation.ea import EvolutionaryAlgorithm
+
+# Import tasks
+from Tasks.cartpole import CartPole
+from Tasks.lunarlander import LunarLander
+from Tasks.xor import XOR
 
 
 '''
@@ -36,8 +42,9 @@ def simple_test():
     np.random.seed(seed)
     random.seed(seed)
     torch.manual_seed(seed)
-    
-    ndp = NeuralDevelopmentalProgram(xor.parameters)
+
+    task = LunarLander() 
+    ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
     mlp_params = np.random.uniform(-1, 1, n_params)
@@ -47,7 +54,7 @@ def simple_test():
     graph = ndp.develope(n_cycles, debug=False)
     # graph.summary()
 
-    loss, predictions = evaluate_graph_on_cartpole(graph)
+    loss, predictions = task.evaluate_graph(graph)
     print("Loss:", loss)
     print("Predictions:")
     print(predictions)
@@ -62,19 +69,19 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = cartpole
+    task = CartPole()
 
     # Params
-    fitness_function = task.fitness_function
     ndp_params = task.parameters
+    evaluate_ndp = task.evaluate_ndp
+    evaluate_grpah = task.evaluate_graph
+
 
     # Initial parameters
     print('This is an initial test of the NDP!')
     ndp = NeuralDevelopmentalProgram(ndp_params)
     n_params = ndp.get_total_number_of_mlp_parameters()
     print(f'Number of NDP parameters {n_params}')
-
-
 
     optimisation_algorithm = 'EA'
 
@@ -86,7 +93,7 @@ def test_with_optimisation():
         seed = 0
         x0 = np.random.uniform(-1, 1, n_params)
         sigma0 = 0.5
-        optimiser = CMA_ES(fitness_function, x0, sigma0, seed)  
+        optimiser = CMA_ES(evaluate_ndp, x0, sigma0, seed)  
         best_params, best_loss = optimiser.run()
 
     else:
@@ -94,13 +101,13 @@ def test_with_optimisation():
         population_size = 50
         n_iterations = 10
         # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
-        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 200, 'name', 'env', 10, 10, fitness_function, run_in_parallel=True, cores = 4)
+        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 200, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = 4)
         best_params, best_loss = optimiser.run(-50000, 0, 0)
 
     print('Optimisation finished!')
 
     print('Evaluating best model!')
-    loss, predictions = fitness_function(best_params, True)
+    loss, predictions = evaluate_ndp(best_params, return_rewards=True, render=True)
     print('Evaluation finished!')
 
     print("\nBest CMA loss:", best_loss)
@@ -116,4 +123,4 @@ Main function
 '''
 if __name__ == '__main__':
 
-    test_with_optimisation()
+    simple_test()

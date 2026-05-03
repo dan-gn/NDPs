@@ -24,17 +24,6 @@ class Node:
         self.node_type = node_type
         self.neighbors = []
 
-    '''
-    REVIEW THIS FUNCTION LATER
-    '''
-    def update(self, neighbors:list[Node]):
-        # How do I update the states????
-        neighbors_states = [node.state for node in neighbors]
-        neighbors_states.append(self.state)
-        self.state = np.mean(neighbors_states, axis = 1)
-        # I am really not sure that this is right!!!!
-
-
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
