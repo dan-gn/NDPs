@@ -52,7 +52,7 @@ def simple_test():
     mlp_weights = np.random.uniform(-1, 1, n_params)
     ndp.update_mlp_weights(mlp_weights)
 
-    n_cycles = 1
+    n_cycles = 5
     graph = ndp.develope(n_cycles, debug=False)
     # graph.summary()
 
@@ -89,6 +89,7 @@ def test_with_optimisation():
 
     # Run optimisation
     print('Starting optimistaion!')
+    print(f"Target value = {task.parameters['target']}")
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -104,7 +105,7 @@ def test_with_optimisation():
         n_iterations = 100
         # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
         optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 200, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = 4)
-        best_params, best_loss = optimiser.run(-50000, 0, 0)
+        best_params, best_loss = optimiser.run(task.parameters['target'], 0, 0)
 
     print('Optimisation finished!')
 
@@ -125,4 +126,4 @@ Main function
 '''
 if __name__ == '__main__':
 
-    simple_test()
+    test_with_optimisation()

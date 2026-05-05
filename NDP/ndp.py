@@ -25,21 +25,22 @@ Default parameters
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-NDP_PARAMETERS = {
+DEFAULT_PARAMETERS = {
     'state_dim' : 5,
     'weighted_graph_flag' : True,
+    'initial_graph' : 'minimal_network',
+    'node_state_random_init' : False,
+    'add_hidden_node_to_minimal_network' : True,
     'pruning_flag' : False,
     'pruning_threshold': 0.01,
-    'initialise_graph_w_hidden_node_flag' : True,
     'gca_hidden_size' : 5,
     'rm_hidden_size' : 5,
-    'wp_hidden_size' : 5
+    'wp_hidden_size' : 5,
+    'graph_n_inputs' : 2,
+    'graph_n_outputs' : 1,
 }
+ 
 
-TASK = {
-    'n_inputs' : 2,
-    'n_outputs' : 1
-}
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -63,20 +64,7 @@ class NeuralDevelopmentalProgram:
         self._set_config(config)
 
     def _set_default_config(self):
-        self.config = {
-            'state_dim' : 5,
-            'weighted_graph_flag' : True,
-            'initial_graph' : 'minimal_network',
-            'node_state_random_init' : False,
-            'add_hidden_node_to_minimal_network' : True,
-            'pruning_flag' : False,
-            'pruning_threshold': 0.01,
-            'gca_hidden_size' : 5,
-            'rm_hidden_size' : 5,
-            'wp_hidden_size' : 5,
-            'graph_n_inputs' : 2,
-            'graph_n_outputs' : 1
-        }
+        self.config = dict(DEFAULT_PARAMETERS)
 
     def _set_config(self, config):
         # Set default parameters
@@ -142,7 +130,6 @@ class NeuralDevelopmentalProgram:
         This function generates an array to initialise the state of a node. 
         This is mainly employed while initialising the graph.
         """
-
         if self.config['node_state_random_init']:
             return np.random.uniform(-1, 1, size=(1, self.config['state_dim'])).astype(np.float32)
         else:
@@ -155,7 +142,6 @@ class NeuralDevelopmentalProgram:
         'one_node' -> Creates a network with only one node
         'minimal_network' -> All inputs are connect to all outputs (a hidden node could be added too)
         """
-
         # Create graph
         graph = Graph(self.config['weighted_graph_flag'])
 
@@ -199,7 +185,6 @@ class NeuralDevelopmentalProgram:
         This perfroms the graph convolution. 
         The update is done by a Graph Cellular Automata.
         """
-
         for _ in range(steps):
             updated_nodes = list(graph.nodes)
 
@@ -220,7 +205,6 @@ class NeuralDevelopmentalProgram:
         This sets the type of each node.
         The first nodes will always be inputs, followed by the outputs and every node after that will be hidden nodes.
         """
-
         if node_id < self.config['graph_n_inputs']:
             return 'input'
         elif node_id < self.config['graph_n_inputs'] + self.config['graph_n_outputs']:
@@ -234,7 +218,6 @@ class NeuralDevelopmentalProgram:
         New nodes are added to each of the growing nodes and their immediate neighbors
         New nodes' embeddings are defined as the mean embeddings of their parent nodes
         """
-        
         new_nodes = [] 
         new_edges = {}
         for node in graph.nodes:
@@ -264,11 +247,12 @@ class NeuralDevelopmentalProgram:
                 Is this okay tho?
                 """
                 for id in neighbor_ids + [node.node_id]:
-                    neighbor_type = graph.nodes[id].node_type
-                    if neighbor_type == 'output':
-                        new_edges[(new_node_id, id)] = 1.0
-                    else:
-                        new_edges[(id, new_node_id)] = 1.0
+                    # neighbor_type = graph.nodes[id].node_type
+                    # if neighbor_type == 'output':
+                    #     new_edges[(new_node_id, id)] = 1.0
+                    # else:
+                    #     new_edges[(id, new_node_id)] = 1.0
+                    new_edges[(id, new_node_id)] = 1.0
 
         # Add the new nodes and edges to the graph
         graph.nodes.extend(new_nodes)
@@ -286,7 +270,6 @@ class NeuralDevelopmentalProgram:
         Chossing version one, mainly because it makes everything faster.
         Fix: On version 2, two edges for each pair are created. But how do I choose which one to create when it doesn't exist?
         """
-
         # 1st version: only updates existing edges
         for input_id, output_id in graph.edges.keys():
             input_node, output_node = graph.get_multiple_nodes([input_id, output_id])
@@ -312,7 +295,6 @@ class NeuralDevelopmentalProgram:
         """
         Edges with weights below pruning threshold P are removed.
         """
-        
         # Find edges to remove
         edges_to_remove = []
         for edge, weight in graph.edges.items():
@@ -333,7 +315,7 @@ class NeuralDevelopmentalProgram:
 
         return graph
 
-    def run_a_developmental_cycle(self, graph:Graph, debug:bool=True) -> Graph:
+    def _run_a_developmental_cycle(self, graph:Graph) -> Graph:
         """
         This method runs one developmental cycle.
         Steps are as follow:
@@ -342,76 +324,49 @@ class NeuralDevelopmentalProgram:
         3. Grow graph
         4. Predict weights (if weighted graph)
         5. Prune (if option chosen)
+
+        Modification: I realised that I don't have to predict the weights in every cycle,
+        unless prunning is happening. So I will predict the weights one time just after the development.
         """
-
         # Compute network diameter D
-        if debug:
-            start_time = time.time()
-            print(f'A - n_nodes = {len(graph.nodes)}')
-
         diameter = graph.get_diameter()
-        # diameter = int(max(1, len(graph.nodes)))
 
-        if debug:
-            print(f'Time = {time.time() - start_time}')
-            start_time = time.time()
-            # print(diameter)
-
-            print('B')
         # Propagate nodes states En via graph convolution D steps
         graph = self.graph_convolution(graph, diameter)
         
-        if debug:
-            print(f'Time = {time.time() - start_time}')
-            start_time = time.time()
-            # graph.summary()
-
-            print('C')
         # Replication model R determines nodes in growing state
         # New nodes are added to each of the growing nodes and their immediate neighbors
         # New nodes' embeddings are defined as the mean embeddings of their parent nodes
         graph = self.grow_graph(graph)
         
-        if debug:
-            print(f'Time = {time.time() - start_time}')
-            start_time = time.time()
-            # graph.summary()
-
-            print(f'D - n_nodes = {len(graph.nodes)}')
-        # If weighted network then:
-        if self.config['weighted_graph_flag']:
+        # # If pruning then
+        if self.config['pruning_flag']:
             # Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings
             graph = self.predict_weights(graph)
-        if debug:
-            print(f'Time = {time.time() - start_time}')
-            start_time = time.time()
-            # graph.summary()
-
-            print('E')
-        # If pruning then
-        if self.config['pruning_flag']:
             # Edges with weights below pruning threshold P are removed
             graph = self.prune(graph)
-        if debug:
-            print(f'Time = {time.time() - start_time}')
+
         return graph
 
     def develope(self, n_cycles:int, debug:bool=False) -> Graph:
         """
         This function developes a graph from scratch for a defined number of cycles.
         """
-
+        start_time = time.time()
         with torch.no_grad():
             graph = self.generate_initial_seed_graph()
             # print('Initial graph')
             # graph.summary()
-            # print(len(graph.nodes))
             for i in range(n_cycles):
                 if debug:
                     print(f'Graph at cycle {i}')
-                graph = self.run_a_developmental_cycle(graph, debug)
+                graph = self._run_a_developmental_cycle(graph)
                 # graph.summary()
-            return graph
+            if (not self.config['pruning_flag']) and  self.config['weighted_graph_flag']:
+                graph = self.predict_weights(graph)
+        if debug:
+            print(f'Total development time = {time.time() - start_time}')
+        return graph
 
     def summary(self):
         print('-------------------------------------')

@@ -20,6 +20,7 @@ LUNARLANDER_PARAMETERS = {
     'state_dim' : 16,
     'weighted_graph_flag' : True,
     'initial_graph': 'one_node',
+    'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,
     'pruning_threshold': 0.3,
@@ -31,6 +32,7 @@ LUNARLANDER_PARAMETERS = {
     'n_cycles': 5,
     'n_repeats': 5,
     'n_rollouts' : 5,
+    'target' : 5 * -200
 }
 
 class LunarLander(Task):

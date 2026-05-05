@@ -20,6 +20,7 @@ ACROBOT_PARAMETERS = {
     'state_dim' : 5,
     'weighted_graph_flag' : True,
     'initial_graph': 'one_node',
+    'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,
     'pruning_threshold': 0.3,
@@ -31,6 +32,7 @@ ACROBOT_PARAMETERS = {
     'n_cycles': 5,
     'n_repeats': 5,
     'n_rollouts' : 10,
+    'target' : 10 * 75
 }
 
 class Acrobot(Task):
