@@ -60,45 +60,55 @@ Neural Developmental Program (Evolutionary-based NDP)
 
 class NeuralDevelopmentalProgram:
 
-    def __init__(self, config = None):
+    def __init__(self, config:dict = None):
         self._set_config(config)
 
     def _set_default_config(self):
         self.config = dict(DEFAULT_PARAMETERS)
 
-    def _set_config(self, config):
+    def _set_config(self, config:dict):
         # Set default parameters
         self._set_default_config()
         if config is not None:
             # Set those values
-            for key in config:
-                self.config[key] = config[key]
-            # Showing if a variable was not defined
             for key in self.config:
-                if key not in config:
+                if key in config:
+                    self.config[key] = config[key]
+                else:
+                    # Showing if a variable was not defined
                     warnings.warn(f'Variable {key} not defined. Using default value {self.config[key]}.')
-            # Check if config values from argument are valid
-            self._check_valid_config()
+        # Set all variables
+        self.state_dim = self.config['state_dim']
+        self.weighted_graph_flag = self.config['weighted_graph_flag']
+        self.initial_graph = self.config['initial_graph']
+        self.node_state_random_init = self.config['node_state_random_init']
+        self.add_hidden_node_to_minimal_network = self.config['add_hidden_node_to_minimal_network']
+        self.pruning_flag = self.config['pruning_flag']
+        self.pruning_threshold = self.config['pruning_threshold']
+        self.graph_n_inputs = self.config['graph_n_inputs']
+        self.graph_n_outputs = self.config['graph_n_outputs']
         # Create the MLPs
-        self.graph_cellular_automata = GraphCellularAutomata(self.config['state_dim'], self.config['gca_hidden_size'])
-        self.replication_model = ReplicationModel(self.config['state_dim'], self.config['rm_hidden_size'])
-        self.weight_prediction_model = WeightPredictionModel(self.config['state_dim'], self.config['wp_hidden_size'])
+        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
+        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
+        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
+        # Check if config values from argument are valid
+        self._check_valid_config()
 
     def _check_valid_config(self):
         """
         This function checks that some of the input values for each variable is valid.
         FIX: I should do this for all the variables.
         """
-        if self.config['state_dim'] < 1:
+        if self.state_dim < 1:
             raise ValueError('State dimension should be equal or greater than 1.')
         initial_graph_options = ['minimal_network', 'one_node']
-        if self.config['initial_graph'] not in initial_graph_options:
+        if self.initial_graph not in initial_graph_options:
             raise ValueError(f'Invalid value for the initial graph. Valid options are: {initial_graph_options}')
 
-    def get_total_number_of_mlp_parameters(self):
+    def get_total_number_of_mlp_parameters(self) -> int:
         n_params = get_number_of_model_parameters(self.graph_cellular_automata)
         n_params += get_number_of_model_parameters(self.replication_model)
-        if self.config['weighted_graph_flag']:
+        if self.weighted_graph_flag:
             n_params += get_number_of_model_parameters(self.weight_prediction_model)
         return n_params
     
@@ -110,7 +120,7 @@ class NeuralDevelopmentalProgram:
             self.graph_cellular_automata,
             self.replication_model,
         ]
-        if self.config['weighted_graph_flag']:
+        if self.weighted_graph_flag:
             models.append(self.weight_prediction_model)
 
         if isinstance(weights, np.ndarray):
@@ -130,12 +140,12 @@ class NeuralDevelopmentalProgram:
         This function generates an array to initialise the state of a node. 
         This is mainly employed while initialising the graph.
         """
-        if self.config['node_state_random_init']:
-            return np.random.uniform(-1, 1, size=(1, self.config['state_dim'])).astype(np.float32)
+        if self.node_state_random_init:
+            return np.random.uniform(-1, 1, size=(1, self.state_dim)).astype(np.float32)
         else:
-            return np.ones((1, self.config['state_dim'])).astype(np.float32)
+            return np.ones((1, self.state_dim)).astype(np.float32)
     
-    def generate_initial_seed_graph(self):
+    def generate_initial_seed_graph(self) -> Graph:
         """
         Generate an initial graph.
         There are two options available:
@@ -143,40 +153,40 @@ class NeuralDevelopmentalProgram:
         'minimal_network' -> All inputs are connect to all outputs (a hidden node could be added too)
         """
         # Create graph
-        graph = Graph(self.config['weighted_graph_flag'])
+        graph = Graph(self.weighted_graph_flag)
 
         # One node initial graph
-        if self.config['initial_graph'] == 'one_node':
-            node = Node(state_dim=self.config['state_dim'], node_type='input')
+        if self.initial_graph == 'one_node':
+            node = Node(state_dim=self.state_dim, node_type='input')
             node.state = self._genereate_node_state()
             graph.add_node(node)
 
         # Minimal network (all inputs connected to outputs) 
         else:  
             # Add input nodes
-            for _ in range(self.config['graph_n_inputs']):
-                node = Node(state_dim=self.config['state_dim'], node_type='input')
+            for _ in range(self.graph_n_inputs):
+                node = Node(state_dim=self.state_dim, node_type='input')
                 node.state = self._genereate_node_state()
                 graph.add_node(node)
 
             # Add output nodes
-            for _ in range(self.config['graph_n_outputs']):
-                node = Node(state_dim=self.config['state_dim'], node_type='output')
+            for _ in range(self.graph_n_outputs):
+                node = Node(state_dim=self.state_dim, node_type='output')
                 node.state = self._genereate_node_state()
                 graph.add_node(node)
-                if not self.config['initial_graph']:
-                    for i in range(self.config['graph_n_inputs']):
+                if not self.initial_graph:
+                    for i in range(self.graph_n_inputs):
                         graph.add_edge(i, len(graph.nodes) - 1)
 
             # Add hidden node (if option was selected)
-            if self.config['add_hidden_node_to_minimal_network']:
-                node = Node(state_dim=self.config['state_dim'], node_type='hidden')
+            if self.add_hidden_node_to_minimal_network:
+                node = Node(state_dim=self.state_dim, node_type='hidden')
                 node.state = self._genereate_node_state()
                 graph.add_node(node)
-                for i in range(self.config['graph_n_inputs']):
+                for i in range(self.graph_n_inputs):
                         graph.add_edge(i, len(graph.nodes) - 1)
-                for i in range(self.config['graph_n_outputs']):
-                        graph.add_edge(len(graph.nodes) - 1, self.config['graph_n_inputs'] + i)
+                for i in range(self.graph_n_outputs):
+                        graph.add_edge(len(graph.nodes) - 1, self.graph_n_inputs + i)
 
         return graph
 
@@ -205,9 +215,9 @@ class NeuralDevelopmentalProgram:
         This sets the type of each node.
         The first nodes will always be inputs, followed by the outputs and every node after that will be hidden nodes.
         """
-        if node_id < self.config['graph_n_inputs']:
+        if node_id < self.graph_n_inputs:
             return 'input'
-        elif node_id < self.config['graph_n_inputs'] + self.config['graph_n_outputs']:
+        elif node_id < self.graph_n_inputs + self.graph_n_outputs:
             return 'output'
         else:
             return 'hidden'
@@ -230,7 +240,7 @@ class NeuralDevelopmentalProgram:
                 # Create a new node
                 new_node_id = len(graph.nodes) + len(new_nodes)
                 new_node_type = self._set_node_type(new_node_id)
-                new_node = Node(node_id=new_node_id, state_dim=self.config['state_dim'], node_type=new_node_type)
+                new_node = Node(node_id=new_node_id, state_dim=self.state_dim, node_type=new_node_type)
                 # Compute the mean of the neighbors
                 neighbor_ids, neighbors_states = graph.get_neighbors_states(node.node_id)
                 # neighbors_states = torch.tensor(neighbors_states)
@@ -298,7 +308,7 @@ class NeuralDevelopmentalProgram:
         # Find edges to remove
         edges_to_remove = []
         for edge, weight in graph.edges.items():
-            if abs(weight) < self.config['pruning_threshold']:
+            if abs(weight) < self.pruning_threshold:
                 edges_to_remove.append(edge)
 
         # Remove edges
@@ -325,8 +335,9 @@ class NeuralDevelopmentalProgram:
         4. Predict weights (if weighted graph)
         5. Prune (if option chosen)
 
-        Modification: I realised that I don't have to predict the weights in every cycle,
-        unless prunning is happening. So I will predict the weights one time just after the development.
+        Modification: 
+        I realised that I don't have to predict the weights in every cycle unless prunning is happening. 
+        So, if pruning is not happening, the weights will be predicted only one time after the development is done. 
         """
         # Compute network diameter D
         diameter = graph.get_diameter()
@@ -340,7 +351,7 @@ class NeuralDevelopmentalProgram:
         graph = self.grow_graph(graph)
         
         # # If pruning then
-        if self.config['pruning_flag']:
+        if self.pruning_flag:
             # Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings
             graph = self.predict_weights(graph)
             # Edges with weights below pruning threshold P are removed
@@ -362,7 +373,7 @@ class NeuralDevelopmentalProgram:
                     print(f'Graph at cycle {i}')
                 graph = self._run_a_developmental_cycle(graph)
                 # graph.summary()
-            if (not self.config['pruning_flag']) and  self.config['weighted_graph_flag']:
+            if self.weighted_graph_flag and (not self.pruning_flag):
                 graph = self.predict_weights(graph)
         if debug:
             print(f'Total development time = {time.time() - start_time}')
@@ -372,6 +383,12 @@ class NeuralDevelopmentalProgram:
         print('-------------------------------------')
         print('NDP')
         print('-------------------------------------')
+        print('Graph')
+        print(f'Node internal state size = {self.state_dim}')
+        print(f'Number of inputs = {self.graph_n_inputs}')
+        print(f'Number of outputs = {self.graph_n_outputs}')
+        print('-------------------------------------')
+        print('MLP Parameters')
         print(f'Graph Cellular Automata = {get_number_of_model_parameters(self.graph_cellular_automata)}')
         print(f'Replication Model = {get_number_of_model_parameters(self.replication_model)}')
         print(f'Weight Prediction Model = {get_number_of_model_parameters(self.weight_prediction_model)}')

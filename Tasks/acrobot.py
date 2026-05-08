@@ -39,7 +39,7 @@ class Acrobot(Task):
 
     def __init__(self, parameters=ACROBOT_PARAMETERS):
         super().__init__(parameters)
-        self.env_name = 'Acrobot-v1'
+        self.name = 'Acrobot-v1'
 
     def compute_action(self, output):
         probs = F.softmax(output, dim=0)  

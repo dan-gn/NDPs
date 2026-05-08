@@ -39,7 +39,7 @@ class LunarLander(Task):
 
     def __init__(self, parameters=LUNARLANDER_PARAMETERS):
         super().__init__(parameters)
-        self.env_name = 'LunarLander-v3'
+        self.name = 'LunarLander-v3'
 
     def compute_action(self, output):
         probs =  F.softmax(output, dim=0)

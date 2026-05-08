@@ -27,7 +27,7 @@ class Task:
 
     def __init__(self, parameters):
         self.parameters = dict(parameters)
-        self.env_name = None
+        self.name = None
 
     def evaluate_graph(self, graph, n_rollouts=10, render=False, verbose=False):
         """
@@ -38,7 +38,7 @@ class Task:
             rewards: list with cumulative reward of each rollout
         """
 
-        env = gym.make(self.env_name, render_mode="human" if render else None)
+        env = gym.make(self.name, render_mode="human" if render else None)
 
         rewards = []
         with torch.no_grad():
@@ -97,5 +97,13 @@ class Task:
 
     def compute_action(self, output):
         raise NotImplementedError('Subclasses of Task should implement the method compute_action().')
+    
+    def summary(self):
+        print('-------------------------------------')
+        print('Task')
+        print('-------------------------------------')
+        print(f'Name = {self.name}')
+        print(f'Target value = {self.parameters['target']}')
+        print('-------------------------------------')
 
         

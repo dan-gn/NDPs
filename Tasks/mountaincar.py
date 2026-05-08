@@ -19,7 +19,7 @@ env = gym.make("MountainCar-v0")
 MOUNTAINCAR_PARAMETERS = {
     'state_dim' : 5,
     'weighted_graph_flag' : True,
-    'initial_graph': 'one_node',
+    'initial_graph': 'minimal_graph',
     'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,
@@ -39,7 +39,7 @@ class MountainCar(Task):
 
     def __init__(self, parameters=MOUNTAINCAR_PARAMETERS):
         super().__init__(parameters)
-        self.env_name = 'MountainCar-v0'
+        self.name = 'MountainCar-v0'
 
     def compute_action(self, output):
         probs = F.softmax(output, dim=0)  

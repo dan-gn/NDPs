@@ -39,7 +39,7 @@ class CartPole(Task):
 
     def __init__(self, parameters=CARTPOLE_PARAMETERS):
         super().__init__(parameters)
-        self.env_name = 'CartPole-v1'
+        self.name = 'CartPole-v1'
 
     def compute_action(self, output):
         action =  torch.sigmoid(output)
