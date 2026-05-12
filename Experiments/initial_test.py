@@ -71,7 +71,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = MountainCar()
+    task = XOR()
 
     # Params
     ndp_params = task.parameters
@@ -91,7 +91,7 @@ def test_with_optimisation():
 
 
     # Run optimisation
-    print('Starting optimistaion!')
+    print('Starting optimisation!')
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -103,10 +103,10 @@ def test_with_optimisation():
 
     else:
         # EA
-        population_size = 100
-        n_iterations = 500
+        population_size = 50
+        n_iterations = 100
         # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
-        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 200, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = 4)
+        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = 4)
         best_params, best_loss = optimiser.run(task.parameters['target'], 0, 0)
 
     print('Optimisation finished!')

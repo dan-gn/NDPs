@@ -36,7 +36,7 @@ Y_XOR = torch.tensor([
 XOR_PARAMETERS = {
     'state_dim' : 1,
     'weighted_graph_flag' : True,
-    'initial_graph' : 'minimal_network',
+    'initial_graph' : 'one_node',
     'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network' : True, 
     'pruning_flag' : False,
@@ -60,7 +60,7 @@ class XOR(Task):
 
     def evaluate_graph(self, graph):
         with torch.no_grad():
-            ann = PolicyNetwork(graph, XOR_PARAMETERS['graph_n_inputs'], XOR_PARAMETERS['graph_n_outputs'])
+            ann = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs)
             predictions = ann(X_XOR)
             predictions =  torch.sigmoid(predictions)
             loss = F.mse_loss(predictions, Y_XOR)
@@ -73,8 +73,8 @@ class XOR(Task):
 
         loss_list = []
         predictions_list = []
-        for _ in range(self.parameters['n_repeats']):
-            graph = ndp.develope(self.parameters['n_cycles'])
+        for _ in range(self.n_repeats):
+            graph = ndp.develope(self.n_cycles)
             loss, predictions = self.evaluate_graph(graph)
             loss_list.append(loss)
             predictions_list.append(predictions_list)

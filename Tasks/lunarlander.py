@@ -28,20 +28,16 @@ LUNARLANDER_PARAMETERS = {
     'rm_hidden_size' : 10,
     'wp_hidden_size' : 10,
     'graph_n_inputs': env.observation_space.shape[0],  # 4
-    'graph_n_outputs': 4,
+    'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 5,
-    'n_rollouts' : 5,
-    'target' : 5 * -200
+    'n_rollouts' : 5
 }
+
+LUNARLANDER_PARAMETERS['target'] = LUNARLANDER_PARAMETERS['n_rollouts'] * (-200)
 
 class LunarLander(Task):
 
     def __init__(self, parameters=LUNARLANDER_PARAMETERS):
         super().__init__(parameters)
         self.name = 'LunarLander-v3'
-
-    def compute_action(self, output):
-        probs =  F.softmax(output, dim=0)
-        return int(probs.argmax())
- 

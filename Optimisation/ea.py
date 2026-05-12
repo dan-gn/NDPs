@@ -277,7 +277,8 @@ class EvolutionaryAlgorithm:
                 self.population[-1].fitness = self.best_individual.fitness
             else:
                 self.update_population()
-            if self.i % int(self.max_iterations/20) == 0:
+            # if self.i % int(self.max_iterations/200) == 0:
+            if self.i % 10 == 0:
                 print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best fitness testing = {self.best_individual.fitness_test:.4f}, Iteration time = {time.time() - start_time:.2f}')
             if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                 print('Stop criteria achieved!')

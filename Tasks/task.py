@@ -6,6 +6,7 @@ Libraries
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 import gymnasium as gym
 
 import os
@@ -28,8 +29,15 @@ class Task:
     def __init__(self, parameters):
         self.parameters = dict(parameters)
         self.name = None
+        self.graph_n_inputs = self.parameters['graph_n_inputs']
+        self.graph_n_outputs = self.parameters['graph_n_outputs']
+        self.n_cycles = self.parameters['n_cycles']
+        self.n_repeats = self.parameters['n_repeats']
+        if 'n_rollouts' in self.parameters:
+            self.n_rollouts = self.parameters['n_rollouts']
 
-    def evaluate_graph(self, graph, n_rollouts=10, render=False, verbose=False):
+
+    def evaluate_graph(self, graph, render=False, verbose=False):
         """
         Evaluates a developed NDP graph on task.
 
@@ -44,11 +52,11 @@ class Task:
         with torch.no_grad():
             if verbose:
                 print('Creating ANN from graph')
-            ann = PolicyNetwork(graph, n_inputs=self.parameters['graph_n_inputs'], n_outputs=self.parameters['graph_n_outputs'])
+            ann = PolicyNetwork(graph, n_inputs=self.graph_n_inputs, n_outputs=self.graph_n_outputs)
             if verbose:
                 print('Done!')
 
-            for i in range(n_rollouts):
+            for i in range(self.n_rollouts):
                 actions_hist = []
                 obs, _ = env.reset()
 
@@ -80,13 +88,14 @@ class Task:
 
     def evaluate_ndp(self, params, return_rewards=False, render=False):
         ndp = NeuralDevelopmentalProgram(self.parameters)
-        ndp.update_mlp_weights(params)
+        weights = np.tanh(params)
+        ndp.update_mlp_weights(weights)
 
         cummulative_rewards = []
         rollout_rewards = []
-        for i in range(self.parameters['n_repeats']):
-            graph = ndp.develope(self.parameters['n_cycles'])
-            cummulative_r, rollout_r= self.evaluate_graph(graph, n_rollouts=self.parameters['n_rollouts'], render=render)
+        for i in range(self.n_repeats):
+            graph = ndp.develope(self.n_cycles)
+            cummulative_r, rollout_r= self.evaluate_graph(graph, render=render)
             cummulative_rewards.append(-cummulative_r)
             rollout_rewards += rollout_r
 
@@ -95,8 +104,13 @@ class Task:
         else:
             return np.mean(cummulative_rewards)
 
-    def compute_action(self, output):
-        raise NotImplementedError('Subclasses of Task should implement the method compute_action().')
+    def compute_action(self, output=None):
+        if self.graph_n_outputs == 1:   # Binary output
+            action =  torch.sigmoid(output)
+            return int(torch.round(action))
+        else:   # Integer output
+            probs =  F.softmax(output, dim=0)
+            return int(probs.argmax())
     
     def summary(self):
         print('-------------------------------------')

@@ -28,19 +28,16 @@ ACROBOT_PARAMETERS = {
     'rm_hidden_size' : 5,
     'wp_hidden_size' : 5,
     'graph_n_inputs': env.observation_space.shape[0],  # 4
-    'graph_n_outputs': 1,
+    'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
-    'n_repeats': 5,
-    'n_rollouts' : 10,
-    'target' : 10 * 75
+    'n_repeats': 3,
+    'n_rollouts' : 3
 }
+
+ACROBOT_PARAMETERS['target'] = ACROBOT_PARAMETERS['n_rollouts'] * 75
 
 class Acrobot(Task):
 
     def __init__(self, parameters=ACROBOT_PARAMETERS):
         super().__init__(parameters)
         self.name = 'Acrobot-v1'
-
-    def compute_action(self, output):
-        probs = F.softmax(output, dim=0)  
-        return int(probs.argmax())
