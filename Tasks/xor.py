@@ -36,7 +36,7 @@ Y_XOR = torch.tensor([
 XOR_PARAMETERS = {
     'state_dim' : 1,
     'weighted_graph_flag' : True,
-    'initial_graph' : 'one_node',
+    'initial_graph' : 'minimal_network',
     'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network' : True, 
     'pruning_flag' : False,
@@ -48,7 +48,6 @@ XOR_PARAMETERS = {
     'graph_n_outputs' : Y_XOR.size()[1],
     'n_cycles' : 4,
     'n_repeats' : 1,
-    'target' : 0
 }
 
 
@@ -57,6 +56,7 @@ class XOR(Task):
     def __init__(self, parameters=XOR_PARAMETERS):
         super().__init__(parameters)
         self.name = 'XOR'
+        self.target = 0
 
     def evaluate_graph(self, graph):
         with torch.no_grad():
@@ -67,20 +67,28 @@ class XOR(Task):
 
         return loss.item(), torch.round(predictions)
 
-    def evaluate_ndp(self, params, return_rewards=False):
+    def evaluate_ndp(self, params, return_rewards=True):
         ndp = NeuralDevelopmentalProgram(XOR_PARAMETERS)
-        ndp.update_mlp_weights(params)
+        # weights = np.tanh(params)
+        weights = np.clip(params, -1.0, 1.0)
+        ndp.update_mlp_weights(weights)
 
+        graphs = []
         loss_list = []
         predictions_list = []
         for _ in range(self.n_repeats):
             graph = ndp.develope(self.n_cycles)
             loss, predictions = self.evaluate_graph(graph)
+            graphs.append(graph)
             loss_list.append(loss)
             predictions_list.append(predictions_list)
 
+        best_loss_idx = np.argmin(loss)
+        best_loss = loss_list[best_loss_idx]
+        best_graph = graphs[best_loss_idx]
+
         if return_rewards:
-            return np.mean(loss_list), predictions
+            return np.mean(loss_list), predictions, best_graph, best_loss
         else:
             return np.mean(loss_list)
 

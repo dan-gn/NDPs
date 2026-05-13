@@ -34,12 +34,14 @@ from concurrent.futures import ProcessPoolExecutor
 
 class Individual:
 
-    def __init__(self, n_variables, genotype = None, fitness = None):
+    def __init__(self, n_variables, genotype = None, fitness = None, best_graph = None, best_graph_fitness = None):
         self.n_variables = n_variables
         self.genotype = genotype
         self.fitness = fitness
         self.fitness_test = None
         self.initial_value_range = 5 # +- initial_value_range
+        self.best_graph = best_graph
+        self.best_graph_fitness = best_graph_fitness
 
     def random_initialise(self):
         self.genotype = np.random.uniform(-self.initial_value_range, self.initial_value_range, self.n_variables)
@@ -69,34 +71,52 @@ class EvolutionaryAlgorithm:
     def init_best_individual(self):
         self.best_individual = Individual(self.n_variables)
         self.best_individual.fitness = float("inf")
+        self.best_individual_by_graph = Individual(self.n_variables)
+        self.best_individual_by_graph.best_graph_fitness = float("inf")
 
     def initialise_population(self):
         population = [Individual(self.n_variables) for _ in range(self.population_size)]
         for i, member in enumerate(population):
             population[i].random_initialise()
-            population[i].fitness = self.objective_function(population[i].genotype)
+            population[i].fitness, _, population[i].best_graph, population[i].best_graph_fitness = self.objective_function(population[i].genotype)
             if population[i].fitness < self.best_individual.fitness:
                 self.best_individual.genotype = population[i].genotype
                 self.best_individual.fitness = population[i].fitness
-                self.best_individual.fitness_test = self.objective_function(self.best_individual.genotype) 
+                self.best_individual.best_graph = population[i].best_graph
+                self.best_individual.best_graph_fitness = population[i].best_graph_fitness
+                self.best_individual.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype) 
+            if population[i].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
+                self.best_individual_by_graph.genotype = population[i].genotype
+                self.best_individual_by_graph.fitness = population[i].fitness
+                self.best_individual_by_graph.best_graph = population[i].best_graph
+                self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
+                self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype)
         return population
     
     def run_initialise_individual(self, core_seed):
         self.set_seed(core_seed)
         individual = Individual(self.n_variables)
         individual.random_initialise()
-        individual.fitness = self.objective_function(individual.genotype)
+        individual.fitness, _, individual.best_graph, individual.best_graph_fitness = self.objective_function(individual.genotype)
         return individual
     
     def parallel_initialise_population(self):
         with ProcessPoolExecutor(max_workers=self.cores) as executor:
             population = list(executor.map(self.run_initialise_individual, range(self.n_core_seed, self.n_core_seed + self.population_size)))
         self.n_core_seed += self.population_size
+        population = sorted(population, key=lambda x: x.best_graph_fitness)
+        if population[0].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
+            self.best_individual_by_graph.genotype = population[0].genotype
+            self.best_individual_by_graph.fitness = population[0].fitness
+            self.best_individual_by_graph.best_graph = population[0].best_graph
+            self.best_individual_by_graph.best_graph_fitness = population[0].best_graph_fitness
         population = sorted(population, key=lambda x: x.fitness)
         if population[0].fitness < self.best_individual.fitness:
             self.best_individual.genotype = population[0].genotype
             self.best_individual.fitness = population[0].fitness
-            self.best_individual.fitness_test = self.objective_function(self.best_individual.genotype) 
+            self.best_individual.best_graph = population[0].best_graph
+            self.best_individual.best_graph_fitness = population[0].best_graph_fitness
+            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype)
         return population
 
     def roulette_wheel(self, p):
@@ -156,6 +176,14 @@ class EvolutionaryAlgorithm:
         return x + delta
 
     def elitism(self, offspring):
+        offspring = sorted(offspring, key=lambda x: x.best_graph_fitness)
+        if offspring[0].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
+            self.best_individual_by_graph.genotype = offspring[0].genotype.copy()
+            self.best_individual_by_graph.fitness = offspring[0].fitness
+            self.best_individual_by_graph.best_graph = offspring[0].best_graph
+            self.best_individual_by_graph.best_graph_fitness = offspring[0].best_graph_fitness
+
+
         self.population = sorted(self.population, key=lambda x: x.fitness)
         offspring = sorted(offspring, key=lambda x: x.fitness)
         self.population[self.elitism_index:] = offspring[:-self.elitism_index]
@@ -163,7 +191,9 @@ class EvolutionaryAlgorithm:
         if offspring[0].fitness < self.best_individual.fitness:
             self.best_individual.genotype = offspring[0].genotype.copy()
             self.best_individual.fitness = offspring[0].fitness
-            self.best_individual.fitness_test = self.objective_function(self.best_individual.genotype) 
+            self.best_individual.best_graph = offspring[0].best_graph
+            self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
+            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype) 
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
 
@@ -188,11 +218,11 @@ class EvolutionaryAlgorithm:
         for p in parents:
             genotype1, genotype2 = self.sbx(p)
             mutated_g1 = self.mutate(genotype1)
-            fitness_g1 = self.objective_function(mutated_g1)
-            offspring.append(Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1))
+            fitness_g1, _, best_graph_g1, best_graph_fitness_g1 = self.objective_function(mutated_g1)
+            offspring.append(Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1, best_graph=best_graph_g1, best_graph_fitness=best_graph_fitness_g1))
             mutated_g2 = self.mutate(genotype2)
-            fitness_g2 = self.objective_function(mutated_g2)
-            offspring.append(Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2))
+            fitness_g2, _, best_graph_g2, best_graph_fitness_g2 = self.objective_function(mutated_g2)
+            offspring.append(Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2, best_graph=best_graph_g2, best_graph_fitness=best_graph_fitness_g2))
         return offspring
     
     def set_seed(self, seed):
@@ -217,13 +247,15 @@ class EvolutionaryAlgorithm:
 
         # Mutation
         mutated_g1 = self.mutate(genotype1)
+        mutated_g2 = self.mutate(genotype2)
         
         # Evaluation
-        fitness_g1 = self.objective_function(mutated_g1)
-        mutated_g2 = self.mutate(genotype2)
-        fitness_g2 = self.objective_function(mutated_g2)
-        offspring1 = Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1)
-        offspring2 = Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2)
+        fitness_g1, _, best_graph_g1, best_graph_fitness_g1 = self.objective_function(mutated_g1)
+        fitness_g2, _, best_graph_g2, best_graph_fitness_g2 = self.objective_function(mutated_g2)
+
+        # Return offspring individuals
+        offspring1 = Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1, best_graph=best_graph_g1, best_graph_fitness=best_graph_fitness_g1)
+        offspring2 = Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2, best_graph=best_graph_g2, best_graph_fitness=best_graph_fitness_g2)
         return [offspring1, offspring2]
 
 
@@ -279,7 +311,7 @@ class EvolutionaryAlgorithm:
                 self.update_population()
             # if self.i % int(self.max_iterations/200) == 0:
             if self.i % 10 == 0:
-                print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best fitness testing = {self.best_individual.fitness_test:.4f}, Iteration time = {time.time() - start_time:.2f}')
+                print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best fitness testing = {self.best_individual.fitness_test:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
             if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                 print('Stop criteria achieved!')
                 self.goal_achieved = True

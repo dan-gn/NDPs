@@ -29,12 +29,12 @@ class Task:
     def __init__(self, parameters):
         self.parameters = dict(parameters)
         self.name = None
-        self.graph_n_inputs = self.parameters['graph_n_inputs']
-        self.graph_n_outputs = self.parameters['graph_n_outputs']
-        self.n_cycles = self.parameters['n_cycles']
-        self.n_repeats = self.parameters['n_repeats']
-        if 'n_rollouts' in self.parameters:
-            self.n_rollouts = self.parameters['n_rollouts']
+        self.graph_n_inputs = parameters['graph_n_inputs']
+        self.graph_n_outputs = parameters['graph_n_outputs']
+        self.n_cycles = parameters['n_cycles']
+        self.n_repeats = parameters['n_repeats']
+        self.n_rollouts = parameters['n_rollouts'] if 'n_rollouts' in parameters else None
+        self.target = parameters['target'] if 'target' in parameters else None
 
 
     def evaluate_graph(self, graph, render=False, verbose=False):
@@ -80,29 +80,36 @@ class Task:
                 # print(np.mean(actions_hist))
                 if verbose:
                     print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
-                rewards.append(cumulative_reward)
+                rewards.append(-cumulative_reward)
 
         env.close()
 
         return np.sum(rewards), rewards
 
-    def evaluate_ndp(self, params, return_rewards=False, render=False):
+    def evaluate_ndp(self, params, return_rollouts=True, render=False):
         ndp = NeuralDevelopmentalProgram(self.parameters)
-        weights = np.tanh(params)
+        # weights = np.tanh(params)
+        weights = np.clip(params, -1.0, 1.0)
         ndp.update_mlp_weights(weights)
 
-        cummulative_rewards = []
-        rollout_rewards = []
+        graphs = []
+        rewards = []
+        rollouts = []
         for i in range(self.n_repeats):
             graph = ndp.develope(self.n_cycles)
-            cummulative_r, rollout_r= self.evaluate_graph(graph, render=render)
-            cummulative_rewards.append(-cummulative_r)
-            rollout_rewards += rollout_r
+            reward, rollout= self.evaluate_graph(graph, render=render)
+            graphs.append(graph)
+            rewards.append(reward)
+            rollouts += rollout
 
-        if return_rewards:
-            return np.mean(cummulative_rewards), rollout_rewards
+        best_reward_idx = np.argmin(rewards)
+        best_reward = rewards[best_reward_idx] 
+        best_graph = graphs[best_reward_idx]
+
+        if return_rollouts:
+            return np.mean(reward), rollout, best_graph, best_reward
         else:
-            return np.mean(cummulative_rewards)
+            return np.mean(reward)
 
     def compute_action(self, output=None):
         if self.graph_n_outputs == 1:   # Binary output
@@ -117,7 +124,7 @@ class Task:
         print('Task')
         print('-------------------------------------')
         print(f'Name = {self.name}')
-        print(f'Target value = {self.parameters['target']}')
+        print(f'Target value = {self.target}')
         print('-------------------------------------')
 
         

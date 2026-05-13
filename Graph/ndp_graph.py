@@ -223,18 +223,27 @@ class Graph:
     def copy(self):
         pass
     
-    def summary(self):
+    def summary(self, full:bool=False):
         self.nodes = sorted(self.nodes, key = lambda x: x.node_id)
-        print('-----------------')
-        print('Nodes')
-        print('-----------------')
-        for node in self.nodes:
-            print(f'id = {node.node_id}, type = {node.node_type}, state = {node.state}')
-        print('\n-----------------')
-        print('Edges')
-        print('-----------------')
-        for (input_node, output_node), weight in self.edges.items():
-            print(f'input = {input_node}, output = {output_node}, weight = {weight}')
+        print('------------------------------------')
+        print('Graph')
+        print('------------------------------------')
+        print(f'Total number of nodes = {len(self.nodes)}')
+        print(f"Number of input nodes = {self.nodes_count['input']}")
+        print(f"Number of output nodes = {self.nodes_count['output']}")
+        print(f"Number of hidden nodes = {self.nodes_count['hidden']}")
+        print(f'Number of edges = {len(self.edges)}')
+        if full:
+            print('------------------------------------')
+            print('Nodes')
+            print('------------------------------------')
+            for node in self.nodes:
+                print(f'id = {node.node_id}, type = {node.node_type}, state = {node.state}')
+            print('\n------------------------------------')
+            print('Edges')
+            print('------------------------------------')
+            for (input_node, output_node), weight in self.edges.items():
+                print(f'input = {input_node}, output = {output_node}, weight = {weight}')
         print('\n')
 
 

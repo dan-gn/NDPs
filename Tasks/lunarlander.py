@@ -34,10 +34,10 @@ LUNARLANDER_PARAMETERS = {
     'n_rollouts' : 5
 }
 
-LUNARLANDER_PARAMETERS['target'] = LUNARLANDER_PARAMETERS['n_rollouts'] * (-200)
 
 class LunarLander(Task):
 
     def __init__(self, parameters=LUNARLANDER_PARAMETERS):
         super().__init__(parameters)
         self.name = 'LunarLander-v3'
+        self.target = parameters['n_rollouts'] * (-200)

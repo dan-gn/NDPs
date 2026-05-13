@@ -19,7 +19,7 @@ env = gym.make("CartPole-v1")
 CARTPOLE_PARAMETERS = {
     'state_dim' : 5,
     'weighted_graph_flag' : True,
-    'initial_graph': 'one_node',
+    'initial_graph': 'minimal_network',
     'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,
@@ -34,10 +34,10 @@ CARTPOLE_PARAMETERS = {
     'n_rollouts' : 10
 }
 
-CARTPOLE_PARAMETERS['target'] = CARTPOLE_PARAMETERS['n_rollouts'] * (-500)
 
 class CartPole(Task):
 
     def __init__(self, parameters=CARTPOLE_PARAMETERS):
         super().__init__(parameters)
         self.name = 'CartPole-v1'
+        self.target = parameters['n_rollouts'] * (-500)

@@ -230,7 +230,11 @@ class NeuralDevelopmentalProgram:
         """
         new_nodes = [] 
         new_edges = {}
-        for node in graph.nodes:
+        if True: # Only replicate hidden nodes
+            replication_start = self.graph_n_inputs + self.graph_n_outputs
+        else:
+            replication_start = 0
+        for node in graph.nodes[replication_start:]:
             # Use the Replication model to decide if a node should be replicated
             state = torch.tensor(node.state, dtype=torch.float32)
             replicate_node = self.replication_model(state)
@@ -257,15 +261,16 @@ class NeuralDevelopmentalProgram:
                 Is this okay tho?
                 """
                 for id in neighbor_ids + [node.node_id]:
-                    # neighbor_type = graph.nodes[id].node_type
-                    # if neighbor_type == 'output':
-                    #     new_edges[(new_node_id, id)] = 1.0
-                    # else:
-                    #     new_edges[(id, new_node_id)] = 1.0
+                    neighbor_type = graph.nodes[id].node_type
+                    if neighbor_type == 'output':
+                        new_edges[(new_node_id, id)] = 1.0
+                    else:
+                        new_edges[(id, new_node_id)] = 1.0
                     new_edges[(id, new_node_id)] = 1.0
 
         # Add the new nodes and edges to the graph
         graph.nodes.extend(new_nodes)
+        graph.nodes_count['hidden'] += len(new_nodes)
         # graph.edges |= new_edges
         for (input_node, output_node), weight in new_edges.items():
             graph.add_edge(input_node, output_node, weight)

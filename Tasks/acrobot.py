@@ -34,10 +34,10 @@ ACROBOT_PARAMETERS = {
     'n_rollouts' : 3
 }
 
-ACROBOT_PARAMETERS['target'] = ACROBOT_PARAMETERS['n_rollouts'] * 75
 
 class Acrobot(Task):
 
     def __init__(self, parameters=ACROBOT_PARAMETERS):
         super().__init__(parameters)
         self.name = 'Acrobot-v1'
+        self.target = parameters['n_rollouts'] * 75

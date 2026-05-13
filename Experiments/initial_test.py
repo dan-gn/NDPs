@@ -52,15 +52,16 @@ def simple_test():
     mlp_weights = np.random.uniform(-1, 1, n_params)
     ndp.update_mlp_weights(mlp_weights)
 
-    n_cycles = 5
-    graph = ndp.develope(n_cycles, debug=False)
+    graph = ndp.develope(task.n_cycles, debug=False)
     # graph.summary()
 
-    loss, predictions = task.evaluate_graph(graph)
-    print("Loss:", loss)
-    print("Predictions:")
-    print(predictions)
-
+    mean_reward, rollouts = task.evaluate_graph(graph)
+    print('------------------------------------')
+    print("Final reward:", mean_reward)
+    print('------------------------------------')
+    print("Rollouts:")
+    print(rollouts)
+    graph.summary(full=False)
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -107,18 +108,20 @@ def test_with_optimisation():
         n_iterations = 100
         # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
         optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = 4)
-        best_params, best_loss = optimiser.run(task.parameters['target'], 0, 0)
+        best_params, best_loss = optimiser.run(task.target, 0, 0)
 
     print('Optimisation finished!')
 
     print('Evaluating best model!')
-    loss, predictions = evaluate_ndp(best_params, return_rewards=True)
+    mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params, return_rewards=True)
     print('Evaluation finished!')
 
-    print("\nBest CMA loss:", best_loss)
-    print("Final loss:", loss)
-    print("Predictions:")
-    print(predictions)
+    print("\nBest reward:", best_loss)
+    print("Final reward:", mean_reward)
+    print("Rollouts:")
+    print(rollouts)
+    print('Best graph')
+    best_graph.summary(full=False)
 
 
 '''
