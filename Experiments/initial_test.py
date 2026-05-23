@@ -107,8 +107,8 @@ def test_with_optimisation():
         # EA
         population_size = 50
         n_iterations = 100
-        colab = False
-        cores = os.cpu_count() if colab else 4
+        colab = True
+        cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
         print(f'Number of cores {cores}')
