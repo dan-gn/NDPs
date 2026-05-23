@@ -295,7 +295,7 @@ class Graphnx():
         self._graph.remove_edge(input_id, output_id)
 
     def get_diameter(self) -> int:
-        return nx.diameter(self._graph)
+        return nx.diameter(self._graph.to_undirected())
     
     def get_neighbors(self, node_id) -> set:
         return set(nx.all_neighbors(self._graph, node_id))

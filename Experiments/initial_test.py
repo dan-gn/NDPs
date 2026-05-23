@@ -72,7 +72,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = CartPole()
+    task = Acrobot()
 
     # Params
     ndp_params = task.parameters

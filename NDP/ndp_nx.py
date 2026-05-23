@@ -204,7 +204,7 @@ class NeuralDevelopmentalProgram:
             new_node_state = neighbors_states.mean(dim=0).numpy()
             new_node_id = graph.add_node(new_node_state)
             for neighbor in neighbors:
-                graph.add_edge(new_node_id, neighbor)
+                # graph.add_edge(new_node_id, neighbor)
                 graph.add_edge(neighbor, new_node_id)
         return graph
     
