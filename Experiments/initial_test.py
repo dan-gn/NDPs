@@ -107,8 +107,11 @@ def test_with_optimisation():
         # EA
         population_size = 50
         n_iterations = 100
-        colab = True
+        colab = False
         cores = os.cpu_count() if colab else 4
+        execution_environment = 'Google Colab' if colab else 'Local Computer'
+        print(f'Running on {execution_environment}')
+        print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = cores)
         best_params, best_loss = optimiser.run(task.target, 0, 0)
 
