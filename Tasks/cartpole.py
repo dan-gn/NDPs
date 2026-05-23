@@ -19,7 +19,7 @@ env = gym.make("CartPole-v1")
 CARTPOLE_PARAMETERS = {
     'state_dim' : 5,
     'weighted_graph_flag' : True,
-    'initial_graph': 'minimal_network',
+    'initial_graph': 'one_node',
     'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,

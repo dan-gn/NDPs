@@ -15,7 +15,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 # Import NDP Class
-from NDP.ndp import NeuralDevelopmentalProgram
+from NDP.ndp_nx import NeuralDevelopmentalProgram
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -53,7 +53,7 @@ def simple_test():
     ndp.update_mlp_weights(mlp_weights)
 
     graph = ndp.develope(task.n_cycles, debug=False)
-    # graph.summary()
+    graph.summary()
 
     mean_reward, rollouts = task.evaluate_graph(graph)
     print('------------------------------------')
@@ -72,11 +72,12 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = XOR()
+    task = CartPole()
 
     # Params
     ndp_params = task.parameters
     evaluate_ndp = task.evaluate_ndp
+    evaluate_graph = task.evaluate_graph
 
     # Initial parameters
     ndp = NeuralDevelopmentalProgram(ndp_params)
@@ -106,9 +107,8 @@ def test_with_optimisation():
         # EA
         population_size = 50
         n_iterations = 100
-        # optimiser = EvolutionaryAlgorithm(n_params, 100, 100, 200, 'name', 'env', 10, 10, evaluate_ndp_on_cartpole, run_in_parallel=True, cores = 47)
         cores = 47 if os.cpu_count() == 48 else 4
-        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = cores)
+        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=False, cores = cores)
         best_params, best_loss = optimiser.run(task.target, 0, 0)
 
     print('Optimisation finished!')
@@ -117,11 +117,22 @@ def test_with_optimisation():
     mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params, return_rewards=True)
     print('Evaluation finished!')
 
-    print("\nBest reward:", best_loss)
-    print("Final reward:", mean_reward)
+    best_graph = optimiser.best_individual_by_graph.best_graph
+    best_graph_reward, best_graph_predictions = evaluate_graph(best_graph)
+    
+
+    print("\nBest mean reward:", best_loss)
+
+    print(f'\nBest graph loss: {best_graph_reward}')
+    print("Rollouts:")
+    print(best_graph_predictions)
+    print('Best graph')
+    best_graph.summary(full=False)
+
+    print("\nTesting reward:", mean_reward)
     print("Rollouts:")
     print(rollouts)
-    print('Best graph')
+    print('Best graph on testing')
     best_graph.summary(full=False)
 
 

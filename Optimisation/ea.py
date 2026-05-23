@@ -1,36 +1,26 @@
+"""
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Libraries
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"""
+
 import numpy as np
 import random
 import torch
 import time
 import torch.nn.functional as F
-
-"""
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-OBJECTIVE FUNCTION
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-"""
-# Compute action from environment
-def compute_action(env_name, action):
-    if env_name == 'CartPole-v1':
-        action =  torch.sigmoid(action)
-        return int(torch.round(action))
-    elif env_name in ['MountainCar-v0', 'Acrobot-v1']:
-        # return int(nn.functional.hardtanh(action, 0, 2))
-        probs = F.softmax(action, dim=0)  
-        return int(probs.argmax())
-    elif env_name == 'LunarLander-v3':
-        # return int(nn.functional.hardtanh(action, 0, 3))
-        probs = F.softmax(action, dim=0)  
-        return int(probs.argmax())   
-
-
-"""
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-EVOLUTIONARY ALGORITHM
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-"""
 import math
 from concurrent.futures import ProcessPoolExecutor
+
+"""
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Evolutionary Algorithm
+
+There are two classes:
+1. Individual - Class for each individual of the population for the evolutionary algorithm.
+2. Evolutionary Algorithm - Class for the evolutionary algorithm to perform the optimisation. 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"""
 
 class Individual:
 

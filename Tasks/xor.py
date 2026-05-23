@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 
 from Tasks.task import Task
-from NDP.ndp import NeuralDevelopmentalProgram
+from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork
 
 
@@ -36,7 +36,7 @@ Y_XOR = torch.tensor([
 XOR_PARAMETERS = {
     'state_dim' : 1,
     'weighted_graph_flag' : True,
-    'initial_graph' : 'minimal_network',
+    'initial_graph' : 'one_node',
     'node_state_random_init' : True,
     'add_hidden_node_to_minimal_network' : True, 
     'pruning_flag' : False,
@@ -62,10 +62,11 @@ class XOR(Task):
         with torch.no_grad():
             ann = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs)
             predictions = ann(X_XOR)
-            predictions =  torch.sigmoid(predictions)
+            # predictions =  torch.sigmoid(predictions)
             loss = F.mse_loss(predictions, Y_XOR)
+            # accuracy = 
 
-        return loss.item(), torch.round(predictions)
+        return loss.item(), torch.round(torch.sigmoid(predictions))
 
     def evaluate_ndp(self, params, return_rewards=True):
         ndp = NeuralDevelopmentalProgram(XOR_PARAMETERS)

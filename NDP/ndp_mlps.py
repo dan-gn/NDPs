@@ -21,22 +21,25 @@ class GraphCellularAutomata(nn.Module):
         super().__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(state_dim * 2, hidden_layer_size),
+            nn.Linear(state_dim, hidden_layer_size),
             nn.Tanh(),
-            nn.Linear(hidden_layer_size, state_dim)
+            nn.Linear(hidden_layer_size, state_dim),
+            nn.Tanh()
         )
 
-    def forward(self, node_state, neighbors_states):
-        if neighbors_states.size()[0] > 1:
-            neighbors_states_mean = torch.mean(neighbors_states, axis = 0).unsqueeze(axis = 0)
-            x = torch.cat([node_state, neighbors_states_mean], dim = 1)
-        else:
-            x = torch.cat([node_state, neighbors_states], dim = 1)
+    # def forward(self, node_state, neighbors_states):
+    #     if neighbors_states.size()[0] > 1:
+    #         neighbors_states_mean = torch.mean(neighbors_states, axis = 0).unsqueeze(axis = 0)
+    #         x = torch.cat([node_state, neighbors_states_mean], dim = 1)
+    #     else:
+    #         x = torch.cat([node_state, neighbors_states], dim = 1)
 
-        delta = self.model(x)
-        new_state = node_state + delta
+    #     delta = self.model(x)
+    #     new_state = node_state + delta
 
-        return new_state
+    #     return new_state
+    def forward(self, node_state):
+        return self.model(node_state)
 
 # Replication model employed to grow the graph 
 class ReplicationModel(nn.Module):
@@ -47,7 +50,7 @@ class ReplicationModel(nn.Module):
             nn.Linear(state_dim, hidden_dim),
             nn.Tanh(),
             nn.Linear(hidden_dim, 1),
-            nn.Sigmoid()
+            nn.Tanh()
         )
 
     def forward(self, node_state):
@@ -66,6 +69,6 @@ class WeightPredictionModel(nn.Module):
         )
 
     def forward(self, input_node_state, output_node_state):
-        x = torch.cat([input_node_state, output_node_state], dim=1)
+        x = torch.cat([input_node_state, output_node_state], dim=0)
         return self.model(x)
 

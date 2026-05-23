@@ -15,7 +15,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from NDP.ndp import NeuralDevelopmentalProgram
+from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork
 
 '''
@@ -126,5 +126,6 @@ class Task:
         print(f'Name = {self.name}')
         print(f'Target value = {self.target}')
         print('-------------------------------------')
+        print('\n')
 
         
