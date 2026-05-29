@@ -17,6 +17,7 @@ sys.path.append(parent)
 
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork
+from Graph.ndp_graph import Graphnx
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,7 +27,7 @@ General task
 
 class Task:
 
-    def __init__(self, parameters):
+    def __init__(self, parameters:dict):
         self.parameters = dict(parameters)
         self.name = None
         self.graph_n_inputs = parameters['graph_n_inputs']
@@ -37,7 +38,7 @@ class Task:
         self.target = parameters['target'] if 'target' in parameters else None
 
 
-    def evaluate_graph(self, graph, render=False, verbose=False):
+    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, verbose:bool=False):
         """
         Evaluates a developed NDP graph on task.
 
@@ -48,6 +49,9 @@ class Task:
 
         env = gym.make(self.name, render_mode="human" if render else None)
 
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
+
         rewards = []
         with torch.no_grad():
             if verbose:
@@ -56,9 +60,10 @@ class Task:
             if verbose:
                 print('Done!')
 
-            for i in range(self.n_rollouts):
+            for i in range(n_rollouts):
                 actions_hist = []
-                obs, _ = env.reset()
+                seed = env_seed + i if env_seed is not None else None
+                obs, _ = env.reset(seed=seed)
 
                 done = False
                 truncated = False
@@ -86,30 +91,33 @@ class Task:
 
         return np.sum(rewards), rewards
 
-    def evaluate_ndp(self, params, return_rollouts=True, render=False):
+    def evaluate_ndp(self, params:np.array, n_rollouts:int=None, return_rollouts:bool=True, render:str=False):
         ndp = NeuralDevelopmentalProgram(self.parameters)
         # weights = np.tanh(params)
         weights = np.clip(params, -1.0, 1.0)
         ndp.update_mlp_weights(weights)
 
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
+
         graphs = []
         rewards = []
         rollouts = []
-        for i in range(self.n_repeats):
+        for _ in range(self.n_repeats):
             graph = ndp.develope(self.n_cycles)
-            reward, rollout= self.evaluate_graph(graph, render=render)
+            reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render)
             graphs.append(graph)
             rewards.append(reward)
-            rollouts += rollout
+            rollouts.extend(rollout)
 
         best_reward_idx = np.argmin(rewards)
         best_reward = rewards[best_reward_idx] 
         best_graph = graphs[best_reward_idx]
 
         if return_rollouts:
-            return np.mean(reward), rollout, best_graph, best_reward
+            return np.mean(rewards), rollouts, best_graph, best_reward
         else:
-            return np.mean(reward)
+            return np.mean(rewards)
 
     def compute_action(self, output=None):
         if self.graph_n_outputs == 1:   # Binary output

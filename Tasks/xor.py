@@ -47,7 +47,7 @@ XOR_PARAMETERS = {
     'graph_n_inputs' : X_XOR.size()[1],
     'graph_n_outputs' : Y_XOR.size()[1],
     'n_cycles' : 4,
-    'n_repeats' : 1,
+    'n_repeats' : 10,
 }
 
 
@@ -89,7 +89,7 @@ class XOR(Task):
         best_graph = graphs[best_loss_idx]
 
         if return_rewards:
-            return np.mean(loss_list), predictions, best_graph, best_loss
+            return np.mean(loss_list), predictions_list, best_graph, best_loss
         else:
             return np.mean(loss_list)
 

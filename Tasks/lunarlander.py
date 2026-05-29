@@ -30,7 +30,7 @@ LUNARLANDER_PARAMETERS = {
     'graph_n_inputs': env.observation_space.shape[0],  # 4
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
-    'n_repeats': 5,
+    'n_repeats': 10,
     'n_rollouts' : 5
 }
 

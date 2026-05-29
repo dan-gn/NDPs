@@ -32,28 +32,30 @@ from Tasks.xor import XOR
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Simple Test:
-* Runs an NDP.
-* MLP Parameters are optimised.
-* Test the generated graph on an environment (you need to define it, sorry)
+* Choose an environment.
+* Randomly initialise the MLP weights.
+* Runs the NDP to generate a graph.
+* Test the generated graph on the chosen environment. 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-def simple_test():
+def simple_test_v1():
 
     seed = 0
     np.random.seed(seed)
     random.seed(seed)
     torch.manual_seed(seed)
 
-    task = XOR() 
+    task = CartPole() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
     mlp_weights = np.random.uniform(-1, 1, n_params)
+    # mlp_weights = np.ones(n_params)*0.1
     ndp.update_mlp_weights(mlp_weights)
 
     graph = ndp.develope(task.n_cycles, debug=False)
-    graph.summary()
+    graph.summary(full=False)
 
     mean_reward, rollouts = task.evaluate_graph(graph)
     print('------------------------------------')
@@ -61,7 +63,42 @@ def simple_test():
     print('------------------------------------')
     print("Rollouts:")
     print(rollouts)
-    graph.summary(full=False)
+
+
+'''
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Simple Test 2:
+* Choose an environment.
+* Randomly initialise the MLP weights.
+* Runs the NDP to generate MULTIPLE graphs.
+* Test the generated graphs on the chosen environment. 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
+def simple_test_v2():
+
+    seed = 0
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+
+    task = CartPole() 
+    ndp = NeuralDevelopmentalProgram(task.parameters)
+
+    n_params = ndp.get_total_number_of_mlp_parameters()
+    mlp_weights = np.random.uniform(-1, 1, n_params)
+    # mlp_weights = np.ones(n_params)
+    
+    mean_reward, rollouts, best_graph, best_reward = task.evaluate_ndp(mlp_weights)
+    best_graph.summary(full=False)
+    print('------------------------------------')
+    print("Final reward:", mean_reward)
+    print("Best reward:", best_reward)
+    print('------------------------------------')
+    print("Rollouts:")
+    print(rollouts)
+    # graph.summary(full=False)
+
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -72,7 +109,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = Acrobot()
+    task = XOR()
 
     # Params
     ndp_params = task.parameters
@@ -106,8 +143,8 @@ def test_with_optimisation():
     else:
         # EA
         population_size = 50
-        n_iterations = 100
-        colab = True
+        n_iterations = 50
+        colab = False
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -117,14 +154,18 @@ def test_with_optimisation():
 
     print('Optimisation finished!')
 
-    print('Evaluating best model!')
-    mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params, return_rewards=True)
-    print('Evaluation finished!')
-
     best_graph = optimiser.best_individual_by_graph.best_graph
-    best_graph_reward, best_graph_predictions = evaluate_graph(best_graph)
-    
 
+    print('Evaluating best model!')
+    if isinstance(task, XOR):
+        best_graph_reward, best_graph_predictions = evaluate_graph(best_graph)
+        mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params)
+    else:
+        best_graph_reward, best_graph_predictions = evaluate_graph(best_graph, n_rollouts=100)
+        mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params, n_rollouts=100)
+
+    print('Evaluation finished!')
+    
     print("\nBest mean reward:", best_loss)
 
     print(f'\nBest graph loss: {best_graph_reward}')
@@ -133,9 +174,10 @@ def test_with_optimisation():
     print('Best graph')
     best_graph.summary(full=False)
 
+
     print("\nTesting reward:", mean_reward)
-    print("Rollouts:")
-    print(rollouts)
+    # print("Rollouts:")
+    # print(rollouts)
     print('Best graph on testing')
     best_graph.summary(full=False)
 

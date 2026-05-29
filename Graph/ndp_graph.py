@@ -300,7 +300,7 @@ class Graphnx():
     def get_neighbors(self, node_id) -> set:
         return set(nx.all_neighbors(self._graph, node_id))
     
-    def summary(self, full:bool=True):
+    def summary(self, full:bool=False):
         nodes = list(self._graph.nodes())
         edges = list(self._graph.edges())
         weights = self.get_adjacency_matrix()
@@ -309,6 +309,10 @@ class Graphnx():
         print('------------------------------------')
         print(f'Total number of nodes = {len(nodes)}')
         print(f'Total number of edges = {len(edges)}')
+        print(f'Min state = {self.nodes_states.min(axis=0)}')
+        print(f'Max state = {self.nodes_states.max(axis=0)}')
+        print(f'Mean state = {self.nodes_states.mean(axis=0)}')
+        print(f'Std state = {self.nodes_states.std(axis=0)}')
         if full:
             print('------------------------------------')
             print('Nodes')
