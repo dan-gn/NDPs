@@ -1,0 +1,6 @@
+numpy
+torch
+cma
+matplotlib
+swig
+gymnasium[box2d]

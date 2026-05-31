@@ -46,7 +46,7 @@ def simple_test_v1():
     random.seed(seed)
     torch.manual_seed(seed)
 
-    task = CartPole() 
+    task = LunarLander() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
@@ -109,7 +109,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = XOR()
+    task = CartPole()
 
     # Params
     ndp_params = task.parameters
@@ -144,7 +144,7 @@ def test_with_optimisation():
         # EA
         population_size = 50
         n_iterations = 50
-        colab = False
+        colab = True
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
