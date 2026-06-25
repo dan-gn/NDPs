@@ -41,12 +41,12 @@ Simple Test:
 
 def simple_test_v1():
 
-    seed = 0
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.manual_seed(seed)
+    # seed = 0
+    # np.random.seed(seed)
+    # random.seed(seed)
+    # torch.manual_seed(seed)
 
-    task = LunarLander() 
+    task = MountainCar() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
@@ -77,12 +77,12 @@ Simple Test 2:
 
 def simple_test_v2():
 
-    seed = 0
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.manual_seed(seed)
+    # seed = 0
+    # np.random.seed(seed)
+    # random.seed(seed)
+    # torch.manual_seed(seed)
 
-    task = CartPole() 
+    task = MountainCar() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
@@ -109,7 +109,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = CartPole()
+    task = MountainCar()
 
     # Params
     ndp_params = task.parameters
@@ -128,7 +128,6 @@ def test_with_optimisation():
 
     optimisation_algorithm = 'EA'
 
-
     # Run optimisation
     print('Starting optimisation!')
 
@@ -142,17 +141,19 @@ def test_with_optimisation():
 
     else:
         # EA
+        seed = None
         population_size = 50
         n_iterations = 50
-        colab = True
+        colab = False
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
         print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = cores)
-        best_params, best_loss = optimiser.run(task.target, 0, 0)
+        best_params, best_loss = optimiser.run(task.target, seed, 0)
 
     print('Optimisation finished!')
+    print("\nBest mean reward:", best_loss)
 
     best_graph = optimiser.best_individual_by_graph.best_graph
 
@@ -160,25 +161,27 @@ def test_with_optimisation():
     if isinstance(task, XOR):
         best_graph_reward, best_graph_predictions = evaluate_graph(best_graph)
         mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params)
+        rollouts = np.array(rollouts).mean(axis=0)
     else:
         best_graph_reward, best_graph_predictions = evaluate_graph(best_graph, n_rollouts=100)
         mean_reward, rollouts, best_graph, _ = evaluate_ndp(best_params, n_rollouts=100)
-
+        rollouts = np.array(rollouts).mean(axis=0)
     print('Evaluation finished!')
     
-    print("\nBest mean reward:", best_loss)
 
-    print(f'\nBest graph loss: {best_graph_reward}')
+    print('\nBest graph results on testing')
+    print(f'Reward: {best_graph_reward}')
     print("Rollouts:")
     print(best_graph_predictions)
-    print('Best graph')
+    print('Graph')
     best_graph.summary(full=False)
 
 
-    print("\nTesting reward:", mean_reward)
-    # print("Rollouts:")
-    # print(rollouts)
-    print('Best graph on testing')
+    print('\nBest model results on testing')
+    print("Mean reward:", mean_reward)
+    print("Mean rollout:")
+    print(rollouts)
+    print('Best graph')
     best_graph.summary(full=False)
 
 
@@ -190,3 +193,4 @@ Main function
 if __name__ == '__main__':
 
     test_with_optimisation()
+

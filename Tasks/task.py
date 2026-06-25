@@ -36,6 +36,7 @@ class Task:
         self.n_repeats = parameters['n_repeats']
         self.n_rollouts = parameters['n_rollouts'] if 'n_rollouts' in parameters else None
         self.target = parameters['target'] if 'target' in parameters else None
+        self.truncated_penalty = 0
 
 
     def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, verbose:bool=False):
@@ -82,7 +83,10 @@ class Task:
 
                     cumulative_reward += reward
 
-                # print(np.mean(actions_hist))
+                if truncated:
+                    cumulative_reward -= self.truncated_penalty
+
+                # print(np.min(actions_hist), np.mean(actions_hist), np.max(actions_hist), len(actions_hist))
                 if verbose:
                     print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
                 rewards.append(-cumulative_reward)
@@ -124,7 +128,9 @@ class Task:
             action =  torch.sigmoid(output)
             return int(torch.round(action))
         else:   # Integer output
-            probs =  F.softmax(output, dim=0)
+            # print(output, output.shape)
+            probs =  F.softmax(output, dim=1)
+            # print(probs)
             return int(probs.argmax())
     
     def summary(self):

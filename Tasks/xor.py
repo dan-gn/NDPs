@@ -56,7 +56,7 @@ class XOR(Task):
     def __init__(self, parameters=XOR_PARAMETERS):
         super().__init__(parameters)
         self.name = 'XOR'
-        self.target = 0
+        self.target = 0.1
 
     def evaluate_graph(self, graph):
         with torch.no_grad():
@@ -82,7 +82,7 @@ class XOR(Task):
             loss, predictions = self.evaluate_graph(graph)
             graphs.append(graph)
             loss_list.append(loss)
-            predictions_list.append(predictions_list)
+            predictions_list.append(predictions)
 
         best_loss_idx = np.argmin(loss)
         best_loss = loss_list[best_loss_idx]

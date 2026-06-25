@@ -308,7 +308,7 @@ class EvolutionaryAlgorithm:
                 self.goal_achieved_it = self.i
                 self.goal_achieved_individual = np.copy(self.best_individual.genotype)
                 self.goal_achieved_fitness = self.best_individual.fitness
-                # break
+                break
             # print(f'Iteration total time = {time.time() - start_time}')
         self.record[self.i + 1] = self.best_individual.fitness
         return self.best_individual.genotype, self.best_individual.fitness
