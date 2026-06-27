@@ -71,10 +71,9 @@ class Task:
                 cumulative_reward = 0.0
 
                 while not done and not truncated:
-                    x = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
-                    # print('\nSTEP\n')
-                    output = ann(x)
+                    output = ann(obs)
 
                     action = self.compute_action(output)
                     actions_hist.append(action)
@@ -139,7 +138,7 @@ class Task:
         print('-------------------------------------')
         print(f'Name = {self.name}')
         print(f'Target value = {self.target}')
-        print('-------------------------------------')
-        print('\n')
+        print('-------------------------------------\n')
+
 
         

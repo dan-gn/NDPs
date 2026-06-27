@@ -109,7 +109,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = MountainCar()
+    task = Acrobot()
 
     # Params
     ndp_params = task.parameters
@@ -142,8 +142,8 @@ def test_with_optimisation():
     else:
         # EA
         seed = None
-        population_size = 50
-        n_iterations = 50
+        population_size = 100
+        n_iterations = 100
         colab = False
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'

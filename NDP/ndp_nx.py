@@ -337,8 +337,7 @@ class NeuralDevelopmentalProgram:
         print(f'Replication Model = {get_number_of_model_parameters(self.replication_model)}')
         print(f'Weight Prediction Model = {get_number_of_model_parameters(self.weight_prediction_model)}')
         print(f'Total = {self.get_total_number_of_mlp_parameters()}')
-        print('-------------------------------------')
-        print('\n')
+        print('-------------------------------------\n')
 
 
 

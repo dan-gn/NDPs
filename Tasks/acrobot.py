@@ -27,11 +27,11 @@ ACROBOT_PARAMETERS = {
     'gca_hidden_size' : 5,
     'rm_hidden_size' : 5,
     'wp_hidden_size' : 5,
-    'graph_n_inputs': env.observation_space.shape[0],  # 4
+    'graph_n_inputs': env.observation_space.shape[0],  # 3
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
-    'n_repeats': 3,
-    'n_rollouts' : 3
+    'n_repeats': 5,
+    'n_rollouts' : 5
 }
 
 
