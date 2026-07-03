@@ -317,7 +317,8 @@ class Graphnx():
             print('------------------------------------')
             print('Nodes')
             print('------------------------------------')
-            print(nodes)
+            for i, node_state in enumerate(self.nodes_states):
+                print(f'{i} = {node_state}')
             print('\n------------------------------------')
             print('Edges')
             print('------------------------------------')

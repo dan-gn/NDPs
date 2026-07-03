@@ -82,7 +82,7 @@ def simple_test_v2():
     # random.seed(seed)
     # torch.manual_seed(seed)
 
-    task = MountainCar() 
+    task = Acrobot() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
@@ -109,7 +109,7 @@ Simple Test with optimisation:
 
 def test_with_optimisation():
     # Task
-    task = Acrobot()
+    task = CartPole()
 
     # Params
     ndp_params = task.parameters
@@ -142,14 +142,25 @@ def test_with_optimisation():
     else:
         # EA
         seed = None
-        population_size = 100
-        n_iterations = 100
         colab = False
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
         print(f'Number of cores {cores}')
-        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = cores)
+        optimiser = EvolutionaryAlgorithm(
+            ndp_params = ndp_params,
+            n_variables = n_params,
+            max_iterations = 50, 
+            population_size = 50,
+            max_stagnment = 250,
+            model_name = None,
+            environment_name = None,
+            tries = None,
+            lambda_value = None,
+            objective_function = evaluate_ndp,
+            run_in_parallel = True,
+            cores = cores
+        )
         best_params, best_loss = optimiser.run(task.target, seed, 0)
 
     print('Optimisation finished!')

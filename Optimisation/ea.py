@@ -173,7 +173,6 @@ class EvolutionaryAlgorithm:
             self.best_individual_by_graph.best_graph = offspring[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = offspring[0].best_graph_fitness
 
-
         self.population = sorted(self.population, key=lambda x: x.fitness)
         offspring = sorted(offspring, key=lambda x: x.fitness)
         self.population[self.elitism_index:] = offspring[:-self.elitism_index]
@@ -220,7 +219,6 @@ class EvolutionaryAlgorithm:
         torch.cuda.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
-
 
     # This function is for running the evolutionary algorithm in parallel. 
     # This function creates a couple of offsprings by performing parent seletction, crossover, mutation and evaluation. 
@@ -300,7 +298,7 @@ class EvolutionaryAlgorithm:
             else:
                 self.update_population()
             # if self.i % int(self.max_iterations/200) == 0:
-            if self.i % 10 == 0:
+            if self.i % 100 == 0:
                 print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best fitness testing = {self.best_individual.fitness_test:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
             if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                 print('Stop criteria achieved!')

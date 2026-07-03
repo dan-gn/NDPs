@@ -30,6 +30,10 @@ DEFAULT_PARAMETERS = {
     'weighted_graph_flag' : True,
     'initial_graph' : 'one_node',
     'node_state_random_init' : False,
+    'shared_initial_node_state_flag' : False,
+    'shared_initial_node_state': None,
+    'noise_while_growing' : False,
+    'noise_while_growing_interval' : 0.15,
     'add_hidden_node_to_minimal_network' : True,
     'pruning_flag' : False,
     'pruning_threshold': 0.01,
@@ -82,11 +86,15 @@ class NeuralDevelopmentalProgram:
         self.weighted_graph_flag = self.config['weighted_graph_flag']
         self.initial_graph = self.config['initial_graph']
         self.node_state_random_init = self.config['node_state_random_init']
+        self.shared_initial_node_state_flag = self.config['shared_initial_node_state_flag']
+        self.shared_initial_node_state = self.config['shared_initial_node_state']
         self.add_hidden_node_to_minimal_network = self.config['add_hidden_node_to_minimal_network']
         self.pruning_flag = self.config['pruning_flag']
         self.pruning_threshold = self.config['pruning_threshold']
         self.graph_n_inputs = self.config['graph_n_inputs']
         self.graph_n_outputs = self.config['graph_n_outputs']
+        self.noise_while_growing = self.config['noise_while_growing']
+        self.noise_while_growing_interval = self.config['noise_while_growing_interval']
         # Create the MLPs
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
         self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
@@ -103,7 +111,13 @@ class NeuralDevelopmentalProgram:
             raise ValueError('State dimension should be equal or greater than 1.')
         initial_graph_options = ['minimal_network', 'one_node']
         if self.initial_graph not in initial_graph_options:
-            raise ValueError(f'Invalid value for the initial graph. Valid options are: {initial_graph_options}')
+            raise ValueError(f'Invalid value for the initial graph. Valid options are: {initial_graph_options}.')
+        if self.shared_initial_node_state_flag:
+            if not isinstance(self.shared_initial_node_state, np.array):
+                raise ValueError(f'If shared_initial_node_state_flag is set to True, then shared_initial_node_state needs to be defined as a np.array([state_dim]).')
+            elif len(self.shared_initial_node_state) != self.state_dim:
+                raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state}) must be an array with state_dim ({self.state_dim}) elements.')
+
 
     def get_total_number_of_mlp_parameters(self) -> int:
         n_params = get_number_of_model_parameters(self.graph_cellular_automata)
@@ -157,7 +171,10 @@ class NeuralDevelopmentalProgram:
 
         # One node initial graph
         if self.initial_graph == 'one_node':
-            node_state = self._genereate_node_state()
+            if self.shared_initial_node_state_flag:
+                node_state = self.shared_initial_node_state.copy()
+            else:
+                node_state = self._genereate_node_state()
             node_id = graph.add_node(node_state)
             graph.add_edge(node_id, node_id)
 
@@ -202,6 +219,10 @@ class NeuralDevelopmentalProgram:
             neighbors.add(node)
             neighbors_states = nodes_states[list(neighbors)]
             new_node_state = neighbors_states.mean(dim=0).numpy()
+            if self.noise_while_growing:
+                # Included a bit of noise so that the new nodes states to avoid states 
+                # converging to a same value during the development process
+                new_node_state += np.random.uniform(-self.noise_while_growing_interval, self.noise_while_growing_interval, new_node_state.size)
             new_node_id = graph.add_node(new_node_state)
             for neighbor in neighbors:
                 # graph.add_edge(new_node_id, neighbor)

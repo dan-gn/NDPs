@@ -32,6 +32,7 @@ MOUNTAINCAR_PARAMETERS = {
     'weighted_graph_flag' : True,
     'initial_graph': 'one_node',
     'node_state_random_init' : True,
+    'noise_while_growing' : True,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,
     'pruning_threshold': 0.3,
@@ -53,4 +54,3 @@ class MountainCar(Task):
         self.name = 'MountainCar-v0'
         self.target = parameters['n_rollouts'] * 110
         self.truncated_penalty = 200
-        print(self.graph_n_outputs)

@@ -38,6 +38,7 @@ XOR_PARAMETERS = {
     'weighted_graph_flag' : True,
     'initial_graph' : 'one_node',
     'node_state_random_init' : True,
+    'noise_while_growing' : False,
     'add_hidden_node_to_minimal_network' : True, 
     'pruning_flag' : False,
     'pruning_threshold': 0.3,
@@ -56,7 +57,7 @@ class XOR(Task):
     def __init__(self, parameters=XOR_PARAMETERS):
         super().__init__(parameters)
         self.name = 'XOR'
-        self.target = 0.1
+        self.target = 0.15
 
     def evaluate_graph(self, graph):
         with torch.no_grad():

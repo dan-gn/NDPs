@@ -21,6 +21,7 @@ ACROBOT_PARAMETERS = {
     'weighted_graph_flag' : True,
     'initial_graph': 'one_node',
     'node_state_random_init' : True,
+    'noise_while_growing' : False,
     'add_hidden_node_to_minimal_network': True,
     'pruning_flag' : False,
     'pruning_threshold': 0.3,

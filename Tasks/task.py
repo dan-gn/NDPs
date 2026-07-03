@@ -37,6 +37,9 @@ class Task:
         self.n_rollouts = parameters['n_rollouts'] if 'n_rollouts' in parameters else None
         self.target = parameters['target'] if 'target' in parameters else None
         self.truncated_penalty = 0
+        if parameters['shared_initial_node_state_flag']:
+            ndp = NeuralDevelopmentalProgram(parameters)
+            self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
 
     def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, verbose:bool=False):
@@ -86,6 +89,10 @@ class Task:
                     cumulative_reward -= self.truncated_penalty
 
                 # print(np.min(actions_hist), np.mean(actions_hist), np.max(actions_hist), len(actions_hist))
+                # a = np.mean(actions_hist)
+                # if not a.is_integer():
+                #     print(np.min(actions_hist), np.mean(actions_hist), np.max(actions_hist), len(actions_hist), cumulative_reward)
+                #     # print(a, cumulative_reward)
                 if verbose:
                     print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
                 rewards.append(-cumulative_reward)
