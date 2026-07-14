@@ -77,10 +77,17 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     n_params = ndp.get_total_number_of_mlp_parameters()
     # print(f'Number of NDP parameters {n_params}')
+    if ndp_params['initial_node_state_mode'] == 'coevolve':
+        n_params += ndp_params['state_dim']
 
     # Run optimisation
     print(f'Seed = {seed}')
     print('Starting optimisation!')
+
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -91,14 +98,27 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     else:
         # EA
-        population_size = 50
-        n_iterations = 1000
         colab = False
+        run_in_parallel = True
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
-        print(f'Number of cores {cores}')
-        optimiser = EvolutionaryAlgorithm(n_params, n_iterations, population_size, 250, 'name', 'env', 10, 10, evaluate_ndp, run_in_parallel=True, cores = cores)
+        print(f'Running in parallel: {run_in_parallel}')
+        if run_in_parallel:
+            print(f'Number of cores {cores}')
+        optimiser = EvolutionaryAlgorithm(
+            n_variables = n_params,
+            max_iterations = 1000, 
+            population_size = 50,
+            max_stagnment = 250,
+            model_name = None,
+            environment_name = None,
+            tries = None,
+            lambda_value = None,
+            objective_function = evaluate_ndp,
+            run_in_parallel = run_in_parallel,
+            cores = cores
+        )
         best_params, best_loss = optimiser.run(task.target, seed, 0)
 
     print('Optimisation finished!')
@@ -117,18 +137,18 @@ def main():
 
     tasks = [
         # XOR(),
-        # Acrobot(),
-        # CartPole(),
-        # MountainCar(), 
+        CartPole(),
+        Acrobot(),
+        MountainCar(), 
         LunarLander(),
     ]
 
     initial_seed = 0
-    final_seed = 30
+    final_seed = 5
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'NDPs/Results/experiments_1/{task.name}'
+        output_folder = f'NDPs/Results/july2026/experiments_1/{task.name}'
         os.makedirs(output_folder, exist_ok=True)
         for seed in range(initial_seed, final_seed):
             start_time = time.time()
@@ -144,7 +164,7 @@ def main():
                 'filename' : output_filename,
                 'algorithm' : optimisation_algorithm,
                 'task' : task.name,
-                'random_state' : task.parameters['node_state_random_init'],
+                'initial_node_state_mode' : task.parameters['initial_node_state_mode'],
                 'seed' : seed,
                 'population_size': optimiser.population_size,
                 'max_iterations': optimiser.max_iterations,
@@ -153,6 +173,8 @@ def main():
                 'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
                 'n_variables' : optimiser.n_variables,
                 'max_stagnment' : optimiser.max_stagnment,
+                'goal_achieved' : optimiser.goal_achieved,
+                'hebbian': task.parameters['hebbian'],
                 'time' : time.time() - start_time,
                 }
             append_line_to_csv(log_file, new_line)

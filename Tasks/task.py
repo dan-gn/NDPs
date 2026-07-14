@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.policy_network import PolicyNetwork
+from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
 from Graph.ndp_graph import Graphnx
 
 '''
@@ -32,13 +32,15 @@ class Task:
         self.name = None
         self.graph_n_inputs = parameters['graph_n_inputs']
         self.graph_n_outputs = parameters['graph_n_outputs']
+        self.network_extra_thinking = parameters['network_extra_thinking']
         self.n_cycles = parameters['n_cycles']
         self.n_repeats = parameters['n_repeats']
         self.n_rollouts = parameters['n_rollouts'] if 'n_rollouts' in parameters else None
         self.target = parameters['target'] if 'target' in parameters else None
         self.truncated_penalty = 0
-        if parameters['shared_initial_node_state_flag']:
-            ndp = NeuralDevelopmentalProgram(parameters)
+        if parameters['initial_node_state_mode'] == 'random_shared':
+            self.parameters['shared_initial_node_state'] = np.zeros((1, parameters['state_dim']))
+            ndp = NeuralDevelopmentalProgram(self.parameters)
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
 
@@ -60,7 +62,11 @@ class Task:
         with torch.no_grad():
             if verbose:
                 print('Creating ANN from graph')
-            ann = PolicyNetwork(graph, n_inputs=self.graph_n_inputs, n_outputs=self.graph_n_outputs)
+            if 'hebbian':
+                ann = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+            else:
+                ann = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+                raise ValueError('No es hebbian perro!')
             if verbose:
                 print('Done!')
 
@@ -102,9 +108,19 @@ class Task:
         return np.sum(rewards), rewards
 
     def evaluate_ndp(self, params:np.array, n_rollouts:int=None, return_rollouts:bool=True, render:str=False):
-        ndp = NeuralDevelopmentalProgram(self.parameters)
-        # weights = np.tanh(params)
-        weights = np.clip(params, -1.0, 1.0)
+        ndp_config = dict(self.parameters)
+
+        # params_bounded = np.tanh(params)
+        params_bounded = np.clip(params, -1.0, 1.1, dtype=np.float32)
+
+        if ndp_config['initial_node_state_mode'] == 'coevolve':
+            state_dim = ndp_config['state_dim']
+            ndp_config['shared_initial_node_state'] = params_bounded[np.newaxis, :state_dim]
+            weights = params_bounded[state_dim:]
+        else:
+            weights = params_bounded
+            
+        ndp = NeuralDevelopmentalProgram(ndp_config)
         ndp.update_mlp_weights(weights)
 
         if n_rollouts is None:

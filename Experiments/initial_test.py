@@ -82,10 +82,13 @@ def simple_test_v2():
     # random.seed(seed)
     # torch.manual_seed(seed)
 
-    task = Acrobot() 
+    task = CartPole() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
+    if task.parameters['initial_node_state_mode'] == 'coevolve':
+        n_params += task.parameters['state_dim']
+
     mlp_weights = np.random.uniform(-1, 1, n_params)
     # mlp_weights = np.ones(n_params)
     
@@ -124,7 +127,9 @@ def test_with_optimisation():
     ndp.summary()
 
     n_params = ndp.get_total_number_of_mlp_parameters()
-    # print(f'Number of NDP parameters {n_params}')
+    
+    if ndp_params['initial_node_state_mode'] == 'coevolve':
+        n_params += ndp_params['state_dim']
 
     optimisation_algorithm = 'EA'
 
@@ -141,16 +146,22 @@ def test_with_optimisation():
 
     else:
         # EA
-        seed = None
+        seed = 1
+        np.random.seed(seed)
+        random.seed(seed)
+        torch.manual_seed(seed)
+
+        run_in_parallel = False
         colab = False
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
-        print(f'Number of cores {cores}')
+        print(f'Running in parallel: {run_in_parallel}')
+        if run_in_parallel:
+            print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(
-            ndp_params = ndp_params,
             n_variables = n_params,
-            max_iterations = 50, 
+            max_iterations = 1000, 
             population_size = 50,
             max_stagnment = 250,
             model_name = None,
@@ -158,7 +169,7 @@ def test_with_optimisation():
             tries = None,
             lambda_value = None,
             objective_function = evaluate_ndp,
-            run_in_parallel = True,
+            run_in_parallel = run_in_parallel,
             cores = cores
         )
         best_params, best_loss = optimiser.run(task.target, seed, 0)

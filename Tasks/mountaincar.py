@@ -4,21 +4,10 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-import  numpy as np
-import torch
 import torch.nn.functional as F
 import gymnasium as gym
 
-import os
-import sys
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
 from Tasks.task import Task
-from NDP.policy_network import PolicyNetwork
-from Graph.ndp_graph import Graphnx
-
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -28,22 +17,26 @@ MountainCar
 env = gym.make("MountainCar-v0")
 
 MOUNTAINCAR_PARAMETERS = {
-    'state_dim' : 5,
-    'weighted_graph_flag' : True,
-    'initial_graph': 'one_node',
-    'node_state_random_init' : True,
-    'noise_while_growing' : True,
-    'add_hidden_node_to_minimal_network': True,
-    'pruning_flag' : False,
-    'pruning_threshold': 0.3,
-    'gca_hidden_size' : 5,
-    'rm_hidden_size' : 5,
-    'wp_hidden_size' : 5,
+    'state_dim': 5,
+    'weighted_graph_flag': True,
+    'initial_graph': 'one_node', 
+    'network_extra_thinking': 5,
+    'initial_node_state_mode': 'coevolve',
+    'shared_initial_node_state': None,
+    'noise_while_growing': True,
+    'noise_while_growing_interval': 0.15,
+    'add_hidden_node_to_minimal_network': False,
+    'pruning_flag': False,
+    'pruning_threshold': None,
+    'gca_hidden_size': 5,
+    'rm_hidden_size': 5,
+    'wp_hidden_size': 5,
     'graph_n_inputs': env.observation_space.shape[0],  # 3
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
-    'n_repeats': 3,
-    'n_rollouts' : 3
+    'n_repeats': 1,
+    'n_rollouts': 10,
+    'hebbian': True
 }
 
 

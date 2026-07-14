@@ -260,8 +260,8 @@ import networkx as nx
 
 class Graphnx():
 
-    def __init__(self, node_state_size:int=1, weighted_graph_flag:bool=False):
-        self.node_state_size = node_state_size
+    def __init__(self, state_dim:int=None, weighted_graph_flag:bool=False):
+        self.state_dim = state_dim
         self.weighted_graph_flag = weighted_graph_flag
         self._graph = nx.DiGraph()
         self.nodes_states = None
