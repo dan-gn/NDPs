@@ -138,9 +138,9 @@ def main():
     tasks = [
         # XOR(),
         CartPole(),
-        Acrobot(),
-        MountainCar(), 
-        LunarLander(),
+        # Acrobot(),
+        # MountainCar(), 
+        # LunarLander(),
     ]
 
     initial_seed = 0

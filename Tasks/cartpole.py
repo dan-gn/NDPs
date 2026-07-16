@@ -36,7 +36,10 @@ CARTPOLE_PARAMETERS = {
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts' : 10,
-    'hebbian': True
+    'hebbian': False,
+    'model': 'standard_ndp',
+    'n_nodes': 32,
+    'initial_graph_density': 0.2
 }
 
 

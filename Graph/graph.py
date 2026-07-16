@@ -266,15 +266,43 @@ class Graphnx():
         self._graph = nx.DiGraph()
         self.nodes_states = None
 
-    def get_adjacency_matrix(self) -> np.array:
-        return nx.to_numpy_array(self._graph)
-    
-    def update_adjacency_matrix(self, adjacency_matrix):
-        self._graph = nx.DiGraph(adjacency_matrix)
+    # Returns the diameter
+    def get_diameter(self) -> int:
+        # graph = self._graph.to_undirected()
 
+        # if nx.is_connected(graph):
+        #     return nx.diameter(graph)
+        
+        # largest_component_nodes = max(nx.connected_components(graph), key=len)
+        # largest_component = graph.subgraph(largest_component_nodes)
+        # return nx.diameter(largest_component)
+        return nx.diameter(self._graph.to_undirected())
+
+    # Returns the number of nodes
     def number_of_nodes(self):
         return self._graph.number_of_nodes()
 
+    # Returns all nodes
+    def nodes(self) -> list:
+        return self._graph.nodes()
+
+    # Returns all edges
+    def edges(self) -> list:
+        return self._graph.edges()
+
+    # Returns the adjacency matrix
+    def get_adjacency_matrix(self) -> np.array:
+        return nx.to_numpy_array(self._graph)
+
+    # Updated the adjacency matrix 
+    def update_adjacency_matrix(self, adjacency_matrix):
+        self._graph = nx.DiGraph(adjacency_matrix)
+
+    # Returns the neighbors of node_id 
+    def get_neighbors(self, node_id) -> set:
+        return set(nx.all_neighbors(self._graph, node_id))
+
+    # Adds a single node
     def add_node(self, new_node_state:np.array) -> int:
         if self.nodes_states is None:
             node_id = 0
@@ -284,14 +312,29 @@ class Graphnx():
             self.nodes_states = np.vstack([self.nodes_states, new_node_state])
         self._graph.add_node(node_id)
         return node_id
+    
+    # Adds multiple nodes
+    def add_nodes_from(self, node_states:np.array):
+        if self.nodes_states is None:
+            nodes_id = range(len(node_states))
+            self.nodes_states = node_states.copy()
+        else:
+            last_id = self._graph.number_of_nodes()
+            nodes_id = range(last_id, last_id + len(node_states))
+            self.nodes_states = np.vstack([self.nodes_states, node_states])
+        self._graph.add_nodes_from(nodes_id)
 
+    # Adds a single edge
     def add_edge(self, input_node:int, output_node:int):
         self._graph.add_edge(input_node, output_node)
 
+    # Adds multiple edges
     def add_edges_from(self, edges:list):
         self._graph.add_edges_from(edges)
 
-    def add_sparese_edges(self, source_nodes:list, target_nodes:list, density:float, rng:np.random.Generator, allow_self_loops:bool=False):
+    # Adds multiple edges from defined source nodes to target nodes.
+    # Density 1.0 is fully connected, lower to 1.0 and higher to 0.0 is sparse
+    def add_sparse_edges(self, source_nodes:list, target_nodes:list, density:float, rng:np.random.Generator, allow_self_loops:bool=False):
         source_nodes = np.asarray(source_nodes)
         target_nodes = np.asarray(target_nodes)
 
@@ -304,22 +347,14 @@ class Graphnx():
 
         self.add_edges_from(zip(source_nodes[source_indices], target_nodes[target_indices]))
 
-
-    def edges(self) -> list:
-        return self._graph.edges()
-    
+    # Removes an edge 
     def remove_edge(self, input_id, output_id):
         self._graph.remove_edge(input_id, output_id)
 
-    def get_diameter(self) -> int:
-        return nx.diameter(self._graph.to_undirected())
-    
-    def get_neighbors(self, node_id) -> set:
-        return set(nx.all_neighbors(self._graph, node_id))
-    
+    # Prints a summary of the graph 
     def summary(self, full:bool=False):
-        nodes = list(self._graph.nodes())
-        edges = list(self._graph.edges())
+        nodes = list(self.nodes())
+        edges = list(self.edges())
         weights = self.get_adjacency_matrix()
         print('------------------------------------')
         print('Graph')

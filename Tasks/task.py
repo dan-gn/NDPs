@@ -16,6 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.ndp_nx import NeuralDevelopmentalProgram
+from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
 from Graph.graph import Graphnx
 
@@ -44,7 +45,7 @@ class Task:
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
 
-    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, verbose:bool=False):
+    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, hebbian:bool=False, verbose:bool=False):
         """
         Evaluates a developed NDP graph on task.
 
@@ -62,11 +63,12 @@ class Task:
         with torch.no_grad():
             if verbose:
                 print('Creating ANN from graph')
-            if 'hebbian':
+
+            if hebbian:
                 ann = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
             else:
                 ann = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
-                raise ValueError('No es hebbian perro!')
+
             if verbose:
                 print('Done!')
 
@@ -111,16 +113,23 @@ class Task:
         ndp_config = dict(self.parameters)
 
         # params_bounded = np.tanh(params)
-        params_bounded = np.clip(params, -1.0, 1.1, dtype=np.float32)
+        params_bounded = np.clip(params, -1.0, 1.0, dtype=np.float32)
 
         if ndp_config['initial_node_state_mode'] == 'coevolve':
-            state_dim = ndp_config['state_dim']
-            ndp_config['shared_initial_node_state'] = params_bounded[np.newaxis, :state_dim]
-            weights = params_bounded[state_dim:]
+            if ndp_config['model'] == 'hebbian_ndp':
+                split_index = 1 + (ndp_config['state_dim'] * ndp_config['n_nodes'])
+            elif ndp_config['model'] == 'standard_ndp':
+                split_index = ndp_config['state_dim']
+            ndp_config['shared_initial_node_state'] = params_bounded[np.newaxis, :split_index]
+            weights = params_bounded[split_index:]
         else:
             weights = params_bounded
-            
-        ndp = NeuralDevelopmentalProgram(ndp_config)
+
+        if ndp_config['model'] == 'hebbian_ndp':
+            ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
+        elif ndp_config['model'] == 'standard_ndp':
+            ndp = NeuralDevelopmentalProgram(ndp_config)
+
         ndp.update_mlp_weights(weights)
 
         if n_rollouts is None:
@@ -131,7 +140,7 @@ class Task:
         rollouts = []
         for _ in range(self.n_repeats):
             graph = ndp.develope(self.n_cycles)
-            reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render)
+            reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render, hebbian=ndp_config['hebbian'])
             graphs.append(graph)
             rewards.append(reward)
             rollouts.extend(rollout)

@@ -16,6 +16,7 @@ sys.path.append(parent)
 
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
+from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -27,6 +28,9 @@ from Tasks.cartpole import CartPole
 from Tasks.mountaincar import MountainCar
 from Tasks.lunarlander import LunarLander
 from Tasks.xor import XOR
+
+# Import Utilities
+from Utilities.utilities import is_running_in_colab
 
 
 '''
@@ -46,7 +50,7 @@ def simple_test_v1():
     # random.seed(seed)
     # torch.manual_seed(seed)
 
-    task = MountainCar() 
+    task = CartPole() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
@@ -121,6 +125,7 @@ def test_with_optimisation():
 
     # Initial parameters
     ndp = NeuralDevelopmentalProgram(ndp_params)
+    # ndp = HebbianNeuralDevelopmentalProgram(ndp_params)
 
     print('This is an initial test of the NDP!')
     task.summary()
@@ -129,12 +134,17 @@ def test_with_optimisation():
     n_params = ndp.get_total_number_of_mlp_parameters()
     
     if ndp_params['initial_node_state_mode'] == 'coevolve':
-        n_params += ndp_params['state_dim']
+        if isinstance(ndp, HebbianNeuralDevelopmentalProgram):
+            n_params += 1 + (ndp_params['state_dim'] * ndp_params['n_nodes'])
+        else:
+            n_params += ndp_params['state_dim']
 
     optimisation_algorithm = 'EA'
 
     # Run optimisation
     print('Starting optimisation!')
+    print(f'Number of optimisation parameters: {n_params}')
+    print(f'Hebbian model = {ndp_params['hebbian']}')
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -151,8 +161,8 @@ def test_with_optimisation():
         random.seed(seed)
         torch.manual_seed(seed)
 
-        run_in_parallel = False
-        colab = False
+        run_in_parallel = True
+        colab = is_running_in_colab()
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -161,7 +171,7 @@ def test_with_optimisation():
             print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(
             n_variables = n_params,
-            max_iterations = 1000, 
+            max_iterations = 50, 
             population_size = 50,
             max_stagnment = 250,
             model_name = None,

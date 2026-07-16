@@ -67,6 +67,7 @@ class NeuralDevelopmentalProgram:
 
     def __init__(self, config:dict = None):
         self._set_config(config)
+        self._check_valid_config()
 
     def _set_default_config(self):
         self.config = dict(DEFAULT_PARAMETERS)
@@ -101,7 +102,6 @@ class NeuralDevelopmentalProgram:
         self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
         self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
         # Check if config values from argument are valid
-        self._check_valid_config()
 
     def _check_valid_config(self):
         """
