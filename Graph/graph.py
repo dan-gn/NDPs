@@ -288,6 +288,23 @@ class Graphnx():
     def add_edge(self, input_node:int, output_node:int):
         self._graph.add_edge(input_node, output_node)
 
+    def add_edges_from(self, edges:list):
+        self._graph.add_edges_from(edges)
+
+    def add_sparese_edges(self, source_nodes:list, target_nodes:list, density:float, rng:np.random.Generator, allow_self_loops:bool=False):
+        source_nodes = np.asarray(source_nodes)
+        target_nodes = np.asarray(target_nodes)
+
+        mask = rng.random((len(source_nodes), len(target_nodes))) < density
+
+        if not allow_self_loops:
+            mask &= source_nodes[:,None] != target_nodes[None, :]
+
+        source_indices, target_indices = np.nonzero(mask)
+
+        self.add_edges_from(zip(source_nodes[source_indices], target_nodes[target_indices]))
+
+
     def edges(self) -> list:
         return self._graph.edges()
     

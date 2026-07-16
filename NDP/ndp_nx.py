@@ -17,7 +17,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.ndp_mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
-from Graph.ndp_graph import Node, Graphnx
+from Graph.graph import Node, Graphnx
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
