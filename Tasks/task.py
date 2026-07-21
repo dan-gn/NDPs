@@ -125,10 +125,12 @@ class Task:
         else:
             weights = params_bounded
 
-        if ndp_config['model'] == 'hebbian_ndp':
-            ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
-        elif ndp_config['model'] == 'standard_ndp':
+        if ndp_config['model'] == 'standard_ndp':
             ndp = NeuralDevelopmentalProgram(ndp_config)
+        elif ndp_config['model'] == 'hebbian_ndp':
+            ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
+        else:
+            raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
 
         ndp.update_mlp_weights(weights)
 

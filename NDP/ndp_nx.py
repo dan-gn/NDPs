@@ -66,7 +66,9 @@ Neural Developmental Program (Evolutionary-based NDP)
 class NeuralDevelopmentalProgram:
 
     def __init__(self, config:dict = None):
+        # Set the algorithm configuration
         self._set_config(config)
+        # Check if config values from argument are valid
         self._check_valid_config()
 
     def _set_default_config(self):
@@ -101,7 +103,6 @@ class NeuralDevelopmentalProgram:
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
         self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
         self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
-        # Check if config values from argument are valid
 
     def _check_valid_config(self):
         """

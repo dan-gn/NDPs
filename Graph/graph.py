@@ -268,15 +268,18 @@ class Graphnx():
 
     # Returns the diameter
     def get_diameter(self) -> int:
-        # graph = self._graph.to_undirected()
+       return nx.diameter(self._graph.to_undirected())
 
-        # if nx.is_connected(graph):
-        #     return nx.diameter(graph)
+    # Returns the diameter of the largest subgraph (in case not all nodes are connected) 
+    def get_largest_subgraph_diameter(self) -> int:
+        graph = self._graph.to_undirected()
+
+        if nx.is_connected(graph):
+            return nx.diameter(graph)
         
-        # largest_component_nodes = max(nx.connected_components(graph), key=len)
-        # largest_component = graph.subgraph(largest_component_nodes)
-        # return nx.diameter(largest_component)
-        return nx.diameter(self._graph.to_undirected())
+        largest_component_nodes = max(nx.connected_components(graph), key=len)
+        largest_component = graph.subgraph(largest_component_nodes)
+        return nx.diameter(largest_component)
 
     # Returns the number of nodes
     def number_of_nodes(self):

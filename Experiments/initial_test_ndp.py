@@ -144,6 +144,9 @@ def test_with_optimisation():
     # Run optimisation
     print('Starting optimisation!')
     print(f'Number of optimisation parameters: {n_params}')
+
+    if 'hebbian' not in ndp_params:
+        ndp_params['hebbian'] = False
     print(f'Hebbian model = {ndp_params['hebbian']}')
 
     if optimisation_algorithm == 'CMA':

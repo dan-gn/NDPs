@@ -82,22 +82,29 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         """
         return graph
     
-    # def _run_a_developmental_cycle(self, graph:Graphnx) -> Graphnx:
-    #     """
-    #     This method runs one developmental cycle.
-    #     Steps are as follow:
-    #     1. Compute graph diameter
-    #     2. Graph convolution
-    #     3. Structural synapsis
-    #     """
-    #     # Compute network diameter D
-    #     diameter = graph.get_diameter()
+    def _run_a_developmental_cycle(self, graph:Graphnx) -> Graphnx:
+        """
+        This method runs one developmental cycle.
+        Steps are as follow:
+        1. Compute graph diameter
+        2. Graph convolution
+        3. Structural synapsis
+        """
+        # Compute network diameter D
+        diameter = graph.get_largest_subgraph_diameter()
 
-    #     # Propagate nodes states En via graph convolution D steps
-    #     steps = diameter + self.network_extra_thinking
-    #     graph = self.graph_convolution(graph, steps)
+        # Propagate nodes states En via graph convolution D steps
+        steps = diameter + self.network_extra_thinking
+        graph = self.graph_convolution(graph, steps)
 
-    #     # Structural Synapsis (Add and remove edges)
-    #     graph = self.structural_synapsis(graph)
+        # Structural Synapsis (Add and remove edges)
+        # graph = self.structural_synapsis(graph)
 
-    #     return graph
+        # THIS IS JUST FOR TESTING - REMOVE LATER
+        graph = self.grow_graph(graph)
+        if self.weighted_graph_flag:
+            graph = self.predict_weights(graph)
+        if self.pruning_flag:
+            graph = self.prune(graph)
+
+        return graph
