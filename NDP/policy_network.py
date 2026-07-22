@@ -29,7 +29,7 @@ class PolicyNetwork(nn.Module):
         super().__init__()
         
         self.graph = graph
-        self.graph_diameter = self.graph.get_diameter()
+        self.graph_diameter = self.graph.get_largest_subgraph_diameter()
         self.network_extra_thinking = network_extra_thinking
         
         self.n_inputs, self.n_outputs = n_inputs, n_outputs

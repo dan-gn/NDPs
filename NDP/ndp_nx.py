@@ -310,7 +310,8 @@ class NeuralDevelopmentalProgram:
         the weights are used during the graph convolution. 
         """
         # Compute network diameter D
-        diameter = graph.get_diameter()
+        # diameter = graph.get_diameter()
+        diameter = graph.get_largest_subgraph_diameter()
 
         # Propagate nodes states En via graph convolution D steps
         steps = diameter + self.network_extra_thinking

@@ -35,25 +35,9 @@ from Tasks.mountaincar import MountainCar
 from Tasks.lunarlander import LunarLander
 from Tasks.xor import XOR
 
-
-'''
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Utilities
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'''
-
-def append_line_to_csv(file_path, new_line_dict):
-    if os.path.exists(file_path):
-        # Read the existing CSV file
-        df = pd.read_csv(file_path)
-        # Append the new line (as a dictionary)
-        df = pd.concat([df, pd.DataFrame([new_line_dict])])
-    else:
-        # Create a new DataFrame if the file doesn't exist
-        df = pd.DataFrame([new_line_dict])
-    # Save it to CSV
-    df.to_csv(file_path, index=False)
-
+# Import Utilities
+from Utilities.utilities import append_line_to_csv
+from Utilities.utilities import is_running_in_colab
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -70,16 +54,24 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     evaluate_graph = task.evaluate_graph
 
     # Initial parameters
-    ndp = NeuralDevelopmentalProgram(ndp_params)
+    if ndp_params['model'] == 'standard_ndp':
+        ndp = NeuralDevelopmentalProgram(ndp_params)
+    elif ndp_params['model'] == 'hebbian_ndp':
+        ndp = HebbianNeuralDevelopmentalProgram(ndp_params)
+    else:
+        raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
 
     print('This is an initial test of the NDP!')
     task.summary()
     ndp.summary()
 
     n_params = ndp.get_total_number_of_mlp_parameters()
-    # print(f'Number of NDP parameters {n_params}')
     if ndp_params['initial_node_state_mode'] == 'coevolve':
-        n_params += ndp_params['state_dim']
+        if ndp_params['model'] == 'hebbian_ndp':
+            n_params += 1 + (ndp_params['state_dim'] * ndp_params['n_nodes'])
+        else:
+            n_params += ndp_params['state_dim']
+    print(f'Number of NDP optimisation parameters {n_params}')
 
     # Run optimisation
     print(f'Seed = {seed}')
@@ -99,8 +91,8 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     else:
         # EA
-        colab = False
         run_in_parallel = True
+        colab = is_running_in_colab()
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -149,9 +141,9 @@ def main():
         'hebbian_ndp'
     ]
 
-    hebbian_flag = [
-        True,
-        False
+    hebbian_flags = [
+        False,
+        True
     ]
 
 
@@ -160,37 +152,41 @@ def main():
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'NDPs/Results/july2026/experiments_2/{task.name}'
+        output_folder = f'Results/july2026/experiments_2/{task.name}'
         os.makedirs(output_folder, exist_ok=True)
-        for seed in range(initial_seed, final_seed):
-            start_time = time.time()
-            output = experiment(task, optimisation_algorithm, seed)
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            output_filename = f'{output_folder}/output-{task.name}-{optimisation_algorithm}-seed_{seed}-time_{timestamp}.pkl'
-            with open(output_filename, 'wb') as file:
-                pickle.dump(output, file)
+        for model in models:
+            task.parameters['model'] = model
+            for hebbian_flag in hebbian_flags:
+                task.parameters['hebbian'] = hebbian_flag
+                for seed in range(initial_seed, final_seed):
+                    start_time = time.time()
+                    output = experiment(task, optimisation_algorithm, seed)
+                    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    output_filename = f'{output_folder}/output-{task.name}-{optimisation_algorithm}-seed_{seed}-time_{timestamp}.pkl'
+                    with open(output_filename, 'wb') as file:
+                        pickle.dump(output, file)
 
-            log_file = f'{output_folder}/experiments_log.csv'
-            optimiser = output['optimiser']
-            new_line = {
-                'filename' : output_filename,
-                'algorithm' : optimisation_algorithm,
-                'task' : task.name,
-                'initial_node_state_mode' : task.parameters['initial_node_state_mode'],
-                'seed' : seed,
-                'population_size': optimiser.population_size,
-                'max_iterations': optimiser.max_iterations,
-                'n_iterations' : optimiser.i,
-                'best_score_mean': optimiser.best_individual.fitness, 
-                'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
-                'n_variables' : optimiser.n_variables,
-                'max_stagnment' : optimiser.max_stagnment,
-                'goal_achieved' : optimiser.goal_achieved,
-                'model': task.parameters['model'],
-                'hebbian': task.parameters['hebbian'],
-                'time' : time.time() - start_time,
-                }
-            append_line_to_csv(log_file, new_line)
+                    log_file = f'{output_folder}/experiments_log.csv'
+                    optimiser = output['optimiser']
+                    new_line = {
+                        'filename' : output_filename,
+                        'algorithm' : optimisation_algorithm,
+                        'task' : task.name,
+                        'initial_node_state_mode' : task.parameters['initial_node_state_mode'],
+                        'seed' : seed,
+                        'population_size': optimiser.population_size,
+                        'max_iterations': optimiser.max_iterations,
+                        'n_iterations' : optimiser.i,
+                        'best_score_mean': optimiser.best_individual.fitness, 
+                        'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
+                        'n_variables' : optimiser.n_variables,
+                        'max_stagnment' : optimiser.max_stagnment,
+                        'goal_achieved' : optimiser.goal_achieved,
+                        'model': task.parameters['model'],
+                        'hebbian': task.parameters['hebbian'],
+                        'time' : time.time() - start_time,
+                        }
+                    append_line_to_csv(log_file, new_line)
 
 
 
