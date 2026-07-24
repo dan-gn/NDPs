@@ -6,7 +6,6 @@ Libraries
 
 import numpy as np
 import torch 
-import torch.nn as nn
 import time
 import warnings
 
@@ -18,6 +17,8 @@ sys.path.append(parent)
 
 from NDP.ndp_mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
 from Graph.graph import Node, Graphnx
+
+from Utilities.utilities import get_number_of_model_parameters
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -42,20 +43,10 @@ DEFAULT_PARAMETERS = {
     'wp_hidden_size': 5,
     'graph_n_inputs': 2,
     'graph_n_outputs': 1,
-    'hebbian': False
+    'hebbian': False,
+    'model': 'standard_ndp'
 }
  
-
-
-'''
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Utilities
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'''
-
-def get_number_of_model_parameters(model:nn.Module):
-    return sum(p.numel() for p in model.parameters())
-
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -71,9 +62,9 @@ class NeuralDevelopmentalProgram:
         # Check if config values from argument are valid
         self._check_valid_config()
 
-    def _set_default_config(self):
-        self.config = dict(DEFAULT_PARAMETERS)
-
+    def _set_default_config(self, default_parameters=DEFAULT_PARAMETERS):
+        self.config = dict(default_parameters)
+    
     def _set_config(self, config:dict):
         # Set default parameters
         self._set_default_config()
@@ -86,6 +77,11 @@ class NeuralDevelopmentalProgram:
                     # Showing if a variable was not defined
                     warnings.warn(f'Variable {key} not defined. Using default value {self.config[key]}.')
         # Set all variables
+        self._set_all_variables()
+        # Create the MLPs
+        self._initialise_mlps()
+
+    def _set_all_variables(self):
         self.state_dim = self.config['state_dim']
         self.weighted_graph_flag = self.config['weighted_graph_flag']
         self.initial_graph = self.config['initial_graph']
@@ -99,7 +95,8 @@ class NeuralDevelopmentalProgram:
         self.graph_n_outputs = self.config['graph_n_outputs']
         self.noise_while_growing = self.config['noise_while_growing']
         self.noise_while_growing_interval = self.config['noise_while_growing_interval']
-        # Create the MLPs
+        
+    def _initialise_mlps(self):
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
         self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
         self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
@@ -126,22 +123,24 @@ class NeuralDevelopmentalProgram:
                 raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state.shape[0]}) must be an array with state_dim ({self.state_dim}) elements.')
 
     def get_total_number_of_mlp_parameters(self) -> int:
-        n_params = get_number_of_model_parameters(self.graph_cellular_automata)
-        n_params += get_number_of_model_parameters(self.replication_model)
-        if self.weighted_graph_flag:
-            n_params += get_number_of_model_parameters(self.weight_prediction_model)
-        return n_params
+        n_params = [get_number_of_model_parameters(model) for model in self._get_mlp_models()]
+        return np.sum(n_params)
     
-    def update_mlp_weights(self, weights):
-        """
-        This function sets the weights of the MLPs.
-        """
+    def _get_mlp_models(self) -> list:
         models = [
             self.graph_cellular_automata,
             self.replication_model,
         ]
         if self.weighted_graph_flag:
             models.append(self.weight_prediction_model)
+        return models
+
+    
+    def update_mlp_weights(self, weights):
+        """
+        This function sets the weights of the MLPs.
+        """
+        models = self._get_mlp_models()
 
         if isinstance(weights, np.ndarray):
             weights = torch.tensor(weights, dtype=torch.float32)

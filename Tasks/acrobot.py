@@ -38,7 +38,7 @@ ACROBOT_PARAMETERS = {
     'n_rollouts' : 10,
     'hebbian': True,
     'model': 'standard_ndp',
-    'n_nodes': 32,
+    'n_nodes': 16,
     'initial_graph_density': 0.2
 }
 

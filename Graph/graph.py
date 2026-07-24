@@ -281,17 +281,25 @@ class Graphnx():
         largest_component = graph.subgraph(largest_component_nodes)
         return nx.diameter(largest_component)
 
-    # Returns the number of nodes
-    def number_of_nodes(self):
-        return self._graph.number_of_nodes()
-
     # Returns all nodes
     def nodes(self) -> list:
         return self._graph.nodes()
 
+    # Returns the number of nodes
+    def number_of_nodes(self) -> int:
+        return self._graph.number_of_nodes()
+
     # Returns all edges
     def edges(self) -> list:
         return self._graph.edges()
+
+    # Returns the number of nodes
+    def number_of_edges(self) -> int:
+        return self._graph.number_of_edges()
+
+    # Check if an edge exists    
+    def has_edge(self, source:int, target:int) -> bool:
+        return self._graph.has_edge(source, target)
 
     # Returns the adjacency matrix
     def get_adjacency_matrix(self) -> np.array:
@@ -304,6 +312,9 @@ class Graphnx():
     # Returns the neighbors of node_id 
     def get_neighbors(self, node_id) -> set:
         return set(nx.all_neighbors(self._graph, node_id))
+    
+    def successors(self, node_id) -> set:
+        return set(self._graph.successors(node_id))
 
     # Adds a single node
     def add_node(self, new_node_state:np.array) -> int:
@@ -334,6 +345,10 @@ class Graphnx():
     # Adds multiple edges
     def add_edges_from(self, edges:list):
         self._graph.add_edges_from(edges)
+
+    # Removes multiple edges
+    def remove_edges_from(self, edges:list):
+        self._graph.remove_edges_from(edges)
 
     # Adds multiple edges from defined source nodes to target nodes.
     # Density 1.0 is fully connected, lower to 1.0 and higher to 0.0 is sparse

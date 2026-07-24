@@ -171,6 +171,8 @@ def main():
                 'n_iterations' : optimiser.i,
                 'best_score_mean': optimiser.best_individual.fitness, 
                 'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
+                'best_graph_n_nodes': optimiser.best_individual_by_graph.best_graph.number_of_nodes(),
+                'best_graph_n_edges': optimiser.best_individual_by_graph.best_graph_fitness.number_of_edges(),
                 'n_variables' : optimiser.n_variables,
                 'max_stagnment' : optimiser.max_stagnment,
                 'goal_achieved' : optimiser.goal_achieved,

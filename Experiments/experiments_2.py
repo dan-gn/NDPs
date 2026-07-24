@@ -52,6 +52,8 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     ndp_params = task.parameters
     evaluate_ndp = task.evaluate_ndp
     evaluate_graph = task.evaluate_graph
+    print(ndp_params)
+    print('\n')
 
     # Initial parameters
     if ndp_params['model'] == 'standard_ndp':
@@ -126,19 +128,26 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     return output
 
+
+'''
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Main function: Definition
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
 def main():
 
     tasks = [
         # XOR(),
         CartPole(),
-        # Acrobot(),
-        # MountainCar(), 
-        # LunarLander(),
+        Acrobot(),
+        MountainCar(), 
+        LunarLander(),
     ]
 
     models = [
         'standard_ndp',
-        'hebbian_ndp'
+        # 'hebbian_ndp'
     ]
 
     hebbian_flags = [
@@ -148,7 +157,7 @@ def main():
 
 
     initial_seed = 0
-    final_seed = 1
+    final_seed = 10
     optimisation_algorithm = 'EA'
 
     for task in tasks:
@@ -179,6 +188,8 @@ def main():
                         'n_iterations' : optimiser.i,
                         'best_score_mean': optimiser.best_individual.fitness, 
                         'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
+                        'best_graph_n_nodes': optimiser.best_individual_by_graph.best_graph.number_of_nodes(),
+                        'best_graph_n_edges': optimiser.best_individual_by_graph.best_graph.number_of_edges(),
                         'n_variables' : optimiser.n_variables,
                         'max_stagnment' : optimiser.max_stagnment,
                         'goal_achieved' : optimiser.goal_achieved,
@@ -195,9 +206,10 @@ def main():
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Main function 
+Main function: Execution
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
+
 if __name__ == '__main__':
 
     main()

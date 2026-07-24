@@ -17,6 +17,7 @@ CartPole
 env = gym.make("CartPole-v1")
 
 CARTPOLE_PARAMETERS = {
+    # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,
     'initial_graph': 'one_node',
@@ -32,14 +33,19 @@ CARTPOLE_PARAMETERS = {
     'rm_hidden_size': 5,
     'wp_hidden_size': 5,
     'graph_n_inputs': env.observation_space.shape[0],  # 4
-    'graph_n_outputs': env.action_space.n,
+    'graph_n_outputs': 1,  # DON'T USE env.action_space.n for CartPole, use 1 instead cause it makes more sense (and works better).
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts' : 10,
-    'hebbian': False,
+    # Activate Hebbian Version
+    'hebbian': False,  
+    # Choose between starndard or variant
     'model': 'standard_ndp',
-    'n_nodes': 32,
-    'initial_graph_density': 0.2
+    # Variant NDP Parameters
+    'n_nodes': 16,
+    'initial_graph_density': 0.2,
+    'create_edge_hidden_size': 5,
+    'remove_edge_hidden_size': 5
 }
 
 
