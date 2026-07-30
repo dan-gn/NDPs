@@ -17,6 +17,7 @@ MountainCar
 env = gym.make("MountainCar-v0")
 
 MOUNTAINCAR_PARAMETERS = {
+    # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,
     'initial_graph': 'one_node', 
@@ -27,7 +28,7 @@ MOUNTAINCAR_PARAMETERS = {
     'noise_while_growing_interval': 0.15,
     'add_hidden_node_to_minimal_network': False,
     'pruning_flag': False,
-    'pruning_threshold': None,
+    'pruning_threshold': 0.5,
     'gca_hidden_size': 5,
     'rm_hidden_size': 5,
     'wp_hidden_size': 5,
@@ -36,10 +37,18 @@ MOUNTAINCAR_PARAMETERS = {
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 10,
-    'hebbian': True,
+    # Activate Hebbian Version
+    'hebbian': False,  
+    # Choose between starndard or variant
     'model': 'standard_ndp',
+    # Variant NDP Parameters
     'n_nodes': 32,
-    'initial_graph_density': 0.2
+    'initial_graph_density': 0.2,
+    'create_edge_hidden_size': 5,
+    'remove_edge_hidden_size': 5,
+    'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
+    'creating_threshold': 0,
+
 }
 
 

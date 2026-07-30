@@ -28,7 +28,7 @@ CARTPOLE_PARAMETERS = {
     'noise_while_growing_interval': None,
     'add_hidden_node_to_minimal_network': False,
     'pruning_flag': False,
-    'pruning_threshold': None,
+    'pruning_threshold': 0.5,
     'gca_hidden_size': 5,
     'rm_hidden_size': 5,
     'wp_hidden_size': 5,
@@ -45,7 +45,9 @@ CARTPOLE_PARAMETERS = {
     'n_nodes': 16,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
-    'remove_edge_hidden_size': 5
+    'remove_edge_hidden_size': 5,
+    'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
+    'creating_threshold': 0,
 }
 
 

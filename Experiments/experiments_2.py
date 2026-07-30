@@ -52,8 +52,6 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     ndp_params = task.parameters
     evaluate_ndp = task.evaluate_ndp
     evaluate_graph = task.evaluate_graph
-    print(ndp_params)
-    print('\n')
 
     # Initial parameters
     if ndp_params['model'] == 'standard_ndp':
@@ -146,8 +144,8 @@ def main():
     ]
 
     models = [
-        'standard_ndp',
-        # 'hebbian_ndp'
+        # 'standard_ndp',
+        'hebbian_ndp'
     ]
 
     hebbian_flags = [

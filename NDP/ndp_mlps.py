@@ -92,7 +92,7 @@ class CreateEdgeModel(nn.Module):
         )
 
     def forward(self, input_node_state, output_node_state):
-        x = torch.cat([input_node_state, output_node_state], dim=0)
+        x = torch.cat([input_node_state, output_node_state], dim=1)
         return self.model(x)
 
 # Model to remove edges

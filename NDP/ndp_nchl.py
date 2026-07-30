@@ -6,13 +6,14 @@ Libraries
 
 import numpy as np
 import torch
+import torch.nn as nn
 from itertools import groupby
 
 from Graph.graph import Graphnx
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
 
-from Utilities.utilities import get_number_of_model_parameters
+from Utilities.utilities import get_number_of_model_parameters, cosine_similarity
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,7 +31,10 @@ DEFAULT_PARAMETERS = {
     'shared_initial_node_state': None,
     'noise_while_growing': False,
     'noise_while_growing_interval': 0.15,  # Required if noise_while_growing == True
+    'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
     'pruning_flag': False,
+    'pruning_threshold': 0.5,
+    'creating_threshold': 0,
     'gca_hidden_size': 5,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -66,10 +70,13 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         self.initial_node_state_mode = self.config['initial_node_state_mode']
         self.shared_initial_node_state = self.config['shared_initial_node_state']
         self.pruning_flag = self.config['pruning_flag']
+        self.pruning_threshold = self.config['pruning_threshold']
+        self.creating_threshold = self.config['creating_threshold']
         self.graph_n_inputs = self.config['graph_n_inputs']
         self.graph_n_outputs = self.config['graph_n_outputs']
         self.noise_while_growing = self.config['noise_while_growing']
         self.noise_while_growing_interval = self.config['noise_while_growing_interval']
+        self.max_edges_to_add_per_node = self.config['edge_growing_rate']
 
     # Check valid configuration
     def _check_valid_config(self):
@@ -187,52 +194,110 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return list(candidates)
 
     # Sample n edges per source node 
-    def sample_n_disconnected_edges_per_node(self, candidate_edges:list, candidates_per_node:int=2, allow_self_loops:bool=False) -> list:
+    def sample_n_disconnected_edges_per_node(self, candidate_edges:list) -> list:
         # Split by source
         rearranged_candidate_edges = [list(group) for source, group in groupby(candidate_edges, key=lambda x:x[0])] 
 
         # Sample the possible edges
         sampled_candidate_edges = []
         for possible_edges_per_source in rearranged_candidate_edges:
-            if candidates_per_node < len(possible_edges_per_source):
-                candidate_edges_per_source = self.rng.choice(possible_edges_per_source, size=candidates_per_node, replace=False)
+            if self.max_edges_to_add_per_node < len(possible_edges_per_source):
+                candidate_edges_per_source = self.rng.choice(possible_edges_per_source, size=self.max_edges_to_add_per_node, replace=False)
                 sampled_candidate_edges.extend(candidate_edges_per_source)
             else:
                 sampled_candidate_edges.extend(possible_edges_per_source)
 
         return sampled_candidate_edges
+ 
+    # Choose candidates using the node state similarity
+    def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+        n_nodes = graph.number_of_nodes()
+        nodes_states = np.array(graph.nodes_states)
+        adjacency_matrix = graph.get_adjacency_matrix()
 
+        # Compute cosine similarity 
+        similarity = cosine_similarity(nodes_states)
 
-        
+        # Remove invalid connectionss 
+        # Existing connections are not valid
+        invalid_mask = adjacency_matrix.astype(bool).copy()
+        # Self-loops are not valid
+        if not allow_self_loops:
+            invalid_mask.fill_diagonal_(True)
+        similarity[invalid_mask] = -np.inf 
+
+        # Create candidate edges list
+        candidate_edges = []
+        for source in range(n_nodes):
+            valid_targets = np.flatnonzero(~invalid_mask[source])
+
+            if valid_targets == 0:
+                continue
+
+            valid_scores = similarity[source, valid_targets]
+            if self.max_edges_to_add_per_node < valid_targets.size:
+                selected_indices = np.argpartition(valid_scores, -self.max_edges_to_add_per_node)[-self.max_edges_to_add_per_node]
+                selected_indices = np.argsort(valid_scores[selected_indices])[::-1]
+            else:
+                selected_indices = np.argsort(valid_scores)[::-1]
+
+            selected_targets = valid_targets[selected_indices]
+            candidate_edges.extend([source, target] for target in selected_targets)
+
+        return candidate_edges
+
+    # Get source and target states from a list of edges
+    def get_states_from_edges(self, edges:np.array, nodes_states:np.array) -> tuple:
+        node_states = np.asarray(nodes_states)
+        edges = np.asarray(edges)
+        source, target = edges[:,0], edges[:, 1]
+        source_states, target_states = node_states[source], node_states[target]
+        source_states, target_states = torch.tensor(source_states), torch.tensor(target_states)
+        return source_states, target_states
+
+    # Get the model decision from create and remove edge models using their respective threshold values
+    def get_model_decision(self, source_states:torch.tensor, target_states:torch.tensor, model:nn.Module, threshold:float) -> np.array:
+        model_decision = model(source_states, target_states).numpy()
+        chosen_edges = model_decision > threshold 
+        chosen_edges = chosen_edges.ravel()
+        return chosen_edges
+
     # Creates new edges using the MLP 
-    def create_edges(self, graph:Graphnx) -> list:
+    def choose_edges_to_create(self, graph:Graphnx) -> list:
         # Get all possible candidate edges
         option = 0
         if option == 0:
             candidate_edges = self.get_all_disconnected_nodes(graph)
+            candidate_edges = self.sample_n_disconnected_edges_per_node(candidate_edges)
         elif option == 1:
             candidate_edges = self.get_two_hop_disconnected_nodes(graph)
+            candidate_edges = self.sample_n_disconnected_edges_per_node(candidate_edges)
+        elif option == 2:
+            candidate_edges = self.get_similar_disconnected_nodes()
+        elif option == 3:
+            pass
 
-        # Sample to reduce computational cost
-        candidate_edges = self.sample_n_disconnected_edges_per_node(candidate_edges)
-
-        # Concatenate the source and target states
-        node_states = np.asarray(graph.nodes_states)
-        candidate_source, candidate_target = candidate_edges[:, 0], candidate_edges[:, 1]
-        source_states, target_states = node_states[candidate_source], node_states[candidate_target]
-        pair_source_target_states = np.concat((source_states, target_states))
-        pair_source_target_states = torch.tensor(pair_source_target_states)
+        # Get the source and target states from candidate edges
+        source_states, target_states = self.get_states_from_edges(candidate_edges, graph.nodes_states)
 
         # Use create_edge_model to decide if a candidate edge should be created
-        model_decision = self.create_edge_model(pair_source_target_states).numpy()
-        chosen_edges = model_decision > 0    # Threshold is 0 since the model uses a tanh
+        chosen_edges = self.get_model_decision(source_states, target_states, self.create_edge_model, self.creating_threshold)
         edges_to_create = candidate_edges[chosen_edges]
 
         return edges_to_create
 
     # Removes existing edges using the MLP
-    def remove_edges(self, graph:Graphnx) -> list:
-        return []
+    def choose_edges_to_remove(self, graph:Graphnx) -> list:
+        edges = graph.edges()
+
+        # Get the source and target states from candidate edges
+        source_states, target_states = self.get_states_from_edges(edges, graph.nodes_states)
+
+        # Use remove_edge_model to decide if a candidate edge should be created
+        chosen_edges = self.get_model_decision(source_states, target_states, self.remove_edge_model, self.pruning_threshold)
+        edges_to_remove = edges[chosen_edges]
+
+        return edges_to_remove
 
     # Structural synapsis: create and remove edges
     def structural_synapsis(self, graph:Graphnx) -> Graphnx:
@@ -243,8 +308,8 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         3. Split edges and adding new neurons - (Should I do this?)
         """
         # Figure out wich edges to add and which ones to remove
-        edges_to_add = self.create_edges(graph)
-        edges_to_remove = self.remove_edges(graph)
+        edges_to_add = self.choose_edges_to_create(graph)
+        edges_to_remove = self.choose_edges_to_remove(graph)
 
         # Add and remove edges
         graph.add_edges_from(edges_to_add)

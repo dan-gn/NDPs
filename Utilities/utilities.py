@@ -1,6 +1,14 @@
+'''
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Libraries 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
 import os
+import numpy as np
 import pandas as pd
 import torch.nn as nn
+
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -8,8 +16,18 @@ NDP Model utilities
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-def get_number_of_model_parameters(model:nn.Module):
+def get_number_of_model_parameters(model:nn.Module) -> int:
     return sum(p.numel() for p in model.parameters())
+
+def cosine_similarity(nodes_states:np.array) -> np.array:
+    # Normalise each state 
+    state_norms = np.linalg.norm(nodes_states, axis=1, keepdims=True)
+    state_norms[state_norms == 0] = 1.0
+    normalised_states = nodes_states / state_norms
+
+    # Compute similarity (cosine similarity)
+    similarity = normalised_states @ normalised_states.T
+    return similarity
 
 
 '''
