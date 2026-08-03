@@ -352,7 +352,7 @@ class Graphnx():
 
     # Adds multiple edges from defined source nodes to target nodes.
     # Density 1.0 is fully connected, lower to 1.0 and higher to 0.0 is sparse
-    def add_sparse_edges(self, source_nodes:list, target_nodes:list, density:float, rng:np.random.Generator, allow_self_loops:bool=False):
+    def add_sparse_edges(self, source_nodes:np.array, target_nodes:np.array, density:float, rng:np.random.Generator, allow_self_loops:bool=False):
         source_nodes = np.asarray(source_nodes)
         target_nodes = np.asarray(target_nodes)
 
@@ -363,7 +363,13 @@ class Graphnx():
 
         source_indices, target_indices = np.nonzero(mask)
 
+        print('F')
+        print(self._graph.edges())
+        print(source_nodes, type(source_nodes))
+        print(target_nodes, type(target_nodes))
         self.add_edges_from(zip(source_nodes[source_indices], target_nodes[target_indices]))
+        print('G')
+        print(self._graph.edges())
 
     # Removes an edge 
     def remove_edge(self, input_id, output_id):

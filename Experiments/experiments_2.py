@@ -91,7 +91,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     else:
         # EA
-        run_in_parallel = True
+        run_in_parallel = False
         colab = is_running_in_colab()
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'

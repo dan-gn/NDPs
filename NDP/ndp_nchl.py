@@ -137,9 +137,9 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             network_seed = np.random.randint()
 
         # Get list of input, hidden and output nodes
-        input_nodes = np.arange(self.graph_n_inputs)
-        hidden_nodes = np.arange(self.graph_n_inputs, self.n_nodes, self.graph_n_outputs)
-        output_nodes = np.arange(self.n_nodes - self.graph_n_outputs, self.n_nodes)
+        input_nodes = np.arange(self.graph_n_inputs, dtype=np.int32)
+        hidden_nodes = np.arange(self.graph_n_inputs, self.n_nodes, self.graph_n_outputs, dtype=np.int32)
+        output_nodes = np.arange(self.n_nodes - self.graph_n_outputs, self.n_nodes, dtype=np.int32)
 
         # Set seed to random number generator
         self.rng = np.random.default_rng(network_seed)
@@ -207,7 +207,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             else:
                 sampled_candidate_edges.extend(possible_edges_per_source)
 
-        return sampled_candidate_edges
+        return np.array(sampled_candidate_edges, dtype=np.int32)
  
     # Choose candidates using the node state similarity
     def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
@@ -244,7 +244,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             selected_targets = valid_targets[selected_indices]
             candidate_edges.extend([source, target] for target in selected_targets)
 
-        return candidate_edges
+        return np.array(candidate_edges, dtype=np.int32)
 
     # Get source and target states from a list of edges
     def get_states_from_edges(self, edges:np.array, nodes_states:np.array) -> tuple:
@@ -282,6 +282,10 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
         # Use create_edge_model to decide if a candidate edge should be created
         chosen_edges = self.get_model_decision(source_states, target_states, self.create_edge_model, self.creating_threshold)
+        # print(type(candidate_edges), type(candidate_edges[0]))
+        # print(type(chosen_edges), type(chosen_edges[0]))
+        # print(candidate_edges)
+        # print(chosen_edges)
         edges_to_create = candidate_edges[chosen_edges]
 
         return edges_to_create
@@ -295,6 +299,10 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
         # Use remove_edge_model to decide if a candidate edge should be created
         chosen_edges = self.get_model_decision(source_states, target_states, self.remove_edge_model, self.pruning_threshold)
+        # print(edges)
+        # print(type(edges), type(edges[0]))
+        # print(type(chosen_edges), type(chosen_edges[0]))
+        # print(chosen_edges)
         edges_to_remove = edges[chosen_edges]
 
         return edges_to_remove
@@ -311,8 +319,14 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         edges_to_add = self.choose_edges_to_create(graph)
         edges_to_remove = self.choose_edges_to_remove(graph)
 
+        print('D')
+        print(graph.edges())
         # Add and remove edges
         graph.add_edges_from(edges_to_add)
+
+        print('E')
+        print(graph.edges())
+
         graph.remove_edges_from(edges_to_remove)
 
         return graph
@@ -326,13 +340,19 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         2. Graph convolution
         3. Structural synapsis
         """
+        print('A')
+        print(graph.edges())
         # Compute network diameter D
         diameter = graph.get_largest_subgraph_diameter()
 
+        print('B')
+        print(graph.edges())
         # Propagate nodes states En via graph convolution D steps
         steps = diameter + self.network_extra_thinking
         graph = self.graph_convolution(graph, steps)
 
+        print('C')
+        print(graph.edges())
         # Structural Synapsis (Add and remove edges)
         graph = self.structural_synapsis(graph)
 
