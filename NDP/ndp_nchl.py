@@ -296,6 +296,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         edges = np.asarray(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
         print(edges)
         print(type(edges))
+        print('Hola')
 
         # Get the source and target states from candidate edges
         source_states, target_states = self.get_states_from_edges(edges, graph.nodes_states)
