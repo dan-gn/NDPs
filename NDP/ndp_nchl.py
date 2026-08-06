@@ -294,14 +294,14 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
     # Removes existing edges using the MLP
     def choose_edges_to_remove(self, graph:Graphnx) -> list:
         edges = np.array(list(graph.edges()), dtype=np.int32)
+        print(edges)
+        print(type(edges))
 
         # Get the source and target states from candidate edges
         source_states, target_states = self.get_states_from_edges(edges, graph.nodes_states)
 
         # Use remove_edge_model to decide if a candidate edge should be created
         chosen_edges = self.get_model_decision(source_states, target_states, self.remove_edge_model, self.pruning_threshold)
-        print(edges)
-        print(type(edges))
         print(type(chosen_edges), type(chosen_edges[0]))
         print(chosen_edges)
         edges_to_remove = edges[chosen_edges]
