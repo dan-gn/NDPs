@@ -250,7 +250,8 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
     def get_states_from_edges(self, edges:np.array, nodes_states:np.array) -> tuple:
         node_states = np.asarray(nodes_states)
         edges = np.asarray(edges)
-        source, target = edges[:,0], edges[:, 1]
+        source = edges[:,0]
+        target = edges[:,1]
         source_states, target_states = node_states[source], node_states[target]
         source_states, target_states = torch.tensor(source_states), torch.tensor(target_states)
         return source_states, target_states
