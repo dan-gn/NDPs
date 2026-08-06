@@ -293,7 +293,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
     # Removes existing edges using the MLP
     def choose_edges_to_remove(self, graph:Graphnx) -> list:
-        edges = np.asgitasgit array(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
+        edges = np.asarray(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
         print(edges)
         print(type(edges))
 
