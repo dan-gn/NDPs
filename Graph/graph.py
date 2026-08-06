@@ -367,7 +367,7 @@ class Graphnx():
         print(self._graph.edges())
         print(source_nodes, type(source_nodes), type(source_nodes[0]))
         print(target_nodes, type(target_nodes), type(target_nodes[0]))
-        self.add_edges_from(zip(source_nodes[source_indices], target_nodes[target_indices]))
+        self.add_edges_from(zip(list(source_nodes[source_indices]), list(target_nodes[target_indices])))
         print('G')
         print(self._graph.edges())
 
