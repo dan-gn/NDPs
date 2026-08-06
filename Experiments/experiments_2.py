@@ -150,12 +150,12 @@ def main():
 
     hebbian_flags = [
         False,
-        True
+        # True
     ]
 
 
     initial_seed = 0
-    final_seed = 10
+    final_seed = 1
     optimisation_algorithm = 'EA'
 
     for task in tasks:
