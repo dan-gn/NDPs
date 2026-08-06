@@ -344,8 +344,6 @@ class Graphnx():
 
     # Adds multiple edges
     def add_edges_from(self, edges:list):
-        for edge in edges:
-            print(edge)
         self._graph.add_edges_from(edges)
 
     # Removes multiple edges
