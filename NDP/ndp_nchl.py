@@ -294,17 +294,17 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
     # Removes existing edges using the MLP
     def choose_edges_to_remove(self, graph:Graphnx) -> list:
         edges = np.asarray(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
-        print(edges)
-        print(type(edges))
-        print('Hola')
+        # print(edges)
+        # print(type(edges))
+        # print('Hola')
 
         # Get the source and target states from candidate edges
         source_states, target_states = self.get_states_from_edges(edges, graph.nodes_states)
 
         # Use remove_edge_model to decide if a candidate edge should be created
         chosen_edges = self.get_model_decision(source_states, target_states, self.remove_edge_model, self.pruning_threshold)
-        print(type(chosen_edges))
-        print(chosen_edges)
+        # print(type(chosen_edges))
+        # print(chosen_edges)
         edges_to_remove = edges[chosen_edges]
 
         return edges_to_remove
@@ -321,13 +321,13 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         edges_to_add = self.choose_edges_to_create(graph)
         edges_to_remove = self.choose_edges_to_remove(graph)
 
-        print('D')
-        print(graph.edges())
+        # print('D')
+        # print(graph.edges())
         # Add and remove edges
         graph.add_edges_from(edges_to_add)
 
-        print('E')
-        print(graph.edges())
+        # print('E')
+        # print(graph.edges())
 
         graph.remove_edges_from(edges_to_remove)
 
@@ -342,19 +342,19 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         2. Graph convolution
         3. Structural synapsis
         """
-        print('A')
-        print(graph.edges())
+        # print('A')
+        # print(graph.edges())
         # Compute network diameter D
         diameter = graph.get_largest_subgraph_diameter()
 
-        print('B')
-        print(graph.edges())
+        # print('B')
+        # print(graph.edges())
         # Propagate nodes states En via graph convolution D steps
         steps = diameter + self.network_extra_thinking
         graph = self.graph_convolution(graph, steps)
 
-        print('C')
-        print(graph.edges())
+        # print('C')
+        # print(graph.edges())
         # Structural Synapsis (Add and remove edges)
         graph = self.structural_synapsis(graph)
 

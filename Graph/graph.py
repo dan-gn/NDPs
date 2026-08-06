@@ -363,13 +363,13 @@ class Graphnx():
 
         source_indices, target_indices = np.nonzero(mask)
 
-        print('F')
-        print(self._graph.edges())
-        print(source_nodes, type(source_nodes), type(source_nodes[0]))
-        print(target_nodes, type(target_nodes), type(target_nodes[0]))
+        # print('F')
+        # print(self._graph.edges())
+        # print(source_nodes, type(source_nodes), type(source_nodes[0]))
+        # print(target_nodes, type(target_nodes), type(target_nodes[0]))
         self.add_edges_from(zip(source_nodes[source_indices], target_nodes[target_indices]))
-        print('G')
-        print(self._graph.edges())
+        # print('G')
+        # print(self._graph.edges())
 
     # Removes an edge 
     def remove_edge(self, input_id, output_id):
