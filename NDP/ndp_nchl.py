@@ -300,10 +300,10 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
         # Use remove_edge_model to decide if a candidate edge should be created
         chosen_edges = self.get_model_decision(source_states, target_states, self.remove_edge_model, self.pruning_threshold)
-        # print(edges)
-        # print(type(edges), type(edges[0]))
-        # print(type(chosen_edges), type(chosen_edges[0]))
-        # print(chosen_edges)
+        print(edges)
+        print(type(edges), type(edges[0]))
+        print(type(chosen_edges), type(chosen_edges[0]))
+        print(chosen_edges)
         edges_to_remove = edges[chosen_edges]
 
         return edges_to_remove
