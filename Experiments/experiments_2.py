@@ -79,7 +79,10 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     np.random.seed(seed)
     random.seed(seed)
-    torch.manual_seed(seed)
+    torch.manual_seed(seed)seeda
+
+    test_number = np.random.randint(0, 100)
+    print(f'random number test {test_number}')
 
 
     if optimisation_algorithm == 'CMA':
