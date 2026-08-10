@@ -143,18 +143,18 @@ def main():
     ]
 
     models = [
-        # 'standard_ndp',
+        'standard_ndp',
         'hebbian_ndp'
     ]
 
     hebbian_flags = [
         False,
-        # True
+        True
     ]
 
 
     initial_seed = 0
-    final_seed = 1
+    final_seed = 5
     optimisation_algorithm = 'EA'
 
     for task in tasks:
