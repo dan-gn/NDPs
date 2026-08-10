@@ -137,10 +137,10 @@ def main():
 
     tasks = [
         # XOR(),
-        CartPole(),
+        # CartPole(),
         Acrobot(),
-        MountainCar(), 
-        LunarLander(),
+        # MountainCar(), 
+        # LunarLander(),
     ]
 
     models = [
