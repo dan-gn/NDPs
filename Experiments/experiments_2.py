@@ -137,15 +137,15 @@ def main():
 
     tasks = [
         # XOR(),
-        # CartPole(),
+        CartPole(),
         # Acrobot(),
         # MountainCar(), 
-        LunarLander(),
+        # LunarLander(),
     ]
 
     models = [
-        # 'standard_ndp',
-        'hebbian_ndp'
+        'standard_ndp',
+        # 'hebbian_ndp'
     ]
 
     hebbian_flags = [
