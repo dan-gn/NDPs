@@ -45,7 +45,7 @@ class Task:
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
 
-    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, hebbian:bool=False, verbose:bool=False):
+    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=0, render:str=False, hebbian:bool=False, verbose:bool=False):
         """
         Evaluates a developed NDP graph on task.
 

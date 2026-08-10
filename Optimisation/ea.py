@@ -271,7 +271,7 @@ class EvolutionaryAlgorithm:
 
     def run(self, stop_criteria, seed, env_initial_seed):
         test_number = np.random.randint(0, 100)
-        print(f'random number test A = {test_number}')
+        print(f'random number test B = {test_number}')
         self.goal_achieved = False
         self.goal_achieved_it = None
         self.goal_achieved_individual = None
