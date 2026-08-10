@@ -138,9 +138,9 @@ def main():
     tasks = [
         # XOR(),
         # CartPole(),
-        Acrobot(),
+        # Acrobot(),
         # MountainCar(), 
-        # LunarLander(),
+        LunarLander(),
     ]
 
     models = [
