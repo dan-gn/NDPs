@@ -81,10 +81,6 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     random.seed(seed)
     torch.manual_seed(seed)
 
-    test_number = np.random.randint(0, 100)
-    print(f'random number test A = {test_number}')
-
-
     if optimisation_algorithm == 'CMA':
         # CMA
         x0 = np.random.uniform(-1, 1, n_params)
@@ -141,14 +137,14 @@ def main():
     tasks = [
         # XOR(),
         CartPole(),
-        # Acrobot(),
-        # MountainCar(), 
-        # LunarLander(),
+        Acrobot(),
+        MountainCar(), 
+        LunarLander(),
     ]
 
     models = [
-        'standard_ndp',
-        # 'hebbian_ndp'
+        # 'standard_ndp',
+        'hebbian_ndp'
     ]
 
     hebbian_flags = [
