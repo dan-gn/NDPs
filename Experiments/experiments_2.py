@@ -91,9 +91,9 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     else:
         # EA
-        run_in_parallel = False
         colab = is_running_in_colab()
         cores = os.cpu_count() - 1 if colab else 4
+        run_in_parallel = True if cores > 1 else False
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
         print(f'Running in parallel: {run_in_parallel}')
@@ -160,6 +160,8 @@ def main():
 
     for task in tasks:
         output_folder = f'Results/july2026/experiments_2/{task.name}'
+        if is_running_in_colab:
+            output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
         for model in models:
             task.parameters['model'] = model
