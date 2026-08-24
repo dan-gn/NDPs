@@ -91,7 +91,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     else:
         # EA
         colab = is_running_in_colab()
-        cores = os.cpu_count() - 1 if colab else 4
+        cores = os.cpu_count() - 1 if colab else max(os.cpu_count() - 1, 4)
         run_in_parallel = True if cores > 1 else False
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -100,8 +100,8 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
             print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(
             n_variables = n_params,
-            max_iterations = 100, 
-            population_size = 50,
+            max_iterations = task.parameters['generations'], 
+            population_size = task.parameters['population_size'],
             max_stagnment = 250,
             model_name = None,
             environment_name = None,
@@ -154,12 +154,12 @@ def main():
 
 
     initial_seed = 0
-    final_seed = 5
+    final_seed = 1
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'HNDP/Results/july2026/experiments_2/{task.name}'
-        if is_running_in_colab:
+        output_folder = f'Results/august2026_v2/experiments_2/{task.name}'
+        if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
         for model in models:

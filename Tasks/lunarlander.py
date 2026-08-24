@@ -42,12 +42,15 @@ LUNARLANDER_PARAMETERS = {
     # Choose between starndard or variant
     'model': 'standard_ndp',
     # Variant NDP Parameters
-    'n_nodes': 32,
+    'n_nodes': 64,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
     'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
     'creating_threshold': 0,
+    # Optimizer parameters
+    'population_size': 512,
+    'generations': 2000,
 }
 
 

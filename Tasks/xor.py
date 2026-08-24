@@ -52,6 +52,9 @@ XOR_PARAMETERS = {
     'graph_n_outputs': Y_XOR.size()[1],
     'n_cycles': 4,
     'n_repeats': 2,
+    # Optimizer parameters
+    'population_size': 64,
+    'generations': 500,
 }
 
 

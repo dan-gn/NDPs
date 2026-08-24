@@ -48,6 +48,10 @@ MOUNTAINCAR_PARAMETERS = {
     'remove_edge_hidden_size': 5,
     'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
     'creating_threshold': 0,
+    # Optimizer parameters
+    'population_size': 64,
+    'generations': 500,
+
 
 }
 
