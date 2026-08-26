@@ -33,6 +33,7 @@ from Tasks.acrobot import Acrobot
 from Tasks.cartpole import CartPole
 from Tasks.mountaincar import MountainCar
 from Tasks.lunarlander import LunarLander
+from Tasks.bipedalwalker import BipedalWalker
 from Tasks.xor import XOR
 
 # Import Utilities
@@ -91,7 +92,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     else:
         # EA
         colab = is_running_in_colab()
-        cores = os.cpu_count() - 1 if colab else max(os.cpu_count() - 1, 4)
+        cores = os.cpu_count() - 1 if colab else min(os.cpu_count() - 1, 8)
         run_in_parallel = True if cores > 1 else False
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -100,18 +101,14 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
             print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(
             n_variables = n_params,
-            max_iterations = task.parameters['generations'], 
             population_size = task.parameters['population_size'],
-            max_stagnment = 250,
-            model_name = None,
-            environment_name = None,
-            tries = None,
-            lambda_value = None,
+            max_iterations = task.parameters['generations'], 
+            max_stagnment = task.parameters['stagnant_generation'],
             objective_function = evaluate_ndp,
             run_in_parallel = run_in_parallel,
             cores = cores
         )
-        best_params, best_loss = optimiser.run(task.target, seed, 0)
+        best_params, best_loss = optimiser.run(task.target, seed)
 
     print('Optimisation finished!')
     print("\nBest mean reward:", best_loss)
@@ -136,20 +133,21 @@ def main():
 
     tasks = [
         # XOR(),
-        CartPole(),
-        Acrobot(),
-        MountainCar(), 
-        LunarLander(),
+        # CartPole(),
+        # Acrobot(),
+        # MountainCar(), 
+        # LunarLander(),
+        BipedalWalker()
     ]
 
     models = [
-        'standard_ndp',
+        # 'standard_ndp',
         'hebbian_ndp'
     ]
 
     hebbian_flags = [
         False,
-        True
+        # True
     ]
 
 

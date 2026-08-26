@@ -51,6 +51,7 @@ MOUNTAINCAR_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 500,
+    'stagnant_generation': 250,
 
 
 }

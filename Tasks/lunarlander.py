@@ -51,6 +51,7 @@ LUNARLANDER_PARAMETERS = {
     # Optimizer parameters
     'population_size': 512,
     'generations': 2000,
+    'stagnant_generation': 250,
 }
 
 

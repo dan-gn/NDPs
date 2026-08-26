@@ -39,6 +39,7 @@ class Task:
         self.n_rollouts = parameters['n_rollouts'] if 'n_rollouts' in parameters else None
         self.target = parameters['target'] if 'target' in parameters else None
         self.truncated_penalty = 0
+        self.action_space_type = 'discrete'
         if parameters['initial_node_state_mode'] == 'random_shared':
             self.parameters['shared_initial_node_state'] = np.zeros((1, parameters['state_dim']))
             ndp = NeuralDevelopmentalProgram(self.parameters)
@@ -160,14 +161,22 @@ class Task:
             return np.mean(rewards)
 
     def compute_action(self, output=None):
-        if self.graph_n_outputs == 1:   # Binary output
-            action =  torch.sigmoid(output)
-            return int(torch.round(action))
-        else:   # Integer output
-            # print(output, output.shape)
-            probs =  F.softmax(output, dim=1)
-            # print(probs)
-            return int(probs.argmax())
+        # Discrete action space
+        if self.action_space_type == 'discrete':
+            # Binary output
+            if self.graph_n_outputs == 1:   
+                action =  torch.sigmoid(output)
+                return int(torch.round(action))
+            # Integer output
+            else:   
+                probs =  F.softmax(output, dim=1)
+                return int(probs.argmax())
+        # Continuous action space
+        elif self.action_space_type == 'continuous':
+            action = torch.tanh(output)
+            return action.numpy().reshape(-1).astype(np.float32)
+        else:
+            raise ValueError('Action Space Type should be either discrete or continuous.')
     
     def summary(self):
         print('-------------------------------------')
