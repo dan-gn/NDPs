@@ -9,9 +9,9 @@ import torch
 import torch.nn as nn
 from itertools import groupby
 
-from Graph.graph import Graphnx
+from Graph.graphnx import Graphnx
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.ndp_mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
+from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
 
 from Utilities.utilities import get_number_of_model_parameters, cosine_similarity
 

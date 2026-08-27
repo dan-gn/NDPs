@@ -14,7 +14,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 from typing import Callable
 
-from Graph.graph import Graphnx
+from Graph.graphnx import Graphnx
 
 """
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,17 @@
+This code is a research work I am working on. 
+It started by trying to replicate the Neural Developmental Programs implemented by Elias Najarro. 
+
+My first version is the ndp.py which uses the graph.py
+The graph.py has code fully implemented by me to create and manipulate a graph.
+However, it was too slow to compute stuff as the diameter.
+
+The second version, I change the graph module to use NetworkX.
+This version uses ndp_nx and graphnx files. 
+
+The third version, in which I'm currently working on, is trying to implement JAX.
+This version uses graphjax file (so far).
+
+I have to add that the file, ndp_nhcl, is my own variant for NDP in which the developmental process changes.
+Instead of a growing network (node-wise), we have a limited number of nodes and the edges structure is develope.
+Besides that, it can include hebbian learning (both standard NDP and my version of NDP) by using the NDP states ad hebbian paramenters. 
+Since the parameters are attached to each node, the Neuron-centric Hebbian Learning model is being used. 

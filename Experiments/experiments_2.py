@@ -92,7 +92,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     else:
         # EA
         colab = is_running_in_colab()
-        cores = os.cpu_count() - 1 if colab else min(os.cpu_count() - 1, 8)
+        cores = os.cpu_count() - 1 if colab else min(os.cpu_count() - 1, 4)
         run_in_parallel = True if cores > 1 else False
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -136,7 +136,7 @@ def main():
         # CartPole(),
         # Acrobot(),
         # MountainCar(), 
-        # LunarLander(),
+        LunarLander(),
         BipedalWalker()
     ]
 
@@ -152,7 +152,7 @@ def main():
 
 
     initial_seed = 0
-    final_seed = 1
+    final_seed = 5
     optimisation_algorithm = 'EA'
 
     for task in tasks:
