@@ -27,17 +27,6 @@ class GraphCellularAutomata(nn.Module):
             nn.Tanh()
         )
 
-    # def forward(self, node_state, neighbors_states):
-    #     if neighbors_states.size()[0] > 1:
-    #         neighbors_states_mean = torch.mean(neighbors_states, axis = 0).unsqueeze(axis = 0)
-    #         x = torch.cat([node_state, neighbors_states_mean], dim = 1)
-    #     else:
-    #         x = torch.cat([node_state, neighbors_states], dim = 1)
-
-    #     delta = self.model(x)
-    #     new_state = node_state + delta
-
-    #     return new_state
     def forward(self, node_state):
         return self.model(node_state)
 

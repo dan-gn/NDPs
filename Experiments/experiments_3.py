@@ -22,6 +22,7 @@ sys.path.append(parent)
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.ndp_nx_jax import NeuralDevelopmentalProgramJax
 from NDP.ndp_nchl_jax import HebbianNeuralDevelopmentalProgramJax
 
 # Import optimisation algorithms
@@ -57,7 +58,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
     # Initial parameters
     if ndp_params['model'] == 'standard_ndp':
-        ndp = NeuralDevelopmentalProgram(ndp_params)
+        ndp = NeuralDevelopmentalProgramJax(ndp_params)
     elif ndp_params['model'] == 'hebbian_ndp':
         ndp = HebbianNeuralDevelopmentalProgramJax(ndp_params)
     else:
@@ -94,7 +95,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
         # EA
         colab = is_running_in_colab()
         cores = os.cpu_count() - 1 if colab else min(os.cpu_count() - 1, 4)
-        run_in_parallel = True if cores > 1 else False
+        run_in_parallel = False if cores > 1 else False
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
         print(f'Running in parallel: {run_in_parallel}')
@@ -157,7 +158,7 @@ def main():
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/august2026_v2/experiments_2/{task.name}'
+        output_folder = f'Results/august2026_v2/experiments_3/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)

@@ -210,6 +210,16 @@ class GraphJax():
     def successors(self, node_id):
         return jnp.where(self.successor_mask(node_id), size=self.max_nodes, fill_value=-1,)[0]
 
+    def get_neighbor_matrix(self, include_self_node:bool = False):
+        neighbor_matrix =  self.adjacency | self.adjacency.T
+
+        if not include_self_node:
+            return neighbor_matrix
+
+        neighbor_matrix = neighbor_matrix | jnp.eye(self.max_nodes, dtype=jnp.bool_)
+        neighbor_matrix &= (self.node_mask[:, None] & self.node_mask[None, :])
+        return neighbor_matrix
+
     # ---------------------------------------------------------------------------------------
     # NetworkX Functions
     # ---------------------------------------------------------------------------------------

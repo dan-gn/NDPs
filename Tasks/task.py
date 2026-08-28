@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import gymnasium as gym
+import jax
 
 import os
 import sys
@@ -15,7 +16,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from NDP.ndp_nx import NeuralDevelopmentalProgram
+# from NDP.ndp_nx import NeuralDevelopmentalProgram
+from NDP.ndp_nx_jax import NeuralDevelopmentalProgramJax
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
 from Graph.graph_nx import Graphnx
@@ -42,7 +44,7 @@ class Task:
         self.action_space_type = 'discrete'
         if parameters['initial_node_state_mode'] == 'random_shared':
             self.parameters['shared_initial_node_state'] = np.zeros((1, parameters['state_dim']))
-            ndp = NeuralDevelopmentalProgram(self.parameters)
+            ndp = NeuralDevelopmentalProgramJax(self.parameters)
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
 
@@ -130,22 +132,24 @@ class Task:
             weights = params_bounded
 
         if ndp_config['model'] == 'standard_ndp':
-            ndp = NeuralDevelopmentalProgram(ndp_config)
+            ndp = NeuralDevelopmentalProgramJax(ndp_config)
         elif ndp_config['model'] == 'hebbian_ndp':
             ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
         else:
             raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
 
-        ndp.update_mlp_weights(weights)
+        params = ndp.update_mlp_weights(weights)
 
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
+
+        key = jax.random.PRNGKey(42)
 
         graphs = []
         rewards = []
         rollouts = []
         for _ in range(self.n_repeats):
-            graph = ndp.develope(self.n_cycles)
+            graph = ndp.develope(self.n_cycles, params=params, key=key)
             reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render, hebbian=ndp_config['hebbian'])
             graphs.append(graph)
             rewards.append(reward)

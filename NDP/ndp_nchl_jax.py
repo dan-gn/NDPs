@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from itertools import groupby
 
-from Graph.graphjax import GraphJax
+from Graph.graph_jax import GraphJax
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
 
