@@ -18,7 +18,7 @@ sys.path.append(parent)
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
-from Graph.graphnx import Graphnx
+from Graph.graph_nx import Graphnx
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

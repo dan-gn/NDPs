@@ -21,7 +21,7 @@ Graph (with nx.Graph() and JAX)
 '''
 
 @partial(
-    jax.tree_utils.register_dataclass,
+    jax.tree_util.register_dataclass,
     data_fields=[
         'nodes_states',
         'node_mask',
@@ -187,10 +187,9 @@ class GraphJax():
     # Updated the adjacency matrix 
     def update_adjacency_matrix(self, adjacency_matrix):
         adjacency_matrix = jnp.asarray(adjacency_matrix)
-        if self.weighted_graph_flag:
-            adjacency = adjacency_matrix.astype(jnp.bool_) 
-            return replace(self, adjacency=adjacency, weights=adjacency_matrix)
-        return replace(self, adjacency=adjacency_matrix.astype(jnp.bool_), weights=adjacency_matrix.astype(jnp.float32))
+        adjacency = adjacency_matrix.astype(jnp.bool_)
+        weights = adjacency_matrix.astype(jnp.float32)
+        return replace(self, adjacency=adjacency, weights=weights)
 
     # ---------------------------------------------------------------------------------------
     # Neighbors

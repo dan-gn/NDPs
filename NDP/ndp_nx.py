@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
-from Graph.graphnx import Graphnx
+from Graph.graph_nx import Graphnx
 
 from Utilities.utilities import get_number_of_model_parameters
 

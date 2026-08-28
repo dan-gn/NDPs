@@ -14,7 +14,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from Graph.graphnx import Graphnx
+from Graph.graph_nx import Graphnx
 
 
 '''

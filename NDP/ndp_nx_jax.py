@@ -4,11 +4,12 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-import numpy as np
+import jax
+import jax.numpy as jnp
 import torch 
-import torch.nn as nn
 import time
 import warnings
+from dataclasses import replace
 
 import os
 import sys
@@ -17,7 +18,9 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
-from Graph.graph import Node, Graph
+from Graph.graph_jax import GraphJax
+
+from Utilities.utilities import get_number_of_model_parameters
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,31 +29,26 @@ Default parameters
 '''
 
 DEFAULT_PARAMETERS = {
-    'state_dim' : 5,
-    'weighted_graph_flag' : True,
-    'initial_graph' : 'one_node',
-    'node_state_random_init' : False,
-    'add_hidden_node_to_minimal_network' : True,
-    'pruning_flag' : False,
-    'pruning_threshold': 0.01,
-    'gca_hidden_size' : 5,
-    'rm_hidden_size' : 5,
-    'wp_hidden_size' : 5,
-    'graph_n_inputs' : 2,
-    'graph_n_outputs' : 1,
+    'state_dim': 5,
+    'weighted_graph_flag': True,
+    'initial_graph': 'one_node',
+    'add_hidden_node_to_minimal_network': True,    # Required if initial_graph == 'minimal_network'
+    'network_extra_thinking': 0,
+    'initial_node_state_mode': 'coevolve', 
+    'shared_initial_node_state': None,
+    'noise_while_growing': False,
+    'noise_while_growing_interval': 0.15,  # Required if noise_while_growing == True
+    'pruning_flag': False,
+    'pruning_threshold': 0.03,  # Required if pruning_flag == True
+    'gca_hidden_size': 5,
+    'rm_hidden_size': 5,
+    'wp_hidden_size': 5,
+    'graph_n_inputs': 2,
+    'graph_n_outputs': 1,
+    'hebbian': False,
+    'model': 'standard_ndp'
 }
  
-
-
-'''
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Utilities
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'''
-
-def get_number_of_model_parameters(model:nn.Module):
-    return sum(p.numel() for p in model.parameters())
-
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -60,12 +58,19 @@ Neural Developmental Program (Evolutionary-based NDP)
 
 class NeuralDevelopmentalProgram:
 
+    # ---------------------------------------------------------------------------------------
+    # Initialisation
+    # ---------------------------------------------------------------------------------------
+
     def __init__(self, config:dict = None):
+        # Set the algorithm configuration
         self._set_config(config)
+        # Check if config values from argument are valid
+        self._check_valid_config()
 
-    def _set_default_config(self):
-        self.config = dict(DEFAULT_PARAMETERS)
-
+    def _set_default_config(self, default_parameters=DEFAULT_PARAMETERS):
+        self.config = dict(default_parameters)
+    
     def _set_config(self, config:dict):
         # Set default parameters
         self._set_default_config()
@@ -78,50 +83,78 @@ class NeuralDevelopmentalProgram:
                     # Showing if a variable was not defined
                     warnings.warn(f'Variable {key} not defined. Using default value {self.config[key]}.')
         # Set all variables
+        self._set_all_variables()
+        # Create the MLPs
+        self._initialise_mlps()
+
+    def _set_all_variables(self):
         self.state_dim = self.config['state_dim']
         self.weighted_graph_flag = self.config['weighted_graph_flag']
         self.initial_graph = self.config['initial_graph']
-        self.node_state_random_init = self.config['node_state_random_init']
+        self.network_extra_thinking = self.config['network_extra_thinking']
+        self.initial_node_state_mode = self.config['initial_node_state_mode']
+        self.shared_initial_node_state = self.config['shared_initial_node_state']
         self.add_hidden_node_to_minimal_network = self.config['add_hidden_node_to_minimal_network']
         self.pruning_flag = self.config['pruning_flag']
         self.pruning_threshold = self.config['pruning_threshold']
         self.graph_n_inputs = self.config['graph_n_inputs']
         self.graph_n_outputs = self.config['graph_n_outputs']
-        # Create the MLPs
+        self.noise_while_growing = self.config['noise_while_growing']
+        self.noise_while_growing_interval = self.config['noise_while_growing_interval']
+        
+    def _initialise_mlps(self):
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
         self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
         self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
-        # Check if config values from argument are valid
-        self._check_valid_config()
 
     def _check_valid_config(self):
         """
         This function checks that some of the input values for each variable is valid.
         FIX: I should do this for all the variables.
+        Variables checked: 3/13
         """
         if self.state_dim < 1:
             raise ValueError('State dimension should be equal or greater than 1.')
         initial_graph_options = ['minimal_network', 'one_node']
         if self.initial_graph not in initial_graph_options:
-            raise ValueError(f'Invalid value for the initial graph. Valid options are: {initial_graph_options}')
+            raise ValueError(f'Invalid value for the initial graph. Valid options are: {initial_graph_options}.')
+        initial_node_state_mode_options = ['coevolve', 'ones', 'random', 'random_shared']
+        if self.initial_node_state_mode not in initial_node_state_mode_options:
+            raise ValueError(f'Invalid value for the initial node state mode. Valid options are: {initial_node_state_mode_options}.')
+        if self.initial_node_state_mode == 'random_shared':
+            if not isinstance(self.shared_initial_node_state, np.ndarray):
+                raise ValueError(f'If initial_node_state_mode is set to random_shared, then shared_initial_node_state needs to be defined as a np.array([state_dim]) instead of {type(self.shared_initial_node_state), self.shared_initial_node_state}.')
+            elif self.shared_initial_node_state.shape[1] != self.state_dim:
+                print(self.shared_initial_node_state.shape[1])
+                raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state.shape[0]}) must be an array with state_dim ({self.state_dim}) elements.')
+
+    # ---------------------------------------------------------------------------------------
+    # Statistics
+    # ---------------------------------------------------------------------------------------
 
     def get_total_number_of_mlp_parameters(self) -> int:
-        n_params = get_number_of_model_parameters(self.graph_cellular_automata)
-        n_params += get_number_of_model_parameters(self.replication_model)
-        if self.weighted_graph_flag:
-            n_params += get_number_of_model_parameters(self.weight_prediction_model)
-        return n_params
+        n_params = [get_number_of_model_parameters(model) for model in self._get_mlp_models()]
+        return np.sum(n_params)
     
-    def update_mlp_weights(self, weights):
-        """
-        This function sets the weights of the MLPs.
-        """
+    # ---------------------------------------------------------------------------------------
+    # MLPs
+    # ---------------------------------------------------------------------------------------
+
+    def _get_mlp_models(self) -> list:
         models = [
             self.graph_cellular_automata,
             self.replication_model,
         ]
         if self.weighted_graph_flag:
             models.append(self.weight_prediction_model)
+        return models
+
+    
+    def update_mlp_weights(self, weights):
+        """
+        This function sets the weights of the MLPs.
+        """
+        models = self._get_mlp_models()
 
         if isinstance(weights, np.ndarray):
             weights = torch.tensor(weights, dtype=torch.float32)
@@ -135,17 +168,21 @@ class NeuralDevelopmentalProgram:
                 param.data.copy_(new_values)
                 pointer += n_params
 
-    def _genereate_node_state(self) -> np.array:
+    # ---------------------------------------------------------------------------------------
+    # Developmental Process
+    # ---------------------------------------------------------------------------------------
+
+    def _genereate_node_state(self, key) -> jnp.Array:
         """
         This function generates an array to initialise the state of a node. 
         This is mainly employed while initialising the graph.
         """
-        if self.node_state_random_init:
-            return np.random.uniform(-1, 1, size=(1, self.state_dim)).astype(np.float32)
+        if self.initial_node_state_mode in ['random', 'random_shared']:
+            return jnp.random.uniform(key, shape=(self.state_dim,), minval=-1.0, maxval=1.0, dtype=jnp.float32)
         else:
-            return np.ones((1, self.state_dim)).astype(np.float32)
+            return jnp.ones(self.state_dim, dtype= jnp.float32)
     
-    def generate_initial_seed_graph(self) -> Graph:
+    def generate_initial_seed_graph(self, key) -> GraphJax:
         """
         Generate an initial graph.
         There are two options available:
@@ -153,159 +190,86 @@ class NeuralDevelopmentalProgram:
         'minimal_network' -> All inputs are connect to all outputs (a hidden node could be added too)
         """
         # Create graph
-        graph = Graph(self.weighted_graph_flag)
+        graph = GraphJax(max_nodes=self.max_nodes, state_dim=self.state_dim, weighted_graph_flag=self.weighted_graph_flag)
 
         # One node initial graph
         if self.initial_graph == 'one_node':
-            node = Node(state_dim=self.state_dim, node_type='input')
-            node.state = self._genereate_node_state()
-            graph.add_node(node)
+            if self.initial_node_state_mode in ['coevolve', 'random_shared']:
+                node_state = jnp.asarray(self.shared_initial_node_state, dtype=jnp.float32).reshape(self.state_dim)
+            else:
+                node_state = self._genereate_node_state(key)
+            graph, node_id = graph.add_node(node_state)
+            graph = graph.add_edge(node_id, node_id)
 
         # Minimal network (all inputs connected to outputs) 
-        else:  
-            # Add input nodes
-            for _ in range(self.graph_n_inputs):
-                node = Node(state_dim=self.state_dim, node_type='input')
-                node.state = self._genereate_node_state()
-                graph.add_node(node)
-
-            # Add output nodes
-            for _ in range(self.graph_n_outputs):
-                node = Node(state_dim=self.state_dim, node_type='output')
-                node.state = self._genereate_node_state()
-                graph.add_node(node)
-                if not self.initial_graph:
-                    for i in range(self.graph_n_inputs):
-                        graph.add_edge(i, len(graph.nodes) - 1)
-
-            # Add hidden node (if option was selected)
-            if self.add_hidden_node_to_minimal_network:
-                node = Node(state_dim=self.state_dim, node_type='hidden')
-                node.state = self._genereate_node_state()
-                graph.add_node(node)
-                for i in range(self.graph_n_inputs):
-                        graph.add_edge(i, len(graph.nodes) - 1)
-                for i in range(self.graph_n_outputs):
-                        graph.add_edge(len(graph.nodes) - 1, self.graph_n_inputs + i)
+        else:
+            raise NotImplementedError("Come on, Daniel! You haven't implemented this yet! Stop procrastinating and just do it!")
 
         return graph
 
-    def graph_convolution(self, graph:Graph, steps:int) -> Graph:
+    
+    def graph_convolution(self, graph:GraphJax, steps:int) -> GraphJax:
         """
         This perfroms the graph convolution. 
         The update is done by a Graph Cellular Automata.
+        Pseudocode:
+        For n in range(steps):
+            new_states <- weights * states
+            new_states <- graph_cellular_automata(new_states)
+            states <- new_states
         """
-        for _ in range(steps):
-            updated_nodes = list(graph.nodes)
+        def convolution_step(_, graph):
+            weights = graph.weights
+            new_states = weights.T @ graph.nodes_states
+            new_states = self.graph_cellular_automata(new_states)
+            return replace(graph, nodes_states=new_states)
+        graph = jax.lax.fori_loop(0, steps, convolution_step, graph)
 
-            for i, node in enumerate(graph.nodes):
-                _, neighbors_states = graph.get_neighbors_states(node.node_id)
-                node_state = torch.tensor(node.state)
-                neighbors_states = torch.tensor(neighbors_states)
-                if neighbors_states.size()[0] == 0:
-                    neighbors_states = node_state
-                updated_nodes[i].state = self.graph_cellular_automata(node_state).numpy()
-            
-            graph.nodes = list(updated_nodes)
-        
-        return graph
-    
-    def graph_convolultion2(self, graph:Graph, steps:int) -> Graph:
-
-        for _ in range(steps):
-            updated_nodes = list(graph.nodes)
-
-            for i, node in enumerate(graph.nodes):
-                neighbor_ids, neighbor_states = graph.get_neighbors_states(node.node_id)
-                node_state = 0
-                for j, neighbor in enumerate(neighbor_ids):
-                    node_state += graph.edges[(neighbor, node.node_id)] * neighbor_states[j]
-                updated_nodes[i].state = self.graph_cellular_automata(node_state).numpy()
-            graph.nodes = list(updated_nodes)
-
-        return graph
-
-    def _set_node_type(self, node_id:int) -> str:
-        """
-        This sets the type of each node.
-        The first nodes will always be inputs, followed by the outputs and every node after that will be hidden nodes.
-        """
-        if node_id < self.graph_n_inputs:
-            return 'input'
-        # elif node_id < self.graph_n_inputs + self.graph_n_outputs:
-        #     return 'output'
-        else:
-            return 'hidden'
- 
-    def grow_graph(self, graph:Graph) -> Graph:
+    def grow_graph(self, graph:Graphnx) -> Graphnx:
         """
         Replication model R determines nodes in growing state
         New nodes are added to each of the growing nodes and their immediate neighbors
         New nodes' embeddings are defined as the mean embeddings of their parent nodes
         """
-        new_nodes = [] 
-        new_edges = {}
-        # if True: # Only replicate hidden nodes
-        #     replication_start = self.graph_n_inputs + self.graph_n_outputs
-        # else:
-        #     replication_start = 0
-        for node in graph.nodes[:]:
-            # Use the Replication model to decide if a node should be replicated
-            state = torch.tensor(node.state, dtype=torch.float32)
-            replicate_node = self.replication_model(state)
-            # In case it does:
-            if replicate_node:
-                # Create a new node
-                new_node_id = len(graph.nodes) + len(new_nodes)
-                new_node_type = self._set_node_type(new_node_id)
-                graph.nodes_count[new_node_type] += 1
-                new_node = Node(node_id=new_node_id, state_dim=self.state_dim, node_type=new_node_type)
-                # Compute the mean of the neighbors
-                neighbor_ids, neighbors_states = graph.get_neighbors_states(node.node_id)
-                # neighbors_states = torch.tensor(neighbors_states)
-                if len(neighbors_states) == 0:
-                    new_node.state = node.state.copy()
-                else:
-                    neighbors_states = np.vstack([neighbors_states, node.state])
-                    mean_state = np.mean(neighbors_states, axis = 0)
-                    new_node.state = np.expand_dims(mean_state, axis=0)
-                new_nodes.append(new_node)
-                # Add the edges to the new node
-                """
-                FIX: I set that the outputs will always be on the end of each edge. 
-                Is this okay tho?
-                """
-                for id in neighbor_ids + [node.node_id]:
-                    # neighbor_type = graph.nodes[id].node_type
-                    # if neighbor_type == 'output':
-                    #     new_edges[(new_node_id, id)] = 1.0
-                    # else:
-                    #     new_edges[(id, new_node_id)] = 1.0
-                    new_edges[(id, new_node_id)] = 1.0
-
-        # Add the new nodes and edges to the graph
-        graph.nodes.extend(new_nodes)
-        # graph.edges |= new_edges
-        for (input_node, output_node), weight in new_edges.items():
-            graph.add_edge(input_node, output_node, weight)
+        # Use the Replication model to decide if a node should be replicad
+        nodes_states = torch.tensor(graph.nodes_states)
+        replicate_probabilities = self.replication_model(nodes_states).numpy()
+        nodes_to_replicate = np.where(replicate_probabilities > 0)[0]
+        all_neighbors = [graph.get_neighbors(node) for node in nodes_to_replicate]
+        for i, node in enumerate(nodes_to_replicate):
+            neighbors = all_neighbors[i]
+            neighbors.add(node)
+            neighbors_states = nodes_states[list(neighbors)]
+            new_node_state = neighbors_states.mean(dim=0).numpy()
+            if self.noise_while_growing:
+                # Included a bit of noise so that the new nodes states to avoid states 
+                # converging to a same value during the development process
+                new_node_state += np.random.uniform(-self.noise_while_growing_interval, self.noise_while_growing_interval, new_node_state.size)
+            new_node_id = graph.add_node(new_node_state)
+            for neighbor in neighbors:
+                # graph.add_edge(new_node_id, neighbor)
+                graph.add_edge(neighbor, new_node_id)
         return graph
     
-    def predict_weights(self, graph:Graph) -> Graph:
+    def predict_weights(self, graph:GraphJax) -> GraphJax:
         """
         Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings.
         There are two versions:
         1. The first version only upudates existing edges, similar to the original implementation.
         2. The second verstion updates all possible pair of nodes. This matches more how it's described in the original paper. 
-        Chossing version one, mainly because it makes everything faster.
+        Choosing version one, mainly because it makes everything faster.
         Fix: On version 2, two edges for each pair are created. But how do I choose which one to create when it doesn't exist?
         """
         # 1st version: only updates existing edges
-        for input_id, output_id in graph.edges.keys():
-            input_node, output_node = graph.get_multiple_nodes([input_id, output_id])
-            input_node_state = torch.tensor(input_node.state, dtype=torch.float32)
-            output_node_state = torch.tensor(output_node.state, dtype=torch.float32)
+        weights = graph.get_adjacency_matrix()
+        for input_id, output_id in graph.edges():
+            input_node_state = torch.tensor(graph.nodes_states[input_id], dtype=torch.float32)
+            output_node_state = torch.tensor(graph.nodes_states[output_id], dtype=torch.float32)
+            # print('input', input_node_state)
+            # print('output', output_node_state)
             new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
-            graph.edges[(input_id, output_id)] = new_weight
+            weights[input_id, output_id] = new_weight
+        graph.update_adjacency_matrix(weights)
 
         # 2nd veresion: update values for all pair of nodes in the graph
         # for input_node in graph.nodes:
@@ -320,31 +284,30 @@ class NeuralDevelopmentalProgram:
 
         return graph
 
-    def prune(self, graph:Graph) -> Graph:
+    def prune(self, graph:Graphnx) -> Graphnx:
         """
         Edges with weights below pruning threshold P are removed.
         """
         # Find edges to remove
+        weights = graph.get_adjacency_matrix()
         edges_to_remove = []
-        for edge, weight in graph.edges.items():
-            if abs(weight) < self.pruning_threshold:
-                edges_to_remove.append(edge)
+        for input_id, output_id in graph.edges():
+            w = weights[input_id, output_id]
+            if abs(w) < self.pruning_threshold:
+                edges_to_remove.append((input_id, output_id))
 
         # Remove edges
-        for edge in edges_to_remove:
-            (input_node, output_node) = edge
-            weight = graph.edges[edge]
-            graph.delete_edge(input_node, output_node)
-            # del graph.edges[edge]
+        for input_id, output_id in edges_to_remove:
+            graph.remove_edge(input_id, output_id)
 
             # Check that removed edge does not disconnect the outputs from the inputs
-            if not graph.is_there_a_path_to_the_output():
-                # graph.edges[edge] = weight
-                graph.add_edge(input_node, output_node, weight)
+            """
+            FIX: Should I check that the removed edge does not disconnect the outputs from the inputs?
+            """
 
         return graph
 
-    def _run_a_developmental_cycle(self, graph:Graph) -> Graph:
+    def _run_a_developmental_cycle(self, graph:Graphnx) -> Graphnx:
         """
         This method runs one developmental cycle.
         Steps are as follow:
@@ -357,50 +320,55 @@ class NeuralDevelopmentalProgram:
         Modification: 
         I realised that I don't have to predict the weights in every cycle unless prunning is happening. 
         So, if pruning is not happening, the weights will be predicted only one time after the development is done. 
+
+        Desmodification:
+        I realised that I was wrong. The reason they need to predict the weights everytime is because
+        the weights are used during the graph convolution. 
         """
         # Compute network diameter D
-        diameter = graph.get_diameter()
+        # diameter = graph.get_diameter()
+        diameter = graph.get_largest_subgraph_diameter()
 
         # Propagate nodes states En via graph convolution D steps
-        graph = self.graph_convolution(graph, diameter)
+        steps = diameter + self.network_extra_thinking
+        graph = self.graph_convolution(graph, steps)
+        # graph.summary(full=True)
         
         # Replication model R determines nodes in growing state
         # New nodes are added to each of the growing nodes and their immediate neighbors
         # New nodes' embeddings are defined as the mean embeddings of their parent nodes
         graph = self.grow_graph(graph)
-        
-        # # If pruning then
-        if self.pruning_flag:
+        # graph.summary(full=True)
+
+        # If graph is weighted then
+        if self.weighted_graph_flag:
             # Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings
             graph = self.predict_weights(graph)
+        
+        # If pruning then
+        if self.pruning_flag:
             # Edges with weights below pruning threshold P are removed
             graph = self.prune(graph)
 
         return graph
 
-    def develope(self, n_cycles:int, debug:bool=False) -> Graph:
+    def develope(self, n_cycles:int, debug:bool=False) -> Graphnx:
         """
         This function developes a graph from scratch for a defined number of cycles.
         """
         start_time = time.time()
+        self.max_nodes = 2 ** n_cycles
         with torch.no_grad():
             graph = self.generate_initial_seed_graph()
-            # print('Initial graph')
-            # graph.summary()
+            if debug:
+                print('Initial graph')
+                graph.summary(full=False)
             for i in range(n_cycles):
+                graph = self._run_a_developmental_cycle(graph)
                 if debug:
                     print(f'Graph at cycle {i}')
-                graph = self._run_a_developmental_cycle(graph)
-                # graph.summary()
-            if self.weighted_graph_flag and (not self.pruning_flag):
-                graph = self.predict_weights(graph)
+                    graph.summary(full=False)
     
-        if self.initial_graph == 'one_node':
-            for i in range(self.graph_n_outputs):
-                graph.nodes[-i].node_type = 'output'
-            graph.nodes_count['hidden'] -= self.graph_n_outputs
-            graph.nodes_count['output'] = self.graph_n_outputs
-
         if debug:
             print(f'Total development time = {time.time() - start_time}')
         return graph
@@ -419,8 +387,7 @@ class NeuralDevelopmentalProgram:
         print(f'Replication Model = {get_number_of_model_parameters(self.replication_model)}')
         print(f'Weight Prediction Model = {get_number_of_model_parameters(self.weight_prediction_model)}')
         print(f'Total = {self.get_total_number_of_mlp_parameters()}')
-        print('-------------------------------------')
-        print('\n')
+        print('-------------------------------------\n')
 
 
 

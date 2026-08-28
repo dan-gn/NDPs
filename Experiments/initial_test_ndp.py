@@ -227,5 +227,5 @@ Main function
 '''
 if __name__ == '__main__':
 
-    test_with_optimisation()
+    simple_test_v1()
 

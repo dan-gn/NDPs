@@ -6,10 +6,11 @@ The graph.py has code fully implemented by me to create and manipulate a graph.
 However, it was too slow to compute stuff as the diameter.
 
 The second version, I change the graph module to use NetworkX.
-This version uses ndp_nx and graphnx files. 
+This version uses ndp_nx.py and graph_nx.py files.
+Also, ndp_nhcl.py, of which I explain later.  
 
 The third version, in which I'm currently working on, is trying to implement JAX.
-This version uses graphjax file (so far).
+This version uses all the files which have "jax" on the name of the file.
 
 I have to add that the file, ndp_nhcl, is my own variant for NDP in which the developmental process changes.
 Instead of a growing network (node-wise), we have a limited number of nodes and the edges structure is develope.

@@ -22,6 +22,7 @@ sys.path.append(parent)
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.ndp_nchl_jax import HebbianNeuralDevelopmentalProgramJax
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -58,7 +59,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     if ndp_params['model'] == 'standard_ndp':
         ndp = NeuralDevelopmentalProgram(ndp_params)
     elif ndp_params['model'] == 'hebbian_ndp':
-        ndp = HebbianNeuralDevelopmentalProgram(ndp_params)
+        ndp = HebbianNeuralDevelopmentalProgramJax(ndp_params)
     else:
         raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
 
@@ -134,10 +135,10 @@ def main():
     tasks = [
         # XOR(),
         # CartPole(),
-        # Acrobot(),
+        Acrobot(),
         # MountainCar(), 
-        LunarLander(),
-        BipedalWalker()
+        # LunarLander(),
+        # BipedalWalker()
     ]
 
     models = [
@@ -152,7 +153,7 @@ def main():
 
 
     initial_seed = 0
-    final_seed = 5
+    final_seed = 1
     optimisation_algorithm = 'EA'
 
     for task in tasks:

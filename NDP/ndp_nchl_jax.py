@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from itertools import groupby
 
-from Graph.graph_nx import Graphnx
+from Graph.graphjax import GraphJax
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
 
@@ -50,7 +50,7 @@ Neural Developmental Program (Evolutionary-based NDP)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
+class HebbianNeuralDevelopmentalProgramJax(NeuralDevelopmentalProgram):
 
     # Init the same as the standart version
     def __init__(self, config:dict = None):
@@ -101,7 +101,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return models
 
     # Generates an initial grpah
-    def generate_initial_seed_graph(self) -> Graphnx:
+    def generate_initial_seed_graph(self) -> GraphJax:
         """
         Generates an initial graph.
         The graph has N nodes (I inputs, H hidden and O outputs).
@@ -112,7 +112,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         4. Spare edges between hidden to output nodes.
         """
         # Create graph
-        graph = Graphnx(self.state_dim, self.weighted_graph_flag)
+        graph = GraphJax(self.state_dim, self.weighted_graph_flag)
 
         # Add nodes
         # For coevolve the initial state of the graph comes from the vector that the evolutionary algorithm optimise
@@ -123,7 +123,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             # The rest of the elements are used as the initial state of each node
             nodes_states = coevolved_array[0, 1:]
             nodes_states = nodes_states.reshape(self.n_nodes, self.state_dim)
-            graph.add_nodes_from(nodes_states)
+            graph = graph.add_nodes_from(nodes_states)
 
         # If random_shared, an initial state is generated ramdomly as it's used for all individuals during optimisation
         elif self.initial_node_state_mode == 'random_shared':
@@ -133,7 +133,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         else:
             for _ in range(self.n_nodes):
                 node_state = self._genereate_node_state()
-                graph.add_node(node_state)
+                graph, _ = graph.add_node(node_state)
             network_seed = np.random.randint()
 
         # Get list of input, hidden and output nodes
@@ -146,21 +146,21 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         density = self.initial_graph_density
 
         # Add edges from inputs to outputs nodes (Fully connected) 
-        graph.add_sparse_edges(input_nodes, output_nodes, density=1.0, rng=self.rng)
+        graph = graph.add_sparse_edges(input_nodes, output_nodes, density=1.0, rng=self.rng)
 
         # Add edges from inputs to hidden nodes (sparse)
-        graph.add_sparse_edges(input_nodes, hidden_nodes, density=density, rng=self.rng)
+        graph = graph.add_sparse_edges(input_nodes, hidden_nodes, density=density, rng=self.rng)
 
         # Add edges from hidden to hidden nodes (sparse)
-        graph.add_sparse_edges(hidden_nodes, hidden_nodes, density=density, rng=self.rng)
+        graph = graph.add_sparse_edges(hidden_nodes, hidden_nodes, density=density, rng=self.rng)
 
         # Add edges from hidden to output nodes (sparse)
-        graph.add_sparse_edges(hidden_nodes, output_nodes, density=density, rng=self.rng)
+        graph = graph.add_sparse_edges(hidden_nodes, output_nodes, density=density, rng=self.rng)
 
         return graph
 
     # Returns all possible edges from disconnected nodes in the graph 
-    def get_all_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_all_disconnected_nodes(self, graph:GraphJax, allow_self_loops:bool=False) -> list:
         nodes = graph.nodes()
         disconnected = []
         for source in nodes:
@@ -178,7 +178,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
     # Get disconnected nodes that are close to each other
     # This means that they are "two hops" distance (neighbour of neighbor nodes)    
-    def get_two_hop_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_two_hop_disconnected_nodes(self, graph:GraphJax, allow_self_loops:bool=False) -> list:
         nodes = graph.nodes()
         candidates = set()
         for source in nodes:
@@ -210,7 +210,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return np.array(sampled_candidate_edges, dtype=np.int32)
  
     # Choose candidates using the node state similarity
-    def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_similar_disconnected_nodes(self, graph:GraphJax, allow_self_loops:bool=False) -> list:
         n_nodes = graph.number_of_nodes()
         nodes_states = np.array(graph.nodes_states)
         adjacency_matrix = graph.get_adjacency_matrix()
@@ -264,7 +264,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return chosen_edges
 
     # Creates new edges using the MLP 
-    def choose_edges_to_create(self, graph:Graphnx) -> list:
+    def choose_edges_to_create(self, graph:GraphJax) -> list:
         # Get all possible candidate edges
         option = 0
         if option == 0:
@@ -288,7 +288,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return edges_to_create
 
     # Removes existing edges using the MLP
-    def choose_edges_to_remove(self, graph:Graphnx) -> list:
+    def choose_edges_to_remove(self, graph:GraphJax) -> list:
         edges = np.asarray(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
 
         # Get the source and target states from candidate edges
@@ -301,7 +301,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return edges_to_remove
 
     # Structural synapsis: create and remove edges
-    def structural_synapsis(self, graph:Graphnx) -> Graphnx:
+    def structural_synapsis(self, graph:GraphJax) -> GraphJax:
         """
         Here we are gonna modify the ANN structure. We should be able to:
         1. Add new edges - (Randomly sample possible new edges)
@@ -313,14 +313,14 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         edges_to_remove = self.choose_edges_to_remove(graph)
 
         # Add and remove edges
-        graph.add_edges_from(edges_to_add)
+        graph = graph.add_edges_from(edges_to_add)
 
-        graph.remove_edges_from(edges_to_remove)
+        graph = graph.remove_edges_from(edges_to_remove)
 
         return graph
 
     # Developmental cycle 
-    def _run_a_developmental_cycle(self, graph:Graphnx) -> Graphnx:
+    def _run_a_developmental_cycle(self, graph:GraphJax) -> GraphJax:
         """
         This method runs one developmental cycle.
         Steps are as follow:
