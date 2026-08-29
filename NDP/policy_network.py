@@ -75,6 +75,8 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
     def __init__(self, graph:Graphnx, n_inputs:int, n_outputs:int, network_extra_thinking:int):
         super().__init__(graph, n_inputs, n_outputs, network_extra_thinking)
 
+        self.reset_weights()
+
         # Check that the all nodes have a state
         if self.n_nodes > len(graph.nodes_states):
             self.nodes_states = np.zeros((self.n_nodes, graph.state_dim))
@@ -82,7 +84,13 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         else:
             self.nodes_states = graph.nodes_states.copy()
 
-        # Create Hebbian Matrix based on Neuron-centric Hebbian Learning (NcHL)
+        self.get_hebbian_matrix()
+
+    def reset_weights(self):
+        self.current_weights = self.weights.clone()
+    
+    # Create Hebbian Matrix based on Neuron-centric Hebbian Learning (NcHL)
+    def get_hebbian_matrix(self):
         self.hebbian_coeff = np.array(self.nodes_states)[:, :5]
         self.hebbian_coeff = torch.tensor(self.hebbian_coeff, dtype=torch.float32)
         self.hebbian_matrix = torch.empty((self.n_nodes, self.n_nodes, 5))
@@ -94,24 +102,28 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         self.hebbian_matrix[:, :, 1] = self.hebbian_coeff[:, None, 1]
 
         # B = Bj
-        self.hebbian_matrix[:, :, 2] = self.hebbian_coeff[None, :, 1]
+        self.hebbian_matrix[:, :, 2] = self.hebbian_coeff[None, :, 2]
 
         # C = Ci*Cj and D = Di*Dj
         self.hebbian_matrix[:, :, 3:5] = self.hebbian_coeff[:, None, 3:5] * self.hebbian_coeff[None, :, 3:5]
 
 
+    # Update Hebbian parameteres
     def hebbian_update(self, weights, pre, post):
-        with torch.no_grad():
-            ETA, A, B, C, D = self.hebbian_matrix.unbind(dim=2)
 
-            # Check __init__ for context
-            # delta = (etai+etaj/2) * (Ai*pre + Bj*post + Ci*Cj*pre*post + Di*Dj)
-            delta = ETA * ( 
-                A * pre +
-                B * post +
-                C * (post @ pre.T) + 
-                D
-            )
+        ETA, A, B, C, D = self.hebbian_matrix.unbind(dim=2)
+
+        pre = pre.squeeze(0)
+        post = post.squeeze(0)
+
+        # Check __init__ for context
+        # delta = (etai+etaj/2) * (Ai*pre + Bj*post + Ci*Cj*pre*post + Di*Dj)
+        delta = ETA * (
+            A * pre[:, None]
+            + B * post[None, :]
+            + C * pre[:, None] * post[None, :]
+            + D
+        )
 
         return weights + delta
 
@@ -121,21 +133,24 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         if steps is None:
             steps = max(1, self.graph_diameter + self.network_extra_thinking)
 
-        batch_size = x.shape[0]
-
-        activations = torch.zeros(batch_size, self.n_nodes, dtype=torch.float32, device=x.device)
+        activations = torch.zeros(1, self.n_nodes, dtype=torch.float32, device=x.device)
         activations[:, :self.n_inputs] = x
 
-        weights = self.weights.clone() 
+        weights = self.current_weights 
 
         for _ in range(steps-1):
             new_activations = activations @ weights
             new_activations = torch.tanh(new_activations)
+
             new_activations[:, :self.n_inputs] = x
+            
             weights = self.hebbian_update(weights, activations, new_activations)
+
             activations = new_activations
-        new_activations = activations @ self.weights
-        return new_activations[:, -self.n_outputs:]
+
+        output_activations = activations @ weights
+        self.current_weights = self.hebbian_update(weights, activations, output_activations)
+        return output_activations[:, -self.n_outputs:]
                                          
                         
 

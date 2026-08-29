@@ -16,8 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-# from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.ndp_nx_jax import NeuralDevelopmentalProgramJax
+from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
 from Graph.graph_nx import Graphnx
@@ -44,7 +43,7 @@ class Task:
         self.action_space_type = 'discrete'
         if parameters['initial_node_state_mode'] == 'random_shared':
             self.parameters['shared_initial_node_state'] = np.zeros((1, parameters['state_dim']))
-            ndp = NeuralDevelopmentalProgramJax(self.parameters)
+            ndp = NeuralDevelopmentalProgram(self.parameters)
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
 
@@ -132,7 +131,7 @@ class Task:
             weights = params_bounded
 
         if ndp_config['model'] == 'standard_ndp':
-            ndp = NeuralDevelopmentalProgramJax(ndp_config)
+            ndp = NeuralDevelopmentalProgram(ndp_config)
         elif ndp_config['model'] == 'hebbian_ndp':
             ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
         else:
@@ -143,13 +142,13 @@ class Task:
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
 
-        key = jax.random.PRNGKey(42)
+        # key = jax.random.PRNGKey(42)
 
         graphs = []
         rewards = []
         rollouts = []
         for _ in range(self.n_repeats):
-            graph = ndp.develope(self.n_cycles, params=params, key=key)
+            graph = ndp.develope(self.n_cycles)
             reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render, hebbian=ndp_config['hebbian'])
             graphs.append(graph)
             rewards.append(reward)

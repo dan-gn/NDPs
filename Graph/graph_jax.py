@@ -73,7 +73,7 @@ class GraphJax():
     # ---------------------------------------------------------------------------------------
 
     # Returns all nodes IDs (inactive nodes are represented with a -1)
-    def nodes(self) -> jnp.Array:
+    def nodes(self) -> jax.Array:
         return jnp.where(self.node_mask, size=self.max_nodes, fill_value=-1)[0]
 
     # Returns the number of nodes
@@ -104,7 +104,7 @@ class GraphJax():
     # ---------------------------------------------------------------------------------------
     
     # Returns all edges
-    def edges(self) -> jnp.Array:
+    def edges(self) -> jax.Array:
         source, target = jnp.nonzero(
             self.adjacency
             & self.node_mask[:, None]

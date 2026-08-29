@@ -5,6 +5,7 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
+import jax
 import jax.numpy as jnp
 
 '''
@@ -27,7 +28,7 @@ class MLPJax:
         hidden_to_output = (self.hidden_dim + 1) * self.output_dim
         return input_to_hidden + hidden_to_output
 
-    def unpack_parameters(self, flat_params:jnp.array) -> tuple:
+    def unpack_parameters(self, flat_params:jax.Array) -> tuple:
         pointer = 0
 
         n = self.hidden_dim * self.input_dim
@@ -55,7 +56,7 @@ class MLPJax:
 
         return params, pointer
 
-    def forward(x:jnp.array, params:dict):
+    def forward(self, x:jax.Array, params:dict):
         x = jnp.dot(x, params['w1'].T) + params['b1']
         x = jnp.tanh(x)
 
@@ -67,7 +68,7 @@ class MLPJax:
 
 class PairMLPJax(MLPJax):
 
-    def forward(self, source_state, target_state, params):
+    def forward(self, source_state:jax.Array, target_state:jax.Array, params:dict):
         x = jnp.concatenate([source_state, target_state], axis=-1)
         return super().forward(x, params)
 

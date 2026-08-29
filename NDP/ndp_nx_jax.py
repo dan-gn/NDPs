@@ -177,7 +177,7 @@ class NeuralDevelopmentalProgramJax:
     # Developmental Process
     # ---------------------------------------------------------------------------------------
 
-    def _genereate_node_state(self, key) -> jnp.array:
+    def _genereate_node_state(self, key) -> jax.Array:
         """
         This function generates an array to initialise the state of a node. 
         This is mainly employed while initialising the graph.
@@ -195,7 +195,7 @@ class NeuralDevelopmentalProgramJax:
         'minimal_network' -> All inputs are connect to all outputs (a hidden node could be added too)
         """
         # Create graph
-        graph = GraphJax(max_nodes=self.max_nodes, state_dim=self.state_dim, weighted_graph_flag=self.weighted_graph_flag)
+        graph = GraphJax.create(max_nodes=self.max_nodes, state_dim=self.state_dim, weighted_graph_flag=self.weighted_graph_flag)
 
         # One node initial graph
         if self.initial_graph == 'one_node':
@@ -248,7 +248,7 @@ class NeuralDevelopmentalProgramJax:
         replica_assignment *= replicate_mask[:, None]
 
         # Get the neighborhood of every node
-        neighborhood = graph.get_neighbor_matrix(include_own_node=True)
+        neighborhood = graph.get_neighbor_matrix(include_self_node=True)
         neighborhood = neighborhood.astype(jnp.float32)
         neighborhood_size = jnp.sum(neighborhood, axis=1, keepdims=1)
         new_states = (neighborhood @ graph.nodes_states) / jnp.maximum(neighborhood_size, 1.0)
