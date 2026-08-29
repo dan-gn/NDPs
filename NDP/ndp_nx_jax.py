@@ -149,7 +149,7 @@ class NeuralDevelopmentalProgramJax:
         return models
 
     
-    def update_mlp_weights(self, weights):
+    def unpack_mlp_parameters(self, weights):
 
         weights = jnp.asarray(weights, dtype=jnp.float32)
 

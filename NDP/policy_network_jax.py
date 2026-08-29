@@ -33,8 +33,6 @@ class PolicyNetworkJax:
 
     def forward(self, graph:GraphJax, x:jax.Array, steps:int=None):
 
-        raise ValueError('YOU HAVE NOT COMPUTED THE STEPS! ADD IT TO THE TASK!')
-        
         # Set up input values
         x = jnp.asarray(x, jnp.float32)
         x = x[None, :] if x.ndim == 1 else x

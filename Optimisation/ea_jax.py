@@ -6,15 +6,13 @@ Libraries
 
 import numpy as np
 import random
-import torch
 import time
-import torch.nn.functional as F
 import math
-from concurrent.futures import ProcessPoolExecutor
+import jax
 
 from typing import Callable
 
-from Graph.graph_nx import Graphnx
+from Graph.graph_jax import GraphJax
 
 """
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -28,7 +26,7 @@ There are two classes:
 
 class Individual:
 
-    def __init__(self, n_variables:int, genotype:np.array = None, fitness:float = None, best_graph:Graphnx = None, best_graph_fitness:float = None):
+    def __init__(self, n_variables:int, genotype:np.array = None, fitness:float = None, best_graph:GraphJax = None, best_graph_fitness:float = None):
         self.n_variables = n_variables
         self.genotype = genotype
         self.fitness = fitness
@@ -40,7 +38,7 @@ class Individual:
     def random_initialise(self):
         self.genotype = np.random.uniform(-self.initial_value_range, self.initial_value_range, self.n_variables)
 
-class EvolutionaryAlgorithm:
+class EvolutionaryAlgorithmJax:
 
     def __init__(
             self,
@@ -53,7 +51,6 @@ class EvolutionaryAlgorithm:
             mutation_eta: int = 5, 
             sbx_eta: int = 5, 
             elitism_proportion: float = 0.1, 
-            run_in_parallel: bool = False,
             cores: int = 4
         ):
         self.n_variables = n_variables
@@ -67,16 +64,19 @@ class EvolutionaryAlgorithm:
         self.sbx_eta = sbx_eta
         self.elitism_proportion = elitism_proportion
         self.elitism_index = int(self.elitism_proportion * self.population_size)
-        self.run_in_parallel = run_in_parallel
         self.cores = cores
         self.init_best_individual()
 
     # Sets seed 
     def set_seed(self, seed:int):
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
+
+    # Evaluates individual
+    def evaluate_individual(self, genotype:np.ndarray, seed:int):
+        key = jax.random.PRNGKey(seed)
+        fitness, _, best_graph, best_graph_fitness = self.objective_function(genotype, key=key)
+        return float(fitness), best_graph, float(best_graph_fitness)
 
     # Initialises best individual with fitness value inf
     def init_best_individual(self):
@@ -103,34 +103,6 @@ class EvolutionaryAlgorithm:
                 self.best_individual_by_graph.best_graph = population[i].best_graph
                 self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
                 self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype)
-        return population
-
-    # Initialises individual (for parallel running) 
-    def run_initialise_individual(self, core_seed:int) -> Individual:
-        self.set_seed(core_seed)
-        individual = Individual(self.n_variables)
-        individual.random_initialise()
-        individual.fitness, _, individual.best_graph, individual.best_graph_fitness = self.objective_function(individual.genotype)
-        return individual
-
-    # Initialises population (for parallel running) 
-    def parallel_initialise_population(self) -> list:
-        with ProcessPoolExecutor(max_workers=self.cores) as executor:
-            population = list(executor.map(self.run_initialise_individual, range(self.n_core_seed, self.n_core_seed + self.population_size)))
-        self.n_core_seed += self.population_size
-        population = sorted(population, key=lambda x: x.best_graph_fitness)
-        if population[0].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
-            self.best_individual_by_graph.genotype = population[0].genotype
-            self.best_individual_by_graph.fitness = population[0].fitness
-            self.best_individual_by_graph.best_graph = population[0].best_graph
-            self.best_individual_by_graph.best_graph_fitness = population[0].best_graph_fitness
-        population = sorted(population, key=lambda x: x.fitness)
-        if population[0].fitness < self.best_individual.fitness:
-            self.best_individual.genotype = population[0].genotype
-            self.best_individual.fitness = population[0].fitness
-            self.best_individual.best_graph = population[0].best_graph
-            self.best_individual.best_graph_fitness = population[0].best_graph_fitness
-            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype)
         return population
 
     # Random Roulette Wheel for parent selection
@@ -246,54 +218,12 @@ class EvolutionaryAlgorithm:
         return offspring
 
 
-    # Runs Single Crossover and Mutation (for parallel execution)
-    # This function creates a couple of offsprings by performing parent seletction, crossover, mutation and evaluation. 
-    # When running in parallel, each core starts its own random generator, so I included the input "core_seed", so each time the iteration ensure a different random process.
-    def run_single_crossover_and_mutation(self, core_seed:int) -> list:
-        self.set_seed(core_seed)
-
-        # Parent Selection
-        # parents = self.parents[np.mod(core_seed, self.n_core_seed)]
-        parents = self.tournament_selection() 
-
-        # Crossover
-        genotype1, genotype2 = self.sbx(parents)
-
-        # Mutation
-        mutated_g1 = self.mutate(genotype1)
-        mutated_g2 = self.mutate(genotype2)
-        
-        # Evaluation
-        fitness_g1, _, best_graph_g1, best_graph_fitness_g1 = self.objective_function(mutated_g1)
-        fitness_g2, _, best_graph_g2, best_graph_fitness_g2 = self.objective_function(mutated_g2)
-
-        # Return offspring individuals
-        offspring1 = Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1, best_graph=best_graph_g1, best_graph_fitness=best_graph_fitness_g1)
-        offspring2 = Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2, best_graph=best_graph_g2, best_graph_fitness=best_graph_fitness_g2)
-        return [offspring1, offspring2]
-
-
-    # Calls Crossover and Mutation (for parallel execution)
-    def parallel_crossover_and_mutation(self) -> list:
-        self.probs = self.compute_parent_selection_prob()
-        n_couples = int(self.population_size/2)
-        with ProcessPoolExecutor(max_workers=self.cores) as executor:
-            offspring = list(executor.map(self.run_single_crossover_and_mutation, range(self.n_core_seed, self.n_core_seed + n_couples)))
-        self.n_core_seed += n_couples
-        offspring = np.array(offspring).flatten().tolist()
-        return offspring
-
     # Updates population
     def update_population(self):
-        if not self.run_in_parallel:
-            # start_time = time.time()
-            parents = self.parent_selection()
-            offspring = self.crossover_and_mutation(parents)
-            # print(f'Normal time = {time.time() - start_time}')
-        else:
-            # start_time = time.time()
-            offspring = self.parallel_crossover_and_mutation()
-            # print(f'Parallel time = {time.time() - start_time}')
+        # start_time = time.time()
+        parents = self.parent_selection()
+        offspring = self.crossover_and_mutation(parents)
+        # print(f'Normal time = {time.time() - start_time}')
         self.elitism(offspring)
 
     # Runs the Evolutionary Algorithm 
@@ -307,10 +237,7 @@ class EvolutionaryAlgorithm:
         self.stagnment_iterations = 0
         self.n_core_seed = np.random.randint(1, 2**14)   # These is the seed for the cores in parallel computing
         print('Initialising population...')
-        if self.run_in_parallel:
-            self.population = self.parallel_initialise_population()
-        else:
-            self.population = self.initialise_population()
+        self.population = self.initialise_population()
         print('Done!')
         for self.i in range(self.max_iterations):
             start_time = time.time()
@@ -318,7 +245,7 @@ class EvolutionaryAlgorithm:
             if self.stagnment_iterations >= self.max_stagnment:
                 print('Restart population!')
                 self.stagnment_iterations = -1
-                self.population = self.parallel_initialise_population()
+                self.population = self.initialise_population()
                 self.population = sorted(self.population, key=lambda x: x.fitness)
                 self.population[-1].genotype = self.best_individual.genotype
                 self.population[-1].fitness = self.best_individual.fitness
