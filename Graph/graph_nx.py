@@ -16,26 +16,19 @@ Graph (with nx.Graph())
 
 class Graphnx():
 
+    # ---------------------------------------------------------------------------------------
+    # Initialisation
+    # ---------------------------------------------------------------------------------------
+
     def __init__(self, state_dim:int=None, weighted_graph_flag:bool=False):
         self.state_dim = state_dim
         self.weighted_graph_flag = weighted_graph_flag
         self._graph = nx.DiGraph()
         self.nodes_states = None
 
-    # Returns the diameter
-    def get_diameter(self) -> int:
-       return nx.diameter(self._graph.to_undirected())
-
-    # Returns the diameter of the largest subgraph (in case not all nodes are connected) 
-    def get_largest_subgraph_diameter(self) -> int:
-        graph = self._graph.to_undirected()
-
-        if nx.is_connected(graph):
-            return nx.diameter(graph)
-        
-        largest_component_nodes = max(nx.connected_components(graph), key=len)
-        largest_component = graph.subgraph(largest_component_nodes)
-        return nx.diameter(largest_component)
+    # ---------------------------------------------------------------------------------------
+    # Nodes
+    # ---------------------------------------------------------------------------------------
 
     # Returns all nodes
     def nodes(self) -> list:
@@ -44,33 +37,6 @@ class Graphnx():
     # Returns the number of nodes
     def number_of_nodes(self) -> int:
         return self._graph.number_of_nodes()
-
-    # Returns all edges
-    def edges(self) -> list:
-        return self._graph.edges()
-
-    # Returns the number of nodes
-    def number_of_edges(self) -> int:
-        return self._graph.number_of_edges()
-
-    # Check if an edge exists    
-    def has_edge(self, source:int, target:int) -> bool:
-        return self._graph.has_edge(source, target)
-
-    # Returns the adjacency matrix
-    def get_adjacency_matrix(self) -> np.array:
-        return nx.to_numpy_array(self._graph)
-
-    # Updated the adjacency matrix 
-    def update_adjacency_matrix(self, adjacency_matrix):
-        self._graph = nx.DiGraph(adjacency_matrix)
-
-    # Returns the neighbors of node_id 
-    def get_neighbors(self, node_id) -> set:
-        return set(nx.all_neighbors(self._graph, node_id))
-    
-    def successors(self, node_id) -> set:
-        return set(self._graph.successors(node_id))
 
     # Adds a single node
     def add_node(self, new_node_state:np.array) -> int:
@@ -93,6 +59,22 @@ class Graphnx():
             nodes_id = range(last_id, last_id + len(node_states))
             self.nodes_states = np.vstack([self.nodes_states, node_states])
         self._graph.add_nodes_from(nodes_id)
+
+    # ---------------------------------------------------------------------------------------
+    # Edges
+    # ---------------------------------------------------------------------------------------
+    
+    # Returns all edges
+    def edges(self) -> list:
+        return self._graph.edges()
+
+    # Returns the number of nodes
+    def number_of_edges(self) -> int:
+        return self._graph.number_of_edges()
+
+    # Check if an edge exists    
+    def has_edge(self, source:int, target:int) -> bool:
+        return self._graph.has_edge(source, target)
 
     # Adds a single edge
     def add_edge(self, input_node:int, output_node:int):
@@ -125,6 +107,56 @@ class Graphnx():
     def remove_edge(self, input_id, output_id):
         self._graph.remove_edge(input_id, output_id)
 
+    # ---------------------------------------------------------------------------------------
+    # Adjacency 
+    # ---------------------------------------------------------------------------------------
+
+    # Returns the adjacency matrix
+    def get_adjacency_matrix(self) -> np.array:
+        return nx.to_numpy_array(self._graph, weight=None, dtype=bool)
+
+    def get_weight_matrix(self) -> np.array:
+        return nx.to_numpy_array(self._graph)
+
+    # Updated the weight matrix 
+    def update_weight_matrix(self, weight_matrix):
+        self._adjacency_matrix = nx.DiGraph(weight_matrix)
+
+
+    # ---------------------------------------------------------------------------------------
+    # Neighbors
+    # ---------------------------------------------------------------------------------------
+
+    # Returns the neighbors of node_id 
+    def get_neighbors(self, node_id) -> set:
+        return set(nx.all_neighbors(self._graph, node_id))
+    
+    def successors(self, node_id) -> set:
+        return set(self._graph.successors(node_id))
+
+    # ---------------------------------------------------------------------------------------
+    # Graph Stats
+    # ---------------------------------------------------------------------------------------
+
+    # Returns the diameter
+    def get_diameter(self) -> int:
+       return nx.diameter(self._graph.to_undirected())
+
+    # Returns the diameter of the largest subgraph (in case not all nodes are connected) 
+    def get_largest_subgraph_diameter(self) -> int:
+        graph = self._graph.to_undirected()
+
+        if nx.is_connected(graph):
+            return nx.diameter(graph)
+        
+        largest_component_nodes = max(nx.connected_components(graph), key=len)
+        largest_component = graph.subgraph(largest_component_nodes)
+        return nx.diameter(largest_component)
+
+    # ---------------------------------------------------------------------------------------
+    # Summary
+    # ---------------------------------------------------------------------------------------
+    
     # Prints a summary of the graph 
     def summary(self, full:bool=False):
         nodes = list(self.nodes())

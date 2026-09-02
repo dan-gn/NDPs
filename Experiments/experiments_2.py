@@ -53,7 +53,6 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     # Params
     ndp_params = task.parameters
     evaluate_ndp = task.evaluate_ndp
-    evaluate_graph = task.evaluate_graph
 
     # Initial parameters
     if ndp_params['model'] == 'standard_ndp':
@@ -63,7 +62,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     else:
         raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
 
-    print('This is an initial test of the NDP!')
+    print('Experiment begins!')
     task.summary()
     ndp.summary()
 
@@ -74,14 +73,15 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
         else:
             n_params += ndp_params['state_dim']
     print(f'Number of NDP optimisation parameters {n_params}')
+    print(f'Hebbian model = {ndp_params['hebbian']}')
 
     # Run optimisation
     print(f'Seed = {seed}')
     print('Starting optimisation!')
 
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.manual_seed(seed)
+    # np.random.seed(seed)
+    # random.seed(seed)
+    # torch.manual_seed(seed)
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -143,12 +143,12 @@ def main():
 
     models = [
         'standard_ndp',
-        'hebbian_ndp'
+        # 'hebbian_ndp'
     ]
 
     hebbian_flags = [
         False,
-        True
+        # True
     ]
 
 
@@ -157,7 +157,7 @@ def main():
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/august2026_v2/experiments_2/{task.name}'
+        output_folder = f'Results/september2026_v2/experiments_2/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)

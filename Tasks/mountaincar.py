@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import gymnasium as gym
 
 from Tasks.task import Task
+from Tasks.task_jax import TaskJax
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ MOUNTAINCAR_PARAMETERS = {
     'network_extra_thinking': 5,
     'initial_node_state_mode': 'coevolve',
     'shared_initial_node_state': None,
-    'noise_while_growing': True,
+    'noise_while_growing': False,
     'noise_while_growing_interval': 0.15,
     'add_hidden_node_to_minimal_network': False,
     'pruning_flag': False,
@@ -51,6 +52,8 @@ MOUNTAINCAR_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 500,
+    # 'population_size': 10,
+    # 'generations' : 0,
     'stagnant_generation': 250,
 
 
@@ -58,6 +61,15 @@ MOUNTAINCAR_PARAMETERS = {
 
 
 class MountainCar(Task):
+
+    def __init__(self, parameters=MOUNTAINCAR_PARAMETERS):
+        super().__init__(parameters)
+        self.name = 'MountainCar-v0'
+        self.target = parameters['n_rollouts'] * 110
+        self.truncated_penalty = 200
+
+
+class MountainCarJax(TaskJax):
 
     def __init__(self, parameters=MOUNTAINCAR_PARAMETERS):
         super().__init__(parameters)

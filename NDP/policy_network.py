@@ -34,16 +34,26 @@ class PolicyNetwork(nn.Module):
         
         self.n_inputs, self.n_outputs = n_inputs, n_outputs
         self.n_nodes = graph.number_of_nodes()
-        weights = torch.tensor(graph.get_adjacency_matrix(), dtype=torch.float32)
+
+        weights = torch.tensor(graph.get_weight_matrix(), dtype=torch.float32)
+        adjacency_matrix = torch.tensor(graph.get_adjacency_matrix(), dtype=torch.bool)
 
         if self.n_nodes < n_inputs + n_outputs:
             temp_n_nodes = n_inputs + n_outputs
+
             temp_weights = torch.zeros((temp_n_nodes, temp_n_nodes), dtype=torch.float32)
             temp_weights[:self.n_nodes, :self.n_nodes] = weights
+
+            temp_adjacency = torch.zeros((temp_n_nodes, temp_n_nodes), dtype=torch.float32)
+            temp_adjacency[:self.n_nodes, :self.n_nodes] = adjacency_matrix
+
             self.n_nodes = temp_n_nodes
             weights = temp_weights
+            adjacency_matrix = temp_adjacency
+
 
         self.register_buffer('weights', weights)
+        self.register_buffer('adjacency_matrix', adjacency_matrix)
 
     def forward(self, x:torch.Tensor, steps:int=None):
 
@@ -87,25 +97,27 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         self.get_hebbian_matrix()
 
     def reset_weights(self):
-        self.current_weights = self.weights.clone()
+        self.register_buffer('current_weights', self.weights.clone())
     
     # Create Hebbian Matrix based on Neuron-centric Hebbian Learning (NcHL)
     def get_hebbian_matrix(self):
-        self.hebbian_coeff = np.array(self.nodes_states)[:, :5]
-        self.hebbian_coeff = torch.tensor(self.hebbian_coeff, dtype=torch.float32)
-        self.hebbian_matrix = torch.empty((self.n_nodes, self.n_nodes, 5))
+        hebbian_coeff = np.asarray(self.nodes_states)[:, :5]
+        hebbian_coeff = torch.tensor(hebbian_coeff, dtype=torch.float32)
+        hebbian_matrix = torch.empty((self.n_nodes, self.n_nodes, 5))
 
         # ETA = (etai + etaj)/2
-        self.hebbian_matrix[:, :, 0] = (self.hebbian_coeff[:, None, 0] + self.hebbian_coeff[None, :, 0]) / 2
+        hebbian_matrix[:, :, 0] = (hebbian_coeff[:, None, 0] + hebbian_coeff[None, :, 0]) / 2
         
         # A = Ai
-        self.hebbian_matrix[:, :, 1] = self.hebbian_coeff[:, None, 1]
+        hebbian_matrix[:, :, 1] = hebbian_coeff[:, None, 1]
 
         # B = Bj
-        self.hebbian_matrix[:, :, 2] = self.hebbian_coeff[None, :, 2]
+        hebbian_matrix[:, :, 2] = hebbian_coeff[None, :, 2]
 
         # C = Ci*Cj and D = Di*Dj
-        self.hebbian_matrix[:, :, 3:5] = self.hebbian_coeff[:, None, 3:5] * self.hebbian_coeff[None, :, 3:5]
+        hebbian_matrix[:, :, 3:5] = hebbian_coeff[:, None, 3:5] * hebbian_coeff[None, :, 3:5]
+
+        self.register_buffer('hebbian_matrix', hebbian_matrix)
 
 
     # Update Hebbian parameteres
@@ -125,7 +137,11 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
             + D
         )
 
-        return weights + delta
+        delta *= self.adjacency_matrix
+
+        new_weights = weights + delta
+
+        return torch.clamp(new_weights, -1.0, 1.0)
 
 
     def forward(self, x:torch.Tensor, steps:int=None):
@@ -136,20 +152,20 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         activations = torch.zeros(1, self.n_nodes, dtype=torch.float32, device=x.device)
         activations[:, :self.n_inputs] = x
 
-        weights = self.current_weights 
+        weights = self.current_weights
 
         for _ in range(steps-1):
             new_activations = activations @ weights
             new_activations = torch.tanh(new_activations)
 
             new_activations[:, :self.n_inputs] = x
-            
-            weights = self.hebbian_update(weights, activations, new_activations)
+
+            # weights = self.hebbian_update(weights, activations, new_activations)
 
             activations = new_activations
 
         output_activations = activations @ weights
-        self.current_weights = self.hebbian_update(weights, activations, output_activations)
+        self.current_weights = self.hebbian_update(weights, activations, torch.tanh(output_activations))
         return output_activations[:, -self.n_outputs:]
                                          
                         

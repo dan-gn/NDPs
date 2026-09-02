@@ -8,6 +8,7 @@ import torch
 import gymnasium as gym
 
 from Tasks.task import Task
+from Tasks.task_jax import TaskJax
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -51,12 +52,21 @@ CARTPOLE_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 500,
+    # 'population_size': 10,
+    # 'generations': 100,
     'stagnant_generation': 250,
 }
 
 
 
 class CartPole(Task):
+
+    def __init__(self, parameters=CARTPOLE_PARAMETERS):
+        super().__init__(parameters)
+        self.name = 'CartPole-v1'
+        self.target = parameters['n_rollouts'] * (-500)
+
+class CartPoleJax(TaskJax):
 
     def __init__(self, parameters=CARTPOLE_PARAMETERS):
         super().__init__(parameters)

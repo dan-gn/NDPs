@@ -234,7 +234,7 @@ class GraphJax():
        return nx.diameter(self.to_networkx().to_undirected())
 
     # Returns the diameter of the largest subgraph (in case not all nodes are connected) 
-    def get_largest_subgraph_diameter(self) -> int:
+    def get_largest_subgraph_diameter2(self) -> int:
         graph = self.to_networkx().to_undirected()
 
         if nx.is_connected(graph):
@@ -244,6 +244,117 @@ class GraphJax():
         largest_component = graph.subgraph(largest_component_nodes)
         return nx.diameter(largest_component)
 
+    def get_largest_subgraph_diameter(self) -> jax.Array:
+
+        # Convert directed graph to undirected
+        adjacency = self.adjacency | self.adjacency.T
+
+        # Only consider active nodes
+        active_pair_mask = (
+            self.node_mask[:, None]
+            & self.node_mask[None, :]
+        )
+
+        adjacency = adjacency & active_pair_mask
+
+        # -----------------------------------------
+        # Initialise shortest-path matrix
+        # -----------------------------------------
+
+        inf = jnp.inf
+
+        distances = jnp.where(
+            adjacency,
+            1.0,
+            inf
+        )
+
+        # Distance from an active node to itself = 0
+        indices = jnp.arange(self.max_nodes)
+
+        distances = distances.at[
+            indices,
+            indices
+        ].set(
+            jnp.where(
+                self.node_mask,
+                0.0,
+                inf
+            )
+        )
+
+        # -----------------------------------------
+        # Floyd-Warshall
+        # -----------------------------------------
+
+        def floyd_step(k, distances):
+
+            through_k = (
+                distances[:, k, None]
+                + distances[None, k, :]
+            )
+
+            return jnp.minimum(
+                distances,
+                through_k
+            )
+
+        distances = jax.lax.fori_loop(
+            0,
+            self.max_nodes,
+            floyd_step,
+            distances
+        )
+
+        # -----------------------------------------
+        # Find largest connected component
+        # -----------------------------------------
+
+        reachable = jnp.isfinite(
+            distances
+        )
+
+        component_sizes = jnp.sum(
+            reachable,
+            axis=1
+        )
+
+        # Inactive nodes shouldn't be candidates
+        component_sizes = jnp.where(
+            self.node_mask,
+            component_sizes,
+            -1
+        )
+
+        # Any node belonging to the largest component
+        component_root = jnp.argmax(
+            component_sizes
+        )
+
+        largest_component_mask = reachable[
+            component_root
+        ]
+
+        # -----------------------------------------
+        # Diameter of largest component
+        # -----------------------------------------
+
+        pair_mask = (
+            largest_component_mask[:, None]
+            & largest_component_mask[None, :]
+        )
+
+        component_distances = jnp.where(
+            pair_mask,
+            distances,
+            0.0
+        )
+
+        diameter = jnp.max(
+            component_distances
+        )
+
+        return diameter.astype(jnp.int32)
     
 
     # ---------------------------------------------------------------------------------------

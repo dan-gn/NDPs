@@ -8,6 +8,7 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 import gymnasium as gym
+import time
 
 import os
 import sys
@@ -72,6 +73,7 @@ class TaskJax:
             ann = NcHebbianLearningPolicyNetworkJax(self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
         else:
             ann = PolicyNetworkJax(self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+            forward_fn = jax.jit(ann.forward)
 
         if verbose:
             print('Done!')
@@ -90,19 +92,37 @@ class TaskJax:
             cumulative_reward = 0.0
             actions_hist = []
 
+            policy_time = 0
+            action_time = 0
+            env_time = 0
             while not terminated and not truncated:
+
+                start = time.time()
 
                 if hebbian:
                     output, policy_state = ann.forward(graph, obs, policy_state, steps)
                 else:
-                    output = ann.forward(graph, obs, steps)
+                    output = forward_fn(graph, obs, steps)
 
+                jax.block_until_ready(output)
+                policy_time += time.time() - start
+
+
+                start = time.time()
                 action = self.compute_action(output)
+                action_time += time.time() - start
+
                 actions_hist.append(action)
 
+                start = time.time()
                 obs, reward, terminated, truncated, _ = env.step(action)
+                env_time += time.time() - start
 
                 cumulative_reward += reward
+
+            print('Policy time', policy_time)
+            print('Action time', action_time)
+            print('Env time', env_time)
 
             if truncated:
                 cumulative_reward -= self.truncated_penalty
@@ -151,9 +171,19 @@ class TaskJax:
         graphs = []
         rewards = []
         rollouts = []
+        develop_fn = jax.jit(ndp.develope, static_argnames=("n_cycles", "debug"))
         for repeat_key in repeat_keys:
-            graph = ndp.develope(self.n_cycles, params=params, key=repeat_key)
+            start = time.time()
+            # graph = ndp.develope(self.n_cycles, params=params, key=repeat_key)
+
+            graph = develop_fn(n_cycles=self.n_cycles, params=params, key=repeat_key, debug=False)
+
+            jax.block_until_ready(graph.nodes_states)
+            print('Development', time.time() - start)
+
+            start = time.time()
             reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render, hebbian=ndp_config['hebbian'])
+            print('Rollouts', time.time() - start)
             graphs.append(graph)
             rewards.append(reward)
             rollouts.extend(rollout)

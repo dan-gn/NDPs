@@ -11,7 +11,7 @@ from itertools import groupby
 
 from Graph.graph_nx import Graphnx
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
+from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel, WeightPredictionModel
 
 from Utilities.utilities import get_number_of_model_parameters, cosine_similarity
 
@@ -38,6 +38,7 @@ DEFAULT_PARAMETERS = {
     'gca_hidden_size': 5,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
+    'wp_hidden_size': 5,
     'graph_n_inputs': 2,
     'graph_n_outputs': 1,
     'hebbian': False,
@@ -90,13 +91,15 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
         self.create_edge_model = CreateEdgeModel(self.state_dim, self.config['create_edge_hidden_size'])
         self.remove_edge_model = RemoveEdgeModel(self.state_dim, self.config['remove_edge_hidden_size'])
+        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
 
     # Get MLP models
     def _get_mlp_models(self) -> list:
         models = [
             self.graph_cellular_automata,
             self.create_edge_model,
-            self.remove_edge_model
+            self.remove_edge_model,
+            self.weight_prediction_model
         ]
         return models
 
@@ -339,6 +342,25 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         graph = self.structural_synapsis(graph)
 
         return graph
+
+    def develope(self, n_cycles:int, debug:bool=False) -> Graphnx:
+        """
+        This function developes a graph from scratch for a defined number of cycles.
+        """
+        with torch.no_grad():
+            graph = self.generate_initial_seed_graph()
+            if debug:
+                print('Initial graph')
+                graph.summary(full=False)
+            for i in range(n_cycles):
+                graph = self._run_a_developmental_cycle(graph)
+                if debug:
+                    print(f'Graph at cycle {i}')
+                    graph.summary(full=False)
+            graph = self.predict_weights(graph)
+    
+        return graph
+
 
     # Print NDP Summary
     def summary(self):

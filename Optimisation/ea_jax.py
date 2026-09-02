@@ -40,6 +40,10 @@ class Individual:
 
 class EvolutionaryAlgorithmJax:
 
+    # ---------------------------------------------------------------------------------------
+    # Initialisation
+    # ---------------------------------------------------------------------------------------
+
     def __init__(
             self,
             n_variables: int,
@@ -47,11 +51,10 @@ class EvolutionaryAlgorithmJax:
             population_size: int,
             max_iterations: int,
             max_stagnment: int,
-            mutation_probability: int = 0.01, 
-            mutation_eta: int = 5, 
-            sbx_eta: int = 5, 
-            elitism_proportion: float = 0.1, 
-            cores: int = 4
+            mutation_probability: float = 0.01, 
+            mutation_eta: float = 5.0, 
+            sbx_eta: float = 5.0, 
+            elitism_proportion: float = 0.1
         ):
         self.n_variables = n_variables
         self.objective_function = objective_function
@@ -63,20 +66,15 @@ class EvolutionaryAlgorithmJax:
         self.mutation_eta = mutation_eta
         self.sbx_eta = sbx_eta
         self.elitism_proportion = elitism_proportion
-        self.elitism_index = int(self.elitism_proportion * self.population_size)
-        self.cores = cores
+        self.elitism_index = max(1, int(self.elitism_proportion * self.population_size))
         self.init_best_individual()
 
     # Sets seed 
     def set_seed(self, seed:int):
         np.random.seed(seed)
         random.seed(seed)
-
-    # Evaluates individual
-    def evaluate_individual(self, genotype:np.ndarray, seed:int):
-        key = jax.random.PRNGKey(seed)
-        fitness, _, best_graph, best_graph_fitness = self.objective_function(genotype, key=key)
-        return float(fitness), best_graph, float(best_graph_fitness)
+        self.seed = seed
+        self.eval_key = jax.random.PRNGKey(seed)
 
     # Initialises best individual with fitness value inf
     def init_best_individual(self):
@@ -85,26 +83,24 @@ class EvolutionaryAlgorithmJax:
         self.best_individual_by_graph = Individual(self.n_variables)
         self.best_individual_by_graph.best_graph_fitness = float("inf")
 
-    # Initialises population
-    def initialise_population(self) -> list:
-        population = [Individual(self.n_variables) for _ in range(self.population_size)]
-        for i, member in enumerate(population):
-            population[i].random_initialise()
-            population[i].fitness, _, population[i].best_graph, population[i].best_graph_fitness = self.objective_function(population[i].genotype)
-            if population[i].fitness < self.best_individual.fitness:
-                self.best_individual.genotype = population[i].genotype
-                self.best_individual.fitness = population[i].fitness
-                self.best_individual.best_graph = population[i].best_graph
-                self.best_individual.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype) 
-            if population[i].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
-                self.best_individual_by_graph.genotype = population[i].genotype
-                self.best_individual_by_graph.fitness = population[i].fitness
-                self.best_individual_by_graph.best_graph = population[i].best_graph
-                self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype)
-        return population
+    # ---------------------------------------------------------------------------------------
+    # Fitness Evaluation
+    # ---------------------------------------------------------------------------------------
 
+    # Evaluates individual
+    def evaluate_individual(self, genotype:np.ndarray):
+        key = self.next_eval_seed()
+        fitness, _, best_graph, best_graph_fitness = self.objective_function(genotype, key=key)
+        return float(fitness), best_graph, float(best_graph_fitness)
+
+    # ---------------------------------------------------------------------------------------
+    # Utils
+    # ---------------------------------------------------------------------------------------
+
+    def next_eval_seed(self):
+        self.eval_key, key = jax.random.split(self.eval_key)
+        return key
+    
     # Random Roulette Wheel for parent selection
     def roulette_wheel(self, p:np.array) -> int:
         r = np.random.uniform(0, 1) * sum(p)	
@@ -122,22 +118,6 @@ class EvolutionaryAlgorithmJax:
             parents.append(competitors[winner])
             all_indexes.remove(parents[i])
         return [self.population[parents[0]], self.population[parents[1]]]
-
-    # Gets parent selection probabilities
-    def compute_parent_selection_prob(self, beta:float=1.0) -> float:
-        # Get an array of all cost of current population, add acceptance criteria value
-        # and divide by the mean of the array to avoid overflow while computing exponential
-        fitness = np.array([member.fitness for member in self.population]) 
-        mean_fitness = abs(np.mean(fitness))
-        if mean_fitness != 0 and mean_fitness != math.inf:
-            fitness /= mean_fitness
-        return np.exp(-beta * fitness)
-
-    # Parent selection 
-    def parent_selection(self) -> list:
-        self.probs = self.compute_parent_selection_prob()
-        parents = [self.tournament_selection() for _ in range(int(self.population_size/2))]
-        return parents
 
     # Simulated Binary Crossover (SBX) 
     def sbx(self, parents:list) -> tuple:
@@ -165,6 +145,70 @@ class EvolutionaryAlgorithmJax:
             delta = 1 - (2 * (1-r)) ** (1 / (self.mutation_eta+1))
         return x + delta
 
+    # ---------------------------------------------------------------------------------------
+    # Evolutionary Process
+    # ---------------------------------------------------------------------------------------
+
+    # Initialises population
+    def initialise_population(self) -> list:
+        population = [Individual(self.n_variables) for _ in range(self.population_size)]
+        for member in population:
+            member.random_initialise()
+            start = time.time()
+            member.fitness, member.best_graph, member.best_graph_fitness = self.evaluate_individual(member.genotype)
+            print('Individual evaluation', time.time() - start)
+            if member.fitness < self.best_individual.fitness:
+                self.best_individual.genotype = member.genotype.copy()
+                self.best_individual.fitness = member.fitness
+                self.best_individual.best_graph = member.best_graph
+                self.best_individual.best_graph_fitness = member.best_graph_fitness
+                self.best_individual.fitness_test, _, _ = self.evaluate_individual(member.genotype)
+            if member.best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
+                self.best_individual_by_graph.genotype = member.genotype.copy()
+                self.best_individual_by_graph.fitness = member.fitness
+                self.best_individual_by_graph.best_graph = member.best_graph
+                self.best_individual_by_graph.best_graph_fitness = member.best_graph_fitness
+                self.best_individual_by_graph.fitness_test, _, _ = self.evaluate_individual(member.genotype) 
+        return population
+
+    # Gets parent selection probabilities
+    def compute_parent_selection_prob(self, beta:float=1.0) -> float:
+        # Get an array of all cost of current population, add acceptance criteria value
+        # and divide by the mean of the array to avoid overflow while computing exponential
+        fitness = np.array([member.fitness for member in self.population]) 
+        mean_fitness = abs(np.mean(fitness))
+        if mean_fitness != 0 and mean_fitness != math.inf:
+            fitness /= mean_fitness
+        return np.exp(-beta * fitness)
+
+    # Parent selection 
+    def parent_selection(self) -> list:
+        self.probs = self.compute_parent_selection_prob()
+        parents = [self.tournament_selection() for _ in range(int(self.population_size/2))]
+        return parents
+
+    # Mutation
+    def mutate(self, genotype:np.array) -> np.array:
+        genotype = np.asarray(genotype)  
+        random_values = np.random.uniform(0, 1, size=genotype.shape)
+        mutation_mask = random_values <= self.mutation_probability
+        for idx in np.where(mutation_mask)[0]:
+            genotype[idx] = self.polynomial_muatation(genotype[idx])
+        return genotype
+
+    # Calls Crossover and Mutation
+    def crossover_and_mutation(self, parents:list) -> list:
+        offspring = []
+        for p in parents:
+            genotype1, genotype2 = self.sbx(p)
+            mutated_g1 = self.mutate(genotype1)
+            fitness_g1, best_graph_g1, best_graph_fitness_g1 = self.evaluate_individual(mutated_g1)
+            offspring.append(Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1, best_graph=best_graph_g1, best_graph_fitness=best_graph_fitness_g1))
+            mutated_g2 = self.mutate(genotype2)
+            fitness_g2, best_graph_g2, best_graph_fitness_g2 = self.evaluate_individual(mutated_g2)
+            offspring.append(Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2, best_graph=best_graph_g2, best_graph_fitness=best_graph_fitness_g2))
+        return offspring
+
     # Elitism 
     def elitism(self, offspring:list):
         offspring = sorted(offspring, key=lambda x: x.best_graph_fitness)
@@ -183,40 +227,9 @@ class EvolutionaryAlgorithmJax:
             self.best_individual.fitness = offspring[0].fitness
             self.best_individual.best_graph = offspring[0].best_graph
             self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
-            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype) 
+            self.best_individual.fitness_test, _, _ = self.evaluate_individual(self.best_individual.genotype) 
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
-
-    # Mutation
-    def mutate(self, genotype:np.array) -> np.array:
-        genotype = np.asarray(genotype)  
-        random_values = np.random.uniform(0, 1, size=genotype.shape)
-        mutation_mask = random_values <= self.mutation_probability
-        for idx in np.where(mutation_mask)[0]:
-            genotype[idx] = self.polynomial_muatation(genotype[idx])
-        return genotype
-
-    # Calls Crossover and Mutation
-    def crossover_and_mutation(self, parents:list) -> list:
-        # offspring = [Individual(self.n_variables) for _ in range(self.population_size)]
-        # for i, p in enumerate(parents):
-        #     genotype1, genotype2 = self.sbx(p)
-        #     offspring[i*2].genotype = self.mutate(genotype1)
-        #     offspring[i*2].fitness = self.evaluate(offspring[i*2].genotype, seed = self.seed)
-        #     offspring[i*2 + 1].genotype = self.mutate(genotype2)
-        #     offspring[i*2 + 1].fitness = self.evaluate(offspring[i*2 + 1].genotype, seed = self.seed)
-        # return offspring
-        offspring = []
-        for p in parents:
-            genotype1, genotype2 = self.sbx(p)
-            mutated_g1 = self.mutate(genotype1)
-            fitness_g1, _, best_graph_g1, best_graph_fitness_g1 = self.objective_function(mutated_g1)
-            offspring.append(Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1, best_graph=best_graph_g1, best_graph_fitness=best_graph_fitness_g1))
-            mutated_g2 = self.mutate(genotype2)
-            fitness_g2, _, best_graph_g2, best_graph_fitness_g2 = self.objective_function(mutated_g2)
-            offspring.append(Individual(self.n_variables, genotype=mutated_g2, fitness=fitness_g2, best_graph=best_graph_g2, best_graph_fitness=best_graph_fitness_g2))
-        return offspring
-
 
     # Updates population
     def update_population(self):
@@ -233,9 +246,8 @@ class EvolutionaryAlgorithmJax:
         self.goal_achieved_individual = None
         self.goal_achieved_fitness = None
         self.record = np.zeros(self.max_iterations + 1)
-        self.seed = seed
         self.stagnment_iterations = 0
-        self.n_core_seed = np.random.randint(1, 2**14)   # These is the seed for the cores in parallel computing
+        self.set_seed(seed)
         print('Initialising population...')
         self.population = self.initialise_population()
         print('Done!')
@@ -247,8 +259,13 @@ class EvolutionaryAlgorithmJax:
                 self.stagnment_iterations = -1
                 self.population = self.initialise_population()
                 self.population = sorted(self.population, key=lambda x: x.fitness)
-                self.population[-1].genotype = self.best_individual.genotype
-                self.population[-1].fitness = self.best_individual.fitness
+                self.population[-1] = Individual(
+                    self.n_variables, 
+                    genotype = self.best_individual.copy(), 
+                    fitness = self.best_individual.fitness,
+                    best_graph =  self.best_individual.best_graph,
+                    best_graph_fitness=self.best_individual.best_graph_fitness
+                    )
             else:
                 self.update_population()
             # if self.i % int(self.max_iterations/200) == 0:
@@ -264,3 +281,4 @@ class EvolutionaryAlgorithmJax:
             # print(f'Iteration total time = {time.time() - start_time}')
         self.record[self.i + 1] = self.best_individual.fitness
         return self.best_individual.genotype, self.best_individual.fitness
+

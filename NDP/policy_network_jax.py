@@ -138,7 +138,7 @@ class NcHebbianLearningPolicyNetworkJax(PolicyNetworkJax):
             new_activations = jnp.tanh(new_activations)
             new_activations = new_activations.at[:, :self.n_inputs].set(x)
 
-            new_weights = self.hebbian_update(weights, activations, new_activations, hebbian_matrix, graph.adjacency)
+            # new_weights = self.hebbian_update(weights, activations, new_activations, hebbian_matrix, graph.adjacency)
 
             return new_activations, new_weights
 
@@ -147,7 +147,7 @@ class NcHebbianLearningPolicyNetworkJax(PolicyNetworkJax):
 
         # Compute output layer (no activation so it can be computed independently for each task outside the function)
         output_activations = activations @ weights
-        new_weights = self.hebbian_update(weights, activations, output_activations, hebbian_matrix, graph.adjacency)
+        new_weights = self.hebbian_update(weights, activations, jnp.tanh(output_activations), hebbian_matrix, graph.adjacency)
         new_policy_state = HebbianPolicyState(new_weights)
 
         # Return the output nodes

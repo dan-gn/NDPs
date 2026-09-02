@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import gymnasium as gym
+import time
 
 import os
 import sys
@@ -77,6 +78,7 @@ class Task:
 
             rewards = []
             for i in range(n_rollouts):
+
                 seed = env_seed + i if env_seed is not None else None
                 obs, _ = env.reset(seed=seed)
 
@@ -85,17 +87,48 @@ class Task:
                 cumulative_reward = 0.0
                 actions_hist = []
 
+                if hebbian:
+                    ann.reset_weights()
+
+                counter = 0
+
+                policy_time = 0
+                action_time = 0
+                env_time = 0
                 while not terminated and not truncated:
                     obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
+                    # print(f'rollout = {i}, counter = {counter}')
+                    # print('obs')
+                    # print(obs)
+
+                    start = time.time()
                     output = ann(obs)
+                    policy_time += time.time() - start
+                    # print('output')
+                    # print(output)
 
+                    start = time.time()
                     action = self.compute_action(output)
+                    action_time += time.time() - start
                     actions_hist.append(action)
+                    # print('action')
+                    # print(action)
+                    # print()
 
+                    start = time.time()
                     obs, reward, terminated, truncated, _ = env.step(action)
+                    env_time += time.time() - start
 
                     cumulative_reward += reward
+
+                    counter += 1
+                    # if counter == 30:
+                    #     raise ValueError('Hola')
+
+                # print('Policy time', policy_time)
+                # print('Action time', action_time)
+                # print('Env time', env_time)
 
                 if truncated:
                     cumulative_reward -= self.truncated_penalty
@@ -147,8 +180,15 @@ class Task:
         rewards = []
         rollouts = []
         for _ in range(self.n_repeats):
+            start = time.time()
             graph = ndp.develope(self.n_cycles)
+            # print('Development', time.time() - start)
+
+            start = time.time()
             reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render, hebbian=ndp_config['hebbian'])
+            # print('Rollouts', time.time() - start)
+
+
             graphs.append(graph)
             rewards.append(reward)
             rollouts.extend(rollout)

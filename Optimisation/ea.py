@@ -49,9 +49,9 @@ class EvolutionaryAlgorithm:
             population_size: int,
             max_iterations: int,
             max_stagnment: int,
-            mutation_probability: int = 0.01, 
-            mutation_eta: int = 5, 
-            sbx_eta: int = 5, 
+            mutation_probability: float = 0.01, 
+            mutation_eta: float = 5, 
+            sbx_eta: float = 5, 
             elitism_proportion: float = 0.1, 
             run_in_parallel: bool = False,
             cores: int = 4
@@ -66,17 +66,18 @@ class EvolutionaryAlgorithm:
         self.mutation_eta = mutation_eta
         self.sbx_eta = sbx_eta
         self.elitism_proportion = elitism_proportion
-        self.elitism_index = int(self.elitism_proportion * self.population_size)
+        self.elitism_index = max(1, int(self.elitism_proportion * self.population_size))
         self.run_in_parallel = run_in_parallel
         self.cores = cores
         self.init_best_individual()
 
     # Sets seed 
     def set_seed(self, seed:int):
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed(seed)
+        self.seed = seed
         np.random.seed(seed)
         random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
 
     # Initialises best individual with fitness value inf
     def init_best_individual(self):
@@ -90,19 +91,21 @@ class EvolutionaryAlgorithm:
         population = [Individual(self.n_variables) for _ in range(self.population_size)]
         for i, member in enumerate(population):
             population[i].random_initialise()
+            start = time.time()
             population[i].fitness, _, population[i].best_graph, population[i].best_graph_fitness = self.objective_function(population[i].genotype)
+            # print('Individual evaluation', time.time() - start)
             if population[i].fitness < self.best_individual.fitness:
-                self.best_individual.genotype = population[i].genotype
+                self.best_individual.genotype = population[i].genotype.copy()
                 self.best_individual.fitness = population[i].fitness
                 self.best_individual.best_graph = population[i].best_graph
                 self.best_individual.best_graph_fitness = population[i].best_graph_fitness
                 self.best_individual.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype) 
             if population[i].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
-                self.best_individual_by_graph.genotype = population[i].genotype
+                self.best_individual_by_graph.genotype = population[i].genotype.copy()
                 self.best_individual_by_graph.fitness = population[i].fitness
                 self.best_individual_by_graph.best_graph = population[i].best_graph
                 self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype)
+                self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual_by_graph.genotype)
         return population
 
     # Initialises individual (for parallel running) 
@@ -110,7 +113,9 @@ class EvolutionaryAlgorithm:
         self.set_seed(core_seed)
         individual = Individual(self.n_variables)
         individual.random_initialise()
+        start = time.time()
         individual.fitness, _, individual.best_graph, individual.best_graph_fitness = self.objective_function(individual.genotype)
+        # print('Individual evaluation', time.time() - start)
         return individual
 
     # Initialises population (for parallel running) 
@@ -120,13 +125,13 @@ class EvolutionaryAlgorithm:
         self.n_core_seed += self.population_size
         population = sorted(population, key=lambda x: x.best_graph_fitness)
         if population[0].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
-            self.best_individual_by_graph.genotype = population[0].genotype
+            self.best_individual_by_graph.genotype = population[0].genotype.copy()
             self.best_individual_by_graph.fitness = population[0].fitness
             self.best_individual_by_graph.best_graph = population[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = population[0].best_graph_fitness
         population = sorted(population, key=lambda x: x.fitness)
         if population[0].fitness < self.best_individual.fitness:
-            self.best_individual.genotype = population[0].genotype
+            self.best_individual.genotype = population[0].genotype.copy()
             self.best_individual.fitness = population[0].fitness
             self.best_individual.best_graph = population[0].best_graph
             self.best_individual.best_graph_fitness = population[0].best_graph_fitness
@@ -303,7 +308,7 @@ class EvolutionaryAlgorithm:
         self.goal_achieved_individual = None
         self.goal_achieved_fitness = None
         self.record = np.zeros(self.max_iterations + 1)
-        self.seed = seed
+        self.set_seed(seed)
         self.stagnment_iterations = 0
         self.n_core_seed = np.random.randint(1, 2**14)   # These is the seed for the cores in parallel computing
         print('Initialising population...')
@@ -318,10 +323,19 @@ class EvolutionaryAlgorithm:
             if self.stagnment_iterations >= self.max_stagnment:
                 print('Restart population!')
                 self.stagnment_iterations = -1
-                self.population = self.parallel_initialise_population()
+                if self.run_in_parallel:
+                    self.population = self.parallel_initialise_population()
+                else:
+                    self.population = self.initialise_population()
+
                 self.population = sorted(self.population, key=lambda x: x.fitness)
-                self.population[-1].genotype = self.best_individual.genotype
-                self.population[-1].fitness = self.best_individual.fitness
+                self.population[-1] = Individual(
+                    self.n_variables, 
+                    genotype = self.best_individual.genotype.copy(), 
+                    fitness = self.best_individual.fitness,
+                    best_graph =  self.best_individual.best_graph,
+                    best_graph_fitness=self.best_individual.best_graph_fitness
+                    )
             else:
                 self.update_population()
             # if self.i % int(self.max_iterations/200) == 0:

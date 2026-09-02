@@ -4,11 +4,6 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-import numpy as np
-import random
-import torch
-
-import pandas as pd
 import pickle
 import time
 import datetime
@@ -20,20 +15,17 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 # Import NDP Class
-from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 from NDP.ndp_nx_jax import NeuralDevelopmentalProgramJax
 from NDP.ndp_nchl_jax import HebbianNeuralDevelopmentalProgramJax
 
 # Import optimisation algorithms
-from Optimisation.cma_es import CMA_ES
-from Optimisation.ea import EvolutionaryAlgorithm
+from Optimisation.ea_jax import EvolutionaryAlgorithmJax
 
 # Import tasks
-from Tasks.task import Task
+from Tasks.task_jax import TaskJax
 from Tasks.acrobot import Acrobot
-from Tasks.cartpole import CartPole
-from Tasks.mountaincar import MountainCar
+from Tasks.cartpole import CartPoleJax
+from Tasks.mountaincar import MountainCarJax
 from Tasks.lunarlander import LunarLander
 from Tasks.bipedalwalker import BipedalWalker
 from Tasks.xor import XOR
@@ -49,12 +41,11 @@ Simple Test with optimisation:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
+def experiment(task:TaskJax, optimisation_algorithm:str='EA', seed:int=None):
 
     # Params
     ndp_params = task.parameters
     evaluate_ndp = task.evaluate_ndp
-    evaluate_graph = task.evaluate_graph
 
     # Initial parameters
     if ndp_params['model'] == 'standard_ndp':
@@ -80,40 +71,23 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     print(f'Seed = {seed}')
     print('Starting optimisation!')
 
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.manual_seed(seed)
+    # Execution environment
+    colab = is_running_in_colab()
+    execution_environment = 'Google Colab' if colab else 'Local Computer'
+    print(f'Running on {execution_environment}')
 
-    if optimisation_algorithm == 'CMA':
-        # CMA
-        x0 = np.random.uniform(-1, 1, n_params)
-        sigma0 = 0.1
-        optimiser = CMA_ES(evaluate_ndp, x0, sigma0, seed)  
-        best_params, best_loss = optimiser.run()
-
-    else:
-        # EA
-        colab = is_running_in_colab()
-        cores = os.cpu_count() - 1 if colab else min(os.cpu_count() - 1, 4)
-        run_in_parallel = False if cores > 1 else False
-        execution_environment = 'Google Colab' if colab else 'Local Computer'
-        print(f'Running on {execution_environment}')
-        print(f'Running in parallel: {run_in_parallel}')
-        if run_in_parallel:
-            print(f'Number of cores {cores}')
-        optimiser = EvolutionaryAlgorithm(
-            n_variables = n_params,
-            population_size = task.parameters['population_size'],
-            max_iterations = task.parameters['generations'], 
-            max_stagnment = task.parameters['stagnant_generation'],
-            objective_function = evaluate_ndp,
-            run_in_parallel = run_in_parallel,
-            cores = cores
-        )
-        best_params, best_loss = optimiser.run(task.target, seed)
+    # EA
+    optimiser = EvolutionaryAlgorithmJax(
+        n_variables = n_params,
+        population_size = task.parameters['population_size'],
+        max_iterations = task.parameters['generations'], 
+        max_stagnment = task.parameters['stagnant_generation'],
+        objective_function = evaluate_ndp,
+    )
+    best_params, best_fitness = optimiser.run(task.target, seed)
 
     print('Optimisation finished!')
-    print("\nBest mean reward:", best_loss)
+    print("\nBest mean reward:", best_fitness)
 
     output = {
         'task': task, 
@@ -135,9 +109,9 @@ def main():
 
     tasks = [
         # XOR(),
-        CartPole(),
+        # CartPoleJax(),
         # Acrobot(),
-        # MountainCar(), 
+        MountainCarJax(), 
         # LunarLander(),
         # BipedalWalker()
     ]
@@ -158,7 +132,7 @@ def main():
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/august2026_v2/experiments_3/{task.name}'
+        output_folder = f'Results/september2026/jax/experiments_3/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
@@ -185,10 +159,10 @@ def main():
                         'population_size': optimiser.population_size,
                         'max_iterations': optimiser.max_iterations,
                         'n_iterations' : optimiser.i,
-                        'best_score_mean': optimiser.best_individual.fitness, 
-                        'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
-                        'best_graph_n_nodes': optimiser.best_individual_by_graph.best_graph.number_of_nodes(),
-                        'best_graph_n_edges': optimiser.best_individual_by_graph.best_graph.number_of_edges(),
+                        'best_score_mean': float(optimiser.best_individual.fitness), 
+                        'best_graph': float(optimiser.best_individual_by_graph.best_graph_fitness),
+                        'best_graph_n_nodes': int(optimiser.best_individual_by_graph.best_graph.number_of_nodes()),
+                        'best_graph_n_edges': int(optimiser.best_individual_by_graph.best_graph.number_of_edges()),
                         'n_variables' : optimiser.n_variables,
                         'max_stagnment' : optimiser.max_stagnment,
                         'goal_achieved' : optimiser.goal_achieved,

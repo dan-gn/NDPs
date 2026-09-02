@@ -9,6 +9,7 @@ import jax.numpy as jnp
 import time
 import warnings
 from dataclasses import replace
+from collections import defaultdict
 
 import os
 import sys
@@ -44,6 +45,7 @@ DEFAULT_PARAMETERS = {
     'wp_hidden_size': 5,
     'graph_n_inputs': 2,
     'graph_n_outputs': 1,
+    'n_cycles': 1,
     'hebbian': False,
     'model': 'standard_ndp'
 }
@@ -100,6 +102,8 @@ class NeuralDevelopmentalProgramJax:
         self.graph_n_outputs = self.config['graph_n_outputs']
         self.noise_while_growing = self.config['noise_while_growing']
         self.noise_while_growing_interval = self.config['noise_while_growing_interval']
+        self.n_cycles = self.config['n_cycles']
+        self.max_nodes = 2 ** self.n_cycles
         
     def _initialise_mlps(self):
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
@@ -272,7 +276,7 @@ class NeuralDevelopmentalProgramJax:
         return replace(graph, nodes_states=nodes_states, node_mask=node_mask, adjacency=adjacency, weights=weights)
 
     
-    def predict_weights(self, graph:GraphJax, params=dict) -> GraphJax:
+    def predict_weights(self, graph:GraphJax, params:dict) -> GraphJax:
         """
         Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings.
         """
@@ -317,23 +321,36 @@ class NeuralDevelopmentalProgramJax:
         """
         # Compute network diameter D
         # diameter = graph.get_diameter()
+
+        start = time.perf_counter()
         diameter = graph.get_largest_subgraph_diameter()
+        jax.block_until_ready(diameter)
+        self.times['diameter'] += time.perf_counter() - start
 
         # Propagate nodes states En via graph convolution D steps
         steps = diameter + self.network_extra_thinking
+        start = time.perf_counter()
         graph = self.graph_convolution(graph, steps, params)
+        jax.block_until_ready(graph.nodes_states)
+        self.times['graph_convolution'] += time.perf_counter() - start
         # graph.summary(full=True)
         
         # Replication model R determines nodes in growing state
         # New nodes are added to each of the growing nodes and their immediate neighbors
         # New nodes' embeddings are defined as the mean embeddings of their parent nodes
+        start = time.perf_counter()
         graph = self.grow_graph(graph, params, key)
+        jax.block_until_ready(graph.adjacency)
+        self.times['grow_graph'] += time.perf_counter() - start
         # graph.summary(full=True)
 
         # If graph is weighted then
         if self.weighted_graph_flag:
+            start = time.perf_counter()
             # Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings
             graph = self.predict_weights(graph, params)
+            jax.block_until_ready(graph.weights)
+            self.times['predict_weights'] += time.perf_counter() - start
         
         # If pruning then
         if self.pruning_flag:
@@ -346,23 +363,49 @@ class NeuralDevelopmentalProgramJax:
         """
         This function developes a graph from scratch for a defined number of cycles.
         """
-        start_time = time.time()
-        self.max_nodes = 2 ** n_cycles
 
+        total_start = time.perf_counter()
+        self.times = defaultdict(float)
+
+        start = time.perf_counter()
         keys = jax.random.split(key, n_cycles + 1)
+        jax.block_until_ready(keys)
+        self.times["key_split"] += time.perf_counter() - start
 
+        start = time.perf_counter()
         graph = self.generate_initial_seed_graph(keys[0])
-        if debug:
-            print('Initial graph')
-            graph.summary(full=False)
+        jax.block_until_ready(graph)
+        self.times["initial_graph"] += time.perf_counter() - start
+
         for i in range(n_cycles):
-            graph = self._run_a_developmental_cycle(graph, params, key[i+1])
+            cycle_start = time.perf_counter()
+
+            graph = self._run_a_developmental_cycle(graph, params, keys[i + 1],)
+            jax.block_until_ready(graph)
+
+            self.times["cycle_total"] += time.perf_counter() - cycle_start
+
             if debug:
-                print(f'Graph at cycle {i}')
+                print(f"Graph at cycle {i}")
                 graph.summary(full=False)
-    
-        if debug:
-            print(f'Total development time = {time.time() - start_time}')
+
+        jax.block_until_ready(graph)
+        total_time = time.perf_counter() - total_start
+
+        individually_measured = (
+            self.times["key_split"]
+            + self.times["initial_graph"]
+            + self.times["diameter"]
+            + self.times["graph_convolution"]
+            + self.times["grow_graph"]
+            + self.times["predict_weights"]
+            + self.times["prune"]
+        )
+
+        print(dict(self.times))
+        print("Internal development:", total_time)
+        print("Unaccounted:", total_time - individually_measured)
+
         return graph
 
     # ---------------------------------------------------------------------------------------
@@ -394,7 +437,7 @@ Main function (mainly for testing)
 '''
 if __name__ == '__main__':
 
-    ndp = NeuralDevelopmentalProgram()
+    ndp = NeuralDevelopmentalProgramJax()
     graph = ndp.develope(n_cycles=5, debug=True)
     print(ndp.get_total_number_of_mlp_parameters())
     # graph.summary()

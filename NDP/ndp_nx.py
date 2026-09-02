@@ -201,7 +201,7 @@ class NeuralDevelopmentalProgram:
             states <- new_states
         """
         for _ in range(steps):
-            weights = graph.get_adjacency_matrix()
+            weights = graph.get_weight_matrix()
             new_states = weights.T @ graph.nodes_states
             new_states = torch.tensor(new_states, dtype=torch.float32)
             new_states = self.graph_cellular_automata(new_states).numpy()
@@ -244,7 +244,7 @@ class NeuralDevelopmentalProgram:
         Fix: On version 2, two edges for each pair are created. But how do I choose which one to create when it doesn't exist?
         """
         # 1st version: only updates existing edges
-        weights = graph.get_adjacency_matrix()
+        weights = graph.get_weight_matrix()
         for input_id, output_id in graph.edges():
             input_node_state = torch.tensor(graph.nodes_states[input_id], dtype=torch.float32)
             output_node_state = torch.tensor(graph.nodes_states[output_id], dtype=torch.float32)
@@ -252,7 +252,7 @@ class NeuralDevelopmentalProgram:
             # print('output', output_node_state)
             new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
             weights[input_id, output_id] = new_weight
-        graph.update_adjacency_matrix(weights)
+        graph.update_weight_matrix(weights)
 
         # 2nd veresion: update values for all pair of nodes in the graph
         # for input_node in graph.nodes:
@@ -272,7 +272,7 @@ class NeuralDevelopmentalProgram:
         Edges with weights below pruning threshold P are removed.
         """
         # Find edges to remove
-        weights = graph.get_adjacency_matrix()
+        weights = graph.get_weight_matrix()
         edges_to_remove = []
         for input_id, output_id in graph.edges():
             w = weights[input_id, output_id]
