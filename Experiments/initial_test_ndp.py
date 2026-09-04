@@ -16,6 +16,7 @@ sys.path.append(parent)
 
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
+from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -27,6 +28,9 @@ from Tasks.cartpole import CartPole
 from Tasks.mountaincar import MountainCar
 from Tasks.lunarlander import LunarLander
 from Tasks.xor import XOR
+
+# Import Utilities
+from Utilities.utilities import is_running_in_colab
 
 
 '''
@@ -46,7 +50,7 @@ def simple_test_v1():
     # random.seed(seed)
     # torch.manual_seed(seed)
 
-    task = MountainCar() 
+    task = CartPole() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
@@ -82,10 +86,13 @@ def simple_test_v2():
     # random.seed(seed)
     # torch.manual_seed(seed)
 
-    task = Acrobot() 
+    task = CartPole() 
     ndp = NeuralDevelopmentalProgram(task.parameters)
 
     n_params = ndp.get_total_number_of_mlp_parameters()
+    if task.parameters['initial_node_state_mode'] == 'coevolve':
+        n_params += task.parameters['state_dim']
+
     mlp_weights = np.random.uniform(-1, 1, n_params)
     # mlp_weights = np.ones(n_params)
     
@@ -118,18 +125,29 @@ def test_with_optimisation():
 
     # Initial parameters
     ndp = NeuralDevelopmentalProgram(ndp_params)
+    # ndp = HebbianNeuralDevelopmentalProgram(ndp_params)
 
     print('This is an initial test of the NDP!')
     task.summary()
     ndp.summary()
 
     n_params = ndp.get_total_number_of_mlp_parameters()
-    # print(f'Number of NDP parameters {n_params}')
+    
+    if ndp_params['initial_node_state_mode'] == 'coevolve':
+        if isinstance(ndp, HebbianNeuralDevelopmentalProgram):
+            n_params += 1 + (ndp_params['state_dim'] * ndp_params['n_nodes'])
+        else:
+            n_params += ndp_params['state_dim']
 
     optimisation_algorithm = 'EA'
 
     # Run optimisation
     print('Starting optimisation!')
+    print(f'Number of optimisation parameters: {n_params}')
+
+    if 'hebbian' not in ndp_params:
+        ndp_params['hebbian'] = False
+    print(f'Hebbian model = {ndp_params['hebbian']}')
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -141,14 +159,20 @@ def test_with_optimisation():
 
     else:
         # EA
-        seed = None
-        colab = False
+        seed = 1
+        np.random.seed(seed)
+        random.seed(seed)
+        torch.manual_seed(seed)
+
+        run_in_parallel = True
+        colab = is_running_in_colab()
         cores = os.cpu_count() - 1 if colab else 4
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
-        print(f'Number of cores {cores}')
+        print(f'Running in parallel: {run_in_parallel}')
+        if run_in_parallel:
+            print(f'Number of cores {cores}')
         optimiser = EvolutionaryAlgorithm(
-            ndp_params = ndp_params,
             n_variables = n_params,
             max_iterations = 50, 
             population_size = 50,
@@ -158,7 +182,7 @@ def test_with_optimisation():
             tries = None,
             lambda_value = None,
             objective_function = evaluate_ndp,
-            run_in_parallel = True,
+            run_in_parallel = run_in_parallel,
             cores = cores
         )
         best_params, best_loss = optimiser.run(task.target, seed, 0)
@@ -203,5 +227,5 @@ Main function
 '''
 if __name__ == '__main__':
 
-    test_with_optimisation()
+    simple_test_v1()
 

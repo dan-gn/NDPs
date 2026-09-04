@@ -14,9 +14,9 @@ from Tasks.task import Task
 Lunar Lander
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
-env = gym.make("LunarLander-v3")
+env = gym.make("BipedalWalker-v3")
 
-LUNARLANDER_PARAMETERS = {
+BIPEDALWALKER_PARAMETERS = {
     # Standard NDP Parameters
     'state_dim': 16,
     'weighted_graph_flag': True,
@@ -32,8 +32,8 @@ LUNARLANDER_PARAMETERS = {
     'gca_hidden_size': 10,
     'rm_hidden_size': 10,
     'wp_hidden_size': 10,
-    'graph_n_inputs': env.observation_space.shape[0],  # 4
-    'graph_n_outputs': env.action_space.n,
+    'graph_n_inputs': env.observation_space.shape[0],  # 24
+    'graph_n_outputs': env.action_space.shape[0],   # 4
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 10,
@@ -42,7 +42,7 @@ LUNARLANDER_PARAMETERS = {
     # Choose between starndard or variant
     'model': 'standard_ndp',
     # Variant NDP Parameters
-    'n_nodes': 64,
+    'n_nodes': 128,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -50,15 +50,16 @@ LUNARLANDER_PARAMETERS = {
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
-    'population_size': 512,
-    'generations': 2000,
+    'population_size': 54,
+    'generations': 500,
     'stagnant_generation': 250,
 }
 
 
-class LunarLander(Task):
+class BipedalWalker(Task):
 
-    def __init__(self, parameters=LUNARLANDER_PARAMETERS):
+    def __init__(self, parameters=BIPEDALWALKER_PARAMETERS):
         super().__init__(parameters)
-        self.name = 'LunarLander-v3'
-        self.target = parameters['n_rollouts'] * (-200)
+        self.name = 'BipedalWalker-v3'
+        self.action_space_type = 'continuous'
+        self.target = parameters['n_rollouts'] * (-300)

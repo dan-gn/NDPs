@@ -9,9 +9,9 @@ import torch
 import torch.nn as nn
 from itertools import groupby
 
-from Graph.graph_nx import Graphnx
+from Graph.graph_jax import GraphJax
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel, WeightPredictionModel
+from NDP.mlps import GraphCellularAutomata, CreateEdgeModel, RemoveEdgeModel
 
 from Utilities.utilities import get_number_of_model_parameters, cosine_similarity
 
@@ -32,15 +32,14 @@ DEFAULT_PARAMETERS = {
     'noise_while_growing': False,
     'noise_while_growing_interval': 0.15,  # Required if noise_while_growing == True
     'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
+    'pruning_flag': False,
     'pruning_threshold': 0.5,
     'creating_threshold': 0,
     'gca_hidden_size': 5,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
-    'wp_hidden_size': 5,
     'graph_n_inputs': 2,
     'graph_n_outputs': 1,
-    'add_edge_strategy': 'all_disconnected',
     'hebbian': False,
     'model': 'hebbian_ndp'
 }
@@ -51,11 +50,7 @@ Neural Developmental Program (Evolutionary-based NDP)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
-
-    # ---------------------------------------------------------------------------------------
-    # Initialisation
-    # ---------------------------------------------------------------------------------------
+class HebbianNeuralDevelopmentalProgramJax(NeuralDevelopmentalProgram):
 
     # Init the same as the standart version
     def __init__(self, config:dict = None):
@@ -74,6 +69,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         self.network_extra_thinking = self.config['network_extra_thinking']
         self.initial_node_state_mode = self.config['initial_node_state_mode']
         self.shared_initial_node_state = self.config['shared_initial_node_state']
+        self.pruning_flag = self.config['pruning_flag']
         self.pruning_threshold = self.config['pruning_threshold']
         self.creating_threshold = self.config['creating_threshold']
         self.graph_n_inputs = self.config['graph_n_inputs']
@@ -81,7 +77,6 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         self.noise_while_growing = self.config['noise_while_growing']
         self.noise_while_growing_interval = self.config['noise_while_growing_interval']
         self.max_edges_to_add_per_node = self.config['edge_growing_rate']
-        self.add_edge_strategy = self.config['add_edge_strategy']
 
     # Check valid configuration
     def _check_valid_config(self):
@@ -89,38 +84,24 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             raise ValueError('State dimension should be equal or greater than 1.')
         if self.graph_n_inputs + self.graph_n_outputs > self.n_nodes:
             raise ValueError('The number of inputs plus outputs exceed the total number of nodes.')
-        valid_strategies = {'all_disconnected', 'two_hop', 'similarity'}
-        if self.add_edge_strategy not in valid_strategies:
-            # raise ValueError(f'edge_candidate_strategy must be one of {sorted(valid_strategies)}')
-            raise ValueError(f'add_edge_strategy must be one of {sorted(valid_strategies)}')
-
-    # ---------------------------------------------------------------------------------------
-    # Multi Layer Perceptrons (MLPs) functions
-    # ---------------------------------------------------------------------------------------
 
     # Initialise MLPs for neural development process 
     def _initialise_mlps(self):
         self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
         self.create_edge_model = CreateEdgeModel(self.state_dim, self.config['create_edge_hidden_size'])
         self.remove_edge_model = RemoveEdgeModel(self.state_dim, self.config['remove_edge_hidden_size'])
-        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
 
     # Get MLP models
     def _get_mlp_models(self) -> list:
         models = [
             self.graph_cellular_automata,
             self.create_edge_model,
-            self.remove_edge_model,
-            self.weight_prediction_model
+            self.remove_edge_model
         ]
         return models
 
-    # ---------------------------------------------------------------------------------------
-    # Developmental Process
-    # ---------------------------------------------------------------------------------------
-
     # Generates an initial grpah
-    def generate_initial_seed_graph(self) -> Graphnx:
+    def generate_initial_seed_graph(self) -> GraphJax:
         """
         Generates an initial graph.
         The graph has N nodes (I inputs, H hidden and O outputs).
@@ -131,7 +112,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         4. Spare edges between hidden to output nodes.
         """
         # Create graph
-        graph = Graphnx(self.state_dim, self.weighted_graph_flag, propagation_mode='directed')
+        graph = GraphJax(self.state_dim, self.weighted_graph_flag)
 
         # Add nodes
         # For coevolve the initial state of the graph comes from the vector that the evolutionary algorithm optimise
@@ -142,7 +123,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             # The rest of the elements are used as the initial state of each node
             nodes_states = coevolved_array[0, 1:]
             nodes_states = nodes_states.reshape(self.n_nodes, self.state_dim)
-            graph.add_nodes_from(nodes_states)
+            graph = graph.add_nodes_from(nodes_states)
 
         # If random_shared, an initial state is generated ramdomly as it's used for all individuals during optimisation
         elif self.initial_node_state_mode == 'random_shared':
@@ -152,16 +133,12 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         else:
             for _ in range(self.n_nodes):
                 node_state = self._genereate_node_state()
-                graph.add_node(node_state)
+                graph, _ = graph.add_node(node_state)
             network_seed = np.random.randint()
-
-        # Add self-lopp edges to all the nodes
-        for node in graph.nodes():
-            graph.add_edge(node, node)
 
         # Get list of input, hidden and output nodes
         input_nodes = np.arange(self.graph_n_inputs, dtype=np.int32)
-        hidden_nodes = np.arange(self.graph_n_inputs, self.n_nodes - self.graph_n_outputs, dtype=np.int32)
+        hidden_nodes = np.arange(self.graph_n_inputs, self.n_nodes, self.graph_n_outputs, dtype=np.int32)
         output_nodes = np.arange(self.n_nodes - self.graph_n_outputs, self.n_nodes, dtype=np.int32)
 
         # Set seed to random number generator
@@ -169,21 +146,21 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         density = self.initial_graph_density
 
         # Add edges from inputs to outputs nodes (Fully connected) 
-        graph.add_sparse_edges(input_nodes, output_nodes, density=1.0, rng=self.rng)
+        graph = graph.add_sparse_edges(input_nodes, output_nodes, density=1.0, rng=self.rng)
 
         # Add edges from inputs to hidden nodes (sparse)
-        graph.add_sparse_edges(input_nodes, hidden_nodes, density=density, rng=self.rng)
+        graph = graph.add_sparse_edges(input_nodes, hidden_nodes, density=density, rng=self.rng)
 
         # Add edges from hidden to hidden nodes (sparse)
-        graph.add_sparse_edges(hidden_nodes, hidden_nodes, density=density, rng=self.rng)
+        graph = graph.add_sparse_edges(hidden_nodes, hidden_nodes, density=density, rng=self.rng)
 
         # Add edges from hidden to output nodes (sparse)
-        graph.add_sparse_edges(hidden_nodes, output_nodes, density=density, rng=self.rng)
+        graph = graph.add_sparse_edges(hidden_nodes, output_nodes, density=density, rng=self.rng)
 
         return graph
 
     # Returns all possible edges from disconnected nodes in the graph 
-    def get_all_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_all_disconnected_nodes(self, graph:GraphJax, allow_self_loops:bool=False) -> list:
         nodes = graph.nodes()
         disconnected = []
         for source in nodes:
@@ -201,7 +178,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
     # Get disconnected nodes that are close to each other
     # This means that they are "two hops" distance (neighbour of neighbor nodes)    
-    def get_two_hop_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_two_hop_disconnected_nodes(self, graph:GraphJax, allow_self_loops:bool=False) -> list:
         nodes = graph.nodes()
         candidates = set()
         for source in nodes:
@@ -210,11 +187,11 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             for neighbour in one_hop:
                 two_hop.update(graph.successors(neighbour))
             for target in two_hop:
-                if (not allow_self_loops and source == target) or (target < self.graph_n_inputs):
+                if not allow_self_loops and source == target:
                     continue
                 if not graph.has_edge(source, target):
                     candidates.add((source, target))
-        return sorted(candidates, key=lambda edge: edge[0])
+        return list(candidates)
 
     # Sample n edges per source node 
     def sample_n_disconnected_edges_per_node(self, candidate_edges:list) -> list:
@@ -233,7 +210,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return np.array(sampled_candidate_edges, dtype=np.int32)
  
     # Choose candidates using the node state similarity
-    def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_similar_disconnected_nodes(self, graph:GraphJax, allow_self_loops:bool=False) -> list:
         n_nodes = graph.number_of_nodes()
         nodes_states = np.array(graph.nodes_states)
         adjacency_matrix = graph.get_adjacency_matrix()
@@ -246,8 +223,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         invalid_mask = adjacency_matrix.astype(bool).copy()
         # Self-loops are not valid
         if not allow_self_loops:
-            np.fill_diagonal(invalid_mask, True)
-        invalid_mask[:, :self.graph_n_inputs] = True
+            invalid_mask.fill_diagonal_(True)
         similarity[invalid_mask] = -np.inf 
 
         # Create candidate edges list
@@ -255,13 +231,15 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         for source in range(n_nodes):
             valid_targets = np.flatnonzero(~invalid_mask[source])
 
-            if valid_targets.size == 0:
+            if valid_targets == 0:
                 continue
 
             valid_scores = similarity[source, valid_targets]
-            k = min(self.max_edges_to_add_per_node, valid_targets.size)
-            top_indices = np.argpartition(valid_scores, -k)[-k:]
-            selected_indices = top_indices[np.argsort(valid_scores[top_indices])[::-1]]
+            if self.max_edges_to_add_per_node < valid_targets.size:
+                selected_indices = np.argpartition(valid_scores, -self.max_edges_to_add_per_node)[-self.max_edges_to_add_per_node]
+                selected_indices = np.argsort(valid_scores[selected_indices])[::-1]
+            else:
+                selected_indices = np.argsort(valid_scores)[::-1]
 
             selected_targets = valid_targets[selected_indices]
             candidate_edges.extend([source, target] for target in selected_targets)
@@ -286,21 +264,19 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return chosen_edges
 
     # Creates new edges using the MLP 
-    def choose_edges_to_create(self, graph:Graphnx) -> list:
+    def choose_edges_to_create(self, graph:GraphJax) -> list:
         # Get all possible candidate edges
-        if self.add_edge_strategy == 'all_disconnected':
+        option = 0
+        if option == 0:
             candidate_edges = self.get_all_disconnected_nodes(graph)
             candidate_edges = self.sample_n_disconnected_edges_per_node(candidate_edges)
-        elif self.add_edge_strategy == 'two_hop':
+        elif option == 1:
             candidate_edges = self.get_two_hop_disconnected_nodes(graph)
             candidate_edges = self.sample_n_disconnected_edges_per_node(candidate_edges)
-        elif self.add_edge_strategy == 'similarity':
-            candidate_edges = self.get_similar_disconnected_nodes(graph)
-        else:
-            raise ValueError(f'Unknown edge candidate strategy: {self.add_edge_strategy}.')
-
-        if len(candidate_edges) == 0:
-            return np.empty((0, 2), dtype=np.int32)
+        elif option == 2:
+            candidate_edges = self.get_similar_disconnected_nodes()
+        elif option == 3:
+            pass
 
         # Get the source and target states from candidate edges
         source_states, target_states = self.get_states_from_edges(candidate_edges, graph.nodes_states)
@@ -312,14 +288,8 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return edges_to_create
 
     # Removes existing edges using the MLP
-    def choose_edges_to_remove(self, graph:Graphnx) -> list:
+    def choose_edges_to_remove(self, graph:GraphJax) -> list:
         edges = np.asarray(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
-
-        # Don't remove self-loops
-        edges = edges[edges[:, 0] != edges[:, 1]]
-
-        if len(edges) == 0:
-            return np.empty((0, 2), dtype=np.int32)
 
         # Get the source and target states from candidate edges
         source_states, target_states = self.get_states_from_edges(edges, graph.nodes_states)
@@ -331,7 +301,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return edges_to_remove
 
     # Structural synapsis: create and remove edges
-    def structural_synapsis(self, graph:Graphnx) -> Graphnx:
+    def structural_synapsis(self, graph:GraphJax) -> GraphJax:
         """
         Here we are gonna modify the ANN structure. We should be able to:
         1. Add new edges - (Randomly sample possible new edges)
@@ -343,42 +313,32 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         edges_to_remove = self.choose_edges_to_remove(graph)
 
         # Add and remove edges
-        graph.add_edges_from(edges_to_add)
+        graph = graph.add_edges_from(edges_to_add)
 
-        graph.remove_edges_from(edges_to_remove)
+        graph = graph.remove_edges_from(edges_to_remove)
 
         return graph
 
     # Developmental cycle 
-    def _run_a_developmental_cycle(self, graph:Graphnx) -> Graphnx:
+    def _run_a_developmental_cycle(self, graph:GraphJax) -> GraphJax:
         """
         This method runs one developmental cycle.
         Steps are as follow:
-        1. Compoute maximum directed propagation distance
+        1. Compute graph diameter
         2. Graph convolution
         3. Structural synapsis
-        4. Weight prediction 
         """
-        # Compute the maximum finite directed propagation distance
-        propagation_distance = graph.get_propagation_distance()
+        # Compute network diameter D
+        diameter = graph.get_largest_subgraph_diameter()
 
-        # Propagate nodes states for the required number of directed steps
-        steps = propagation_distance + self.network_extra_thinking
+        # Propagate nodes states En via graph convolution D steps
+        steps = diameter + self.network_extra_thinking
         graph = self.graph_convolution(graph, steps)
 
         # Structural Synapsis (Add and remove edges)
         graph = self.structural_synapsis(graph)
 
-        # If graph is weighted then
-        if self.weighted_graph_flag:
-            # Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings
-            graph = self.predict_weights(graph)
-
         return graph
-
-    # ---------------------------------------------------------------------------------------
-    # Summary 
-    # ---------------------------------------------------------------------------------------
 
     # Print NDP Summary
     def summary(self):
