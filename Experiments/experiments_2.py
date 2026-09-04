@@ -73,7 +73,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
         else:
             n_params += ndp_params['state_dim']
     print(f'Number of NDP optimisation parameters {n_params}')
-    print(f'Hebbian model = {ndp_params['hebbian']}')
+    print(f"Hebbian model = {ndp_params['hebbian']}")
 
     # Run optimisation
     print(f'Seed = {seed}')
@@ -112,7 +112,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
         best_params, best_loss = optimiser.run(task.target, seed)
 
     print('Optimisation finished!')
-    print("\nBest mean reward:", best_loss)
+    print("\nBest reward:", best_loss)
 
     output = {
         'task': task, 
@@ -153,11 +153,11 @@ def main():
 
 
     initial_seed = 0
-    final_seed = 3
+    final_seed = 30
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/september2026_v2/experiments_2/{task.name}'
+        output_folder = f'Results/september2026_ICLR/experiments_2/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
@@ -188,6 +188,7 @@ def main():
                         'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
                         'best_graph_n_nodes': optimiser.best_individual_by_graph.best_graph.number_of_nodes(),
                         'best_graph_n_edges': optimiser.best_individual_by_graph.best_graph.number_of_edges(),
+                        'best_graph_are_all_outputs_reachable': optimiser.best_individual_by_graph.best_graph.are_all_outputs_reachable(task.parameters['graph_n_inputs'], task.parameters['graph_n_outputs']),
                         'n_variables' : optimiser.n_variables,
                         'max_stagnment' : optimiser.max_stagnment,
                         'goal_achieved' : optimiser.goal_achieved,

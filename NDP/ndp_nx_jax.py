@@ -105,11 +105,6 @@ class NeuralDevelopmentalProgramJax:
         self.n_cycles = self.config['n_cycles']
         self.max_nodes = 2 ** self.n_cycles
         
-    def _initialise_mlps(self):
-        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
-        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
-        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
-
     def _check_valid_config(self):
         """
         This function checks that some of the input values for each variable is valid.
@@ -132,17 +127,18 @@ class NeuralDevelopmentalProgramJax:
         #         raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state.shape[0]}) must be an array with state_dim ({self.state_dim}) elements.')
 
     # ---------------------------------------------------------------------------------------
-    # Statistics
+    # MLPs
     # ---------------------------------------------------------------------------------------
+
+    def _initialise_mlps(self):
+        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
+        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
+        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
 
     def get_total_number_of_mlp_parameters(self) -> int:
         n_params = [model.get_n_parameters() for model in self._get_mlp_models()]
         return sum(n_params)
     
-    # ---------------------------------------------------------------------------------------
-    # MLPs
-    # ---------------------------------------------------------------------------------------
-
     def _get_mlp_models(self) -> list:
         models = [
             self.graph_cellular_automata,

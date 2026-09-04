@@ -56,6 +56,10 @@ Neural Developmental Program (Evolutionary-based NDP)
 
 class NeuralDevelopmentalProgram:
 
+    # ---------------------------------------------------------------------------------------
+    # Initialisation
+    # ---------------------------------------------------------------------------------------
+
     def __init__(self, config:dict = None):
         # Set the algorithm configuration
         self._set_config(config)
@@ -96,11 +100,6 @@ class NeuralDevelopmentalProgram:
         self.noise_while_growing = self.config['noise_while_growing']
         self.noise_while_growing_interval = self.config['noise_while_growing_interval']
         
-    def _initialise_mlps(self):
-        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
-        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
-        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
-
     def _check_valid_config(self):
         """
         This function checks that some of the input values for each variable is valid.
@@ -121,6 +120,15 @@ class NeuralDevelopmentalProgram:
             elif self.shared_initial_node_state.shape[1] != self.state_dim:
                 print(self.shared_initial_node_state.shape[1])
                 raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state.shape[0]}) must be an array with state_dim ({self.state_dim}) elements.')
+
+    # ---------------------------------------------------------------------------------------
+    # Multi Layer Perceptrons (MLPs) functions
+    # ---------------------------------------------------------------------------------------
+
+    def _initialise_mlps(self):
+        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
+        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
+        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
 
     def get_total_number_of_mlp_parameters(self) -> int:
         n_params = [get_number_of_model_parameters(model) for model in self._get_mlp_models()]
@@ -153,6 +161,10 @@ class NeuralDevelopmentalProgram:
                 new_values = new_values.view_as(param)
                 param.data.copy_(new_values)
                 pointer += n_params
+
+    # ---------------------------------------------------------------------------------------
+    # Developmental Process
+    # ---------------------------------------------------------------------------------------
 
     def _genereate_node_state(self) -> np.array:
         """
@@ -230,7 +242,7 @@ class NeuralDevelopmentalProgram:
                 new_node_state += np.random.uniform(-self.noise_while_growing_interval, self.noise_while_growing_interval, new_node_state.size)
             new_node_id = graph.add_node(new_node_state)
             for neighbor in neighbors:
-                # graph.add_edge(new_node_id, neighbor)
+                graph.add_edge(new_node_id, neighbor)
                 graph.add_edge(neighbor, new_node_id)
         return graph
     
@@ -309,11 +321,10 @@ class NeuralDevelopmentalProgram:
         the weights are used during the graph convolution. 
         """
         # Compute network diameter D
-        # diameter = graph.get_diameter()
-        diameter = graph.get_largest_subgraph_diameter()
+        propagation_distance = graph.get_propagation_distance()
 
         # Propagate nodes states En via graph convolution D steps
-        steps = diameter + self.network_extra_thinking
+        steps = propagation_distance + self.network_extra_thinking
         graph = self.graph_convolution(graph, steps)
         # graph.summary(full=True)
         
@@ -354,6 +365,10 @@ class NeuralDevelopmentalProgram:
         if debug:
             print(f'Total development time = {time.time() - start_time}')
         return graph
+
+    # ---------------------------------------------------------------------------------------
+    # Summary 
+    # ---------------------------------------------------------------------------------------
 
     def summary(self):
         print('-------------------------------------')

@@ -20,11 +20,14 @@ class Graphnx():
     # Initialisation
     # ---------------------------------------------------------------------------------------
 
-    def __init__(self, state_dim:int=None, weighted_graph_flag:bool=False):
+    def __init__(self, state_dim:int=None, weighted_graph_flag:bool=False, propagation_mode:str='undirected'):
         self.state_dim = state_dim
         self.weighted_graph_flag = weighted_graph_flag
         self._graph = nx.DiGraph()
         self.nodes_states = None
+        self.propagation_mode = propagation_mode
+        if propagation_mode not in ['undirected', 'directed']:
+            raise ValueError("Propagation mode must be either 'undirected' or 'directed'")
 
     # ---------------------------------------------------------------------------------------
     # Nodes
@@ -120,7 +123,9 @@ class Graphnx():
 
     # Updated the weight matrix 
     def update_weight_matrix(self, weight_matrix):
-        self._adjacency_matrix = nx.DiGraph(weight_matrix)
+        # self._graph = nx.DiGraph(weight_matrix)
+        for source, target in self._graph.edges():
+            self._graph[source][target]["weight"] = float(weight_matrix[source, target])
 
 
     # ---------------------------------------------------------------------------------------
@@ -152,6 +157,31 @@ class Graphnx():
         largest_component_nodes = max(nx.connected_components(graph), key=len)
         largest_component = graph.subgraph(largest_component_nodes)
         return nx.diameter(largest_component)
+
+    # Return the longest finite directed shortest-path distance.
+    def get_maximum_directed_distance(self) -> int:
+        distances = (
+            distance
+            for _, target_distances in nx.all_pairs_shortest_path_length(self._graph)
+            for distance in target_distances.values()
+        )
+        return max(distances, default=0)
+
+    def get_propagation_distance(self) -> int:
+        if self.propagation_mode == 'directed':
+            return self.get_maximum_directed_distance()
+        return self.get_largest_subgraph_diameter()    
+
+    def get_unreachable_outputs(self, n_inputs: int, n_outputs: int) -> list:
+        input_nodes = range(n_inputs)
+        output_nodes = range(self.number_of_nodes() - n_outputs, self.number_of_nodes())
+        unreachable_outputs = [output_node for output_node in output_nodes if not any(nx.has_path(self._graph, input_node, output_node) for input_node in input_nodes)]
+        return unreachable_outputs
+
+    def are_all_outputs_reachable(self, n_inputs:int, n_outputs:int) -> bool:
+        return len(self.get_unreachable_outputs(n_inputs, n_outputs)) == 0
+
+
 
     # ---------------------------------------------------------------------------------------
     # Summary

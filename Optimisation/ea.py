@@ -26,6 +26,8 @@ There are two classes:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 """
 
+TEST_SEED = 10000
+
 class Individual:
 
     def __init__(self, n_variables:int, genotype:np.array = None, fitness:float = None, best_graph:Graphnx = None, best_graph_fitness:float = None):
@@ -99,13 +101,13 @@ class EvolutionaryAlgorithm:
                 self.best_individual.fitness = population[i].fitness
                 self.best_individual.best_graph = population[i].best_graph
                 self.best_individual.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype) 
+                self.best_individual.fitness_test, _, _, _ = self.objective_function(self.best_individual.genotype, env_seed = TEST_SEED) 
             if population[i].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
                 self.best_individual_by_graph.genotype = population[i].genotype.copy()
                 self.best_individual_by_graph.fitness = population[i].fitness
                 self.best_individual_by_graph.best_graph = population[i].best_graph
                 self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual_by_graph.genotype)
+                self.best_individual_by_graph.fitness_test, _, _, _ = self.objective_function(self.best_individual_by_graph.genotype, env_seed = TEST_SEED)
         return population
 
     # Initialises individual (for parallel running) 
@@ -135,7 +137,7 @@ class EvolutionaryAlgorithm:
             self.best_individual.fitness = population[0].fitness
             self.best_individual.best_graph = population[0].best_graph
             self.best_individual.best_graph_fitness = population[0].best_graph_fitness
-            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype)
+            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype, env_seed = TEST_SEED)
         return population
 
     # Random Roulette Wheel for parent selection
@@ -216,7 +218,7 @@ class EvolutionaryAlgorithm:
             self.best_individual.fitness = offspring[0].fitness
             self.best_individual.best_graph = offspring[0].best_graph
             self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
-            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype) 
+            self.best_individual.fitness_test, _, _, _= self.objective_function(self.best_individual.genotype, env_seed = TEST_SEED) 
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
 

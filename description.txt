@@ -11,6 +11,7 @@ Also, ndp_nhcl.py, of which I explain later.
 
 The third version, in which I'm currently working on, is trying to implement JAX.
 This version uses all the files which have "jax" on the name of the file.
+Update: So far this version is actually slower than my NetworkX version, therefore I'm not working on it anymore.
 
 I have to add that the file, ndp_nhcl, is my own variant for NDP in which the developmental process changes.
 Instead of a growing network (node-wise), we have a limited number of nodes and the edges structure is develope.

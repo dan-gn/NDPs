@@ -52,7 +52,7 @@ class Task:
         Evaluates a developed NDP graph on task.
 
         Returns:
-            mean_reward: average cumulative reward over rollouts
+            cummulative reward: cumulative reward over rollouts
             rewards: list with cumulative reward of each rollout
         """
         if self.name == 'LunarLander-v3':
@@ -82,16 +82,16 @@ class Task:
                 seed = env_seed + i if env_seed is not None else None
                 obs, _ = env.reset(seed=seed)
 
+                ann.reset_activations()
+                if hebbian:
+                    ann.reset_weights()
+
                 terminated = False
                 truncated = False
                 cumulative_reward = 0.0
                 actions_hist = []
 
-                if hebbian:
-                    ann.reset_weights()
-
                 counter = 0
-
                 policy_time = 0
                 action_time = 0
                 env_time = 0
@@ -146,7 +146,7 @@ class Task:
 
         return np.sum(rewards), rewards
 
-    def evaluate_ndp(self, ndp_vector:np.array, n_rollouts:int=None, return_rollouts:bool=True, render:bool=False):
+    def evaluate_ndp(self, ndp_vector:np.array, n_rollouts:int=None, env_seed:int=0, return_rollouts:bool=True, render:bool=False):
         ndp_config = dict(self.parameters)
 
         # params_bounded = np.tanh(params)
@@ -169,7 +169,7 @@ class Task:
         else:
             raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
 
-        params = ndp.update_mlp_weights(weights)
+        ndp.update_mlp_weights(weights)
 
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
@@ -185,7 +185,7 @@ class Task:
             # print('Development', time.time() - start)
 
             start = time.time()
-            reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render, hebbian=ndp_config['hebbian'])
+            reward, rollout = self.evaluate_graph(graph, n_rollouts, env_seed, render=render, hebbian=ndp_config['hebbian'])
             # print('Rollouts', time.time() - start)
 
 

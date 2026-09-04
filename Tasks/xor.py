@@ -34,6 +34,7 @@ Y_XOR = torch.tensor([
 ])
 
 XOR_PARAMETERS = {
+    # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,
     'initial_graph': 'one_node',
@@ -51,10 +52,23 @@ XOR_PARAMETERS = {
     'graph_n_inputs': X_XOR.size()[1],
     'graph_n_outputs': Y_XOR.size()[1],
     'n_cycles': 4,
-    'n_repeats': 2,
+    'n_repeats': 1,
+    # Activate Hebbian Version
+    'hebbian': False,
+    # Choose between starndard or variant
+    'model': 'standard_ndp',
+    # Variant NDP Parameters
+    'n_nodes': 16,
+    'initial_graph_density': 0.2,
+    'create_edge_hidden_size': 5,
+    'remove_edge_hidden_size': 5,
+    'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
+    'creating_threshold': 0,
+    'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
     'population_size': 64,
     'generations': 500,
+    'stagnant_generation': 250
 }
 
 

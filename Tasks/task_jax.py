@@ -53,7 +53,7 @@ class TaskJax:
         Evaluates a developed NDP graph on task.
 
         Returns:
-            mean_reward: average cumulative reward over rollouts
+            cummulative_reward: cumulative reward over rollouts
             rewards: list with cumulative reward of each rollout
         """
         if self.name == 'LunarLander-v3':
