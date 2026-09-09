@@ -46,7 +46,7 @@ def json_default(value):
     return str(value)
 
 
-def resolved_manifest(args):
+def resolved_manifest():
     task_settings = {}
     for task_name in TASKS:
         task = TASKS[task_name]()
@@ -55,7 +55,6 @@ def resolved_manifest(args):
     return {
         "algorithm": "EA",
         "optimizer_seeds": list(FINAL_OPTIMIZER_SEEDS),
-        "cores": args.cores,
         "models": list(MODELS),
         "policy_hebbian_options": list(POLICY_HEBBIAN_OPTIONS),
         "tasks": task_settings,
@@ -217,7 +216,7 @@ def main():
         print(f"FINAL STUDY: {final_study_runs} EA runs, seeds=0-29")
         return
 
-    manifest = resolved_manifest(args)
+    manifest = resolved_manifest()
     write_or_validate_manifest(args.output, manifest)
 
     counts = {"completed": 0, "skipped": 0, "failed": 0}
