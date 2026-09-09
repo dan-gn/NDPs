@@ -15,6 +15,7 @@ import datetime
 
 import os
 import sys
+from pathlib import Path
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
@@ -48,6 +49,12 @@ Simple Test with optimisation:
 * Runs an evolutionary algorithm to optimise the MLP parameters for an NDP.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
+
+def is_experiment_completed(experiment_path:Path):
+    if experiment_path.exists():
+        return True
+    return False
+
 
 def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
 
@@ -147,13 +154,13 @@ def main():
 
     tasks = [
         # XOR(),
-        # CartPole(),
+        CartPole(),
         # Acrobot(),
         # MountainCar(), 
         # LunarLander(),
-        BipedalWalker(),
-        Pendulum(),
-        PositionOnlyCartPole()
+        # BipedalWalker(),
+        # Pendulum(),
+        # PositionOnlyCartPole()
     ]
 
     models = [
@@ -172,7 +179,7 @@ def main():
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/september2026_ICLR_6/experiments_2/{task.name}'
+        output_folder = f'Results/september2026_ICLR_7/experiments_2/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
@@ -181,10 +188,14 @@ def main():
             for hebbian_flag in hebbian_flags:
                 task.parameters['hebbian'] = hebbian_flag
                 for seed in range(initial_seed, final_seed):
+                    output_filename = f'{output_folder}/output-{task.name}-{optimisation_algorithm}-seed_{seed}'
+                    if is_experiment_completed(output_filename + '_completed'):
+                        print(f'Test skipped: {output_filename}')
+                        continue
                     start_time = time.time()
                     output = experiment(task, optimisation_algorithm, seed)
                     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                    output_filename = f'{output_folder}/output-{task.name}-{optimisation_algorithm}-seed_{seed}-time_{timestamp}.pkl'
+                    output_filename = f'{output_filename}-time_{timestamp}.pkl'
                     with open(output_filename, 'wb') as file:
                         pickle.dump(output, file)
 

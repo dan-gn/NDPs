@@ -111,6 +111,14 @@ class EvolutionaryAlgorithm:
         self.heldout_evaluations += 1
         return self.objective_function(genotype, env_seed = TEST_SEED)
 
+    def final_evaluation(self):
+        self.best_individual.fitness_test, _, _, self.best_individual.best_graph_fitness_test = self.evaluate_heldout(self.best_individual.genotype) 
+        if self.best_individual.fitness == self.best_individual.best_graph_fitness:
+            self.best_individual_by_graph.fitness_test = self.best_individual.fitness
+            self.best_individual_by_graph.best_graph_fitness_test = self.best_individual.fitness_test
+        else:
+            self.best_individual_by_graph.fitness_test, _, _, self.best_individual_by_graph.best_graph_fitness_test = self.evaluate_heldout(self.best_individual_by_graph.genotype)
+
     # ---------------------------------------------------------------------------------------
     # Evolutionary Process
     # ---------------------------------------------------------------------------------------
@@ -128,13 +136,11 @@ class EvolutionaryAlgorithm:
                 self.best_individual.fitness = population[i].fitness
                 self.best_individual.best_graph = population[i].best_graph
                 self.best_individual.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual.fitness_test, _, _, self.best_individual.best_graph_fitness_test = self.evaluate_heldout(self.best_individual.genotype) 
             if population[i].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
                 self.best_individual_by_graph.genotype = population[i].genotype.copy()
                 self.best_individual_by_graph.fitness = population[i].fitness
                 self.best_individual_by_graph.best_graph = population[i].best_graph
                 self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
-                self.best_individual_by_graph.fitness_test, _, _, self.best_individual_by_graph.best_graph_fitness_test = self.evaluate_heldout(self.best_individual_by_graph.genotype)
         return population
 
     # Initialises individual (for parallel running) 
@@ -158,14 +164,12 @@ class EvolutionaryAlgorithm:
             self.best_individual_by_graph.fitness = population[0].fitness
             self.best_individual_by_graph.best_graph = population[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = population[0].best_graph_fitness
-            self.best_individual_by_graph.fitness_test, _, _, self.best_individual_by_graph.best_graph_fitness_test= self.evaluate_heldout(self.best_individual_by_graph.genotype)
         population = sorted(population, key=lambda x: x.fitness)
         if population[0].fitness < self.best_individual.fitness:
             self.best_individual.genotype = population[0].genotype.copy()
             self.best_individual.fitness = population[0].fitness
             self.best_individual.best_graph = population[0].best_graph
             self.best_individual.best_graph_fitness = population[0].best_graph_fitness
-            self.best_individual.fitness_test, _, _, self.best_individual.best_graph_fitness_test = self.evaluate_heldout(self.best_individual.genotype)
         return population
 
     # Random Roulette Wheel for parent selection
@@ -236,7 +240,6 @@ class EvolutionaryAlgorithm:
             self.best_individual_by_graph.fitness = offspring[0].fitness
             self.best_individual_by_graph.best_graph = offspring[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = offspring[0].best_graph_fitness
-            self.best_individual_by_graph.fitness_test, _, _, self.best_individual_by_graph.best_graph_fitness_test = self.evaluate_heldout(self.best_individual_by_graph.genotype) 
 
         self.population = sorted(self.population, key=lambda x: x.fitness)
         offspring = sorted(offspring, key=lambda x: x.fitness)
@@ -247,7 +250,6 @@ class EvolutionaryAlgorithm:
             self.best_individual.fitness = offspring[0].fitness
             self.best_individual.best_graph = offspring[0].best_graph
             self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
-            self.best_individual.fitness_test, _, _, self.best_individual.best_graph_fitness_test = self.evaluate_heldout(self.best_individual.genotype) 
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
 
@@ -390,4 +392,5 @@ class EvolutionaryAlgorithm:
                 break
             # print(f'Iteration total time = {time.time() - start_time}')
         self.record[self.i + 1] = self.best_individual.fitness
+        self.final_evaluation()
         return self.best_individual.genotype, self.best_individual.fitness
