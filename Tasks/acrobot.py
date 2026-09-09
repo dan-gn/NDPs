@@ -52,6 +52,8 @@ ACROBOT_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 500,
+    # 'population_size': 10,
+    # 'generations': 1,
     'stagnant_generation': 250,
 }
 

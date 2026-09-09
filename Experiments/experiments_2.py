@@ -22,11 +22,10 @@ sys.path.append(parent)
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
-# from NDP.ndp_nchl_jax import HebbianNeuralDevelopmentalProgramJax
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
-from Optimisation.ea import EvolutionaryAlgorithm
+from Optimisation.ea import EvolutionaryAlgorithm, TEST_SEED
 
 # Import tasks
 from Tasks.task import Task
@@ -35,10 +34,12 @@ from Tasks.cartpole import CartPole
 from Tasks.mountaincar import MountainCar
 from Tasks.lunarlander import LunarLander
 from Tasks.bipedalwalker import BipedalWalker
+from Tasks.pendulum import Pendulum
+from Tasks.position_only_cartpole import PositionOnlyCartPole
 from Tasks.xor import XOR
 
 # Import Utilities
-from Utilities.utilities import append_line_to_csv
+from Utilities.utilities import create_experiment_log, append_line_to_csv
 from Utilities.utilities import is_running_in_colab
 
 '''
@@ -79,21 +80,32 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
     print(f'Seed = {seed}')
     print('Starting optimisation!')
 
-    # np.random.seed(seed)
-    # random.seed(seed)
-    # torch.manual_seed(seed)
-
     if optimisation_algorithm == 'CMA':
         # CMA
-        x0 = np.random.uniform(-1, 1, n_params)
+        rng = np.random.default_rng(seed)
+        x0 = rng.uniform(-1, 1, n_params)
+
         sigma0 = 0.1
-        optimiser = CMA_ES(evaluate_ndp, x0, sigma0, seed)  
+
+        optimiser = CMA_ES(
+            fitness_function = evaluate_ndp,
+            x0 = x0,
+            sigma0 = sigma0,
+            seed = seed,
+            test_seed = TEST_SEED,
+            population_size = task.parameters['population_size'],
+            max_iterations = task.parameters['generations'] + 1
+        )
+
         best_params, best_loss = optimiser.run()
 
     else:
         # EA
         colab = is_running_in_colab()
-        cores = os.cpu_count() - 1 if colab else min(os.cpu_count() - 1, 4)
+        available_cores = max(1, os.cpu_count() - 1)
+        default_max_cores = available_cores if colab else 6
+        max_cores = int(os.environ.get('NDP_MAX_CORES', default_max_cores))
+        cores = max(1, (min(available_cores, max_cores)))
         run_in_parallel = True if cores > 1 else False
         execution_environment = 'Google Colab' if colab else 'Local Computer'
         print(f'Running on {execution_environment}')
@@ -109,6 +121,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
             run_in_parallel = run_in_parallel,
             cores = cores
         )
+
         best_params, best_loss = optimiser.run(task.target, seed)
 
     print('Optimisation finished!')
@@ -134,30 +147,32 @@ def main():
 
     tasks = [
         # XOR(),
-        CartPole(),
-        Acrobot(),
-        MountainCar(), 
-        LunarLander(),
-        BipedalWalker()
+        # CartPole(),
+        # Acrobot(),
+        # MountainCar(), 
+        # LunarLander(),
+        BipedalWalker(),
+        Pendulum(),
+        PositionOnlyCartPole()
     ]
 
     models = [
         'standard_ndp',
-        # 'hebbian_ndp'
+        'hebbian_ndp'
     ]
 
     hebbian_flags = [
         False,
-        # True
+        True
     ]
 
 
     initial_seed = 0
-    final_seed = 30
+    final_seed = 3
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/september2026_ICLR/experiments_2/{task.name}'
+        output_folder = f'Results/september2026_ICLR_6/experiments_2/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
@@ -175,27 +190,7 @@ def main():
 
                     log_file = f'{output_folder}/experiments_log.csv'
                     optimiser = output['optimiser']
-                    new_line = {
-                        'filename' : output_filename,
-                        'algorithm' : optimisation_algorithm,
-                        'task' : task.name,
-                        'initial_node_state_mode' : task.parameters['initial_node_state_mode'],
-                        'seed' : seed,
-                        'population_size': optimiser.population_size,
-                        'max_iterations': optimiser.max_iterations,
-                        'n_iterations' : optimiser.i,
-                        'best_score_mean': optimiser.best_individual.fitness, 
-                        'best_graph': optimiser.best_individual_by_graph.best_graph_fitness,
-                        'best_graph_n_nodes': optimiser.best_individual_by_graph.best_graph.number_of_nodes(),
-                        'best_graph_n_edges': optimiser.best_individual_by_graph.best_graph.number_of_edges(),
-                        'best_graph_are_all_outputs_reachable': optimiser.best_individual_by_graph.best_graph.are_all_outputs_reachable(task.parameters['graph_n_inputs'], task.parameters['graph_n_outputs']),
-                        'n_variables' : optimiser.n_variables,
-                        'max_stagnment' : optimiser.max_stagnment,
-                        'goal_achieved' : optimiser.goal_achieved,
-                        'model': task.parameters['model'],
-                        'hebbian': task.parameters['hebbian'],
-                        'time' : time.time() - start_time,
-                        }
+                    new_line = create_experiment_log(output_filename, optimisation_algorithm, task, seed, optimiser, elapsed_time=time.time() - start_time)
                     append_line_to_csv(log_file, new_line)
 
 

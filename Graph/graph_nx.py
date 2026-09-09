@@ -172,7 +172,12 @@ class Graphnx():
             return self.get_maximum_directed_distance()
         return self.get_largest_subgraph_diameter()    
 
-    def get_unreachable_outputs(self, n_inputs: int, n_outputs: int) -> list:
+    def get_unreachable_outputs(self, n_inputs:int, n_outputs:int) -> list:
+        n_nodes = self.number_of_nodes()
+
+        if n_nodes < (n_inputs + n_outputs):
+            return list(range(n_inputs, n_inputs + n_outputs))
+
         input_nodes = range(n_inputs)
         output_nodes = range(self.number_of_nodes() - n_outputs, self.number_of_nodes())
         unreachable_outputs = [output_node for output_node in output_nodes if not any(nx.has_path(self._graph, input_node, output_node) for input_node in input_nodes)]
