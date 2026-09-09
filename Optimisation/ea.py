@@ -111,11 +111,13 @@ class EvolutionaryAlgorithm:
         self.heldout_evaluations += 1
         return self.objective_function(genotype, env_seed = TEST_SEED)
 
-    def final_evaluation(self):
-        self.best_individual.fitness_test, _, _, self.best_individual.best_graph_fitness_test = self.evaluate_heldout(self.best_individual.genotype) 
-        if self.best_individual.fitness == self.best_individual.best_graph_fitness:
-            self.best_individual_by_graph.fitness_test = self.best_individual.fitness
-            self.best_individual_by_graph.best_graph_fitness_test = self.best_individual.fitness_test
+    def evaluate_final_heldout(self):
+        self.best_individual.fitness_test, _, _, self.best_individual.best_graph_fitness_test = self.evaluate_heldout(self.best_individual.genotype)
+
+        if self.best_individual.best_graph_fitness == self.best_individual_by_graph.best_graph_fitness:
+            self.best_individual_by_graph.fitness_test = self.best_individual.fitness_test
+            self.best_individual_by_graph.best_graph_fitness_test = self.best_individual.best_graph_fitness_test
+            
         else:
             self.best_individual_by_graph.fitness_test, _, _, self.best_individual_by_graph.best_graph_fitness_test = self.evaluate_heldout(self.best_individual_by_graph.genotype)
 
@@ -382,7 +384,7 @@ class EvolutionaryAlgorithm:
                 self.update_population()
             # if self.i % int(self.max_iterations/200) == 0:
             if self.i % 25 == 0:
-                print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best fitness testing = {self.best_individual.fitness_test:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
+                print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
             if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                 print('Stop criteria achieved!')
                 self.goal_achieved = True
@@ -392,5 +394,5 @@ class EvolutionaryAlgorithm:
                 break
             # print(f'Iteration total time = {time.time() - start_time}')
         self.record[self.i + 1] = self.best_individual.fitness
-        self.final_evaluation()
+        self.evaluate_final_heldout()
         return self.best_individual.genotype, self.best_individual.fitness
