@@ -19,7 +19,11 @@ from Tasks.lunarlander import LunarLander
 from Tasks.mountaincar import MountainCar
 from Tasks.pendulum import Pendulum
 from Tasks.position_only_cartpole import PositionOnlyCartPole
-from Utilities.utilities import append_line_to_csv, create_experiment_log
+from Utilities.utilities import (
+    append_line_to_csv,
+    create_experiment_log,
+    is_running_in_colab,
+)
 
 
 TASKS = {
@@ -36,6 +40,7 @@ MODELS = ("standard_ndp", "hebbian_ndp")
 POLICY_HEBBIAN_OPTIONS = (False, True)
 INITIAL_OPTIMIZER_SEEDS = tuple(range(10))
 FINAL_OPTIMIZER_SEEDS = tuple(range(30))
+COLAB_DRIVE_ROOT = Path("/content/drive/MyDrive/ICLR")
 
 
 def json_default(value):
@@ -44,6 +49,24 @@ def json_default(value):
     if isinstance(value, Path):
         return str(value)
     return str(value)
+
+
+def resolve_output_root(output_root):
+    output_root = Path(output_root)
+    if not is_running_in_colab():
+        return output_root
+
+    if output_root.is_absolute():
+        try:
+            output_root.relative_to(COLAB_DRIVE_ROOT)
+        except ValueError as error:
+            raise ValueError(
+                "On Colab, an absolute --output path must be inside "
+                f"{COLAB_DRIVE_ROOT}."
+            ) from error
+        return output_root
+
+    return COLAB_DRIVE_ROOT / output_root
 
 
 def resolved_manifest():
@@ -186,6 +209,14 @@ def main():
         raise ValueError(
             f"Seeds {invalid_seeds} are outside the final study seeds "
             f"{list(FINAL_OPTIMIZER_SEEDS)}."
+        )
+
+    colab = is_running_in_colab()
+    args.output = resolve_output_root(args.output)
+    if colab and not args.dry_run and not COLAB_DRIVE_ROOT.exists():
+        raise RuntimeError(
+            f"Google Drive is not mounted at {COLAB_DRIVE_ROOT}. "
+            "Mount Drive before starting the experiments."
         )
 
     os.environ["NDP_MAX_CORES"] = str(args.cores)
