@@ -4,6 +4,7 @@ Libraries
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
+import json
 import os
 import numpy as np
 import pandas as pd
@@ -47,6 +48,28 @@ def append_line_to_csv(file_path, new_line_dict):
     # Save it to CSV
     df.to_csv(file_path, index=False)
 
+
+def graph_reachability_fields(graph, task):
+    if graph is None:
+        return {
+            "best_graph_are_all_outputs_reachable": None,
+            "best_graph_n_unreachable_outputs": None,
+            "best_graph_unreachable_output_ids": None,
+        }
+
+    unreachable_output_ids = graph.get_unreachable_outputs(
+        task.parameters["graph_n_inputs"],
+        task.parameters["graph_n_outputs"],
+    )
+    unreachable_output_ids = [int(node_id) for node_id in unreachable_output_ids]
+    return {
+        "best_graph_are_all_outputs_reachable": len(unreachable_output_ids) == 0,
+        "best_graph_n_unreachable_outputs": len(unreachable_output_ids),
+        # JSON keeps the list unambiguous after the record is written to CSV.
+        "best_graph_unreachable_output_ids": json.dumps(unreachable_output_ids),
+    }
+
+
 def create_experiment_log(
     output_filename,
     optimisation_algorithm,
@@ -88,7 +111,7 @@ def create_experiment_log(
                 "best_graph_test": testing_result[3] if isinstance(testing_result, tuple) else None,
                 "best_graph_n_nodes": training_graph.number_of_nodes() if training_graph is not None else None,
                 "best_graph_n_edges": training_graph.number_of_edges() if training_graph is not None else None,
-                "best_graph_are_all_outputs_reachable": training_graph.are_all_outputs_reachable(task.parameters["graph_n_inputs"], task.parameters["graph_n_outputs"]) if training_graph is not None else None,
+                **graph_reachability_fields(training_graph, task),
                 "n_variables": len(optimiser.best_params),
                 "max_stagnment": None,
                 "goal_achieved": None,
@@ -98,8 +121,7 @@ def create_experiment_log(
 
     elif optimisation_algorithm == "EA":
         best_individual = optimiser.best_individual
-        best_by_graph = optimiser.best_individual_by_graph
-        training_graph = best_by_graph.best_graph
+        training_graph = best_individual.best_graph
 
         new_line.update(
             {
@@ -107,11 +129,11 @@ def create_experiment_log(
                 "optimiser_iterations": optimiser.i + 1,
                 "best_score_mean": best_individual.fitness,
                 "best_score_test": best_individual.fitness_test,
-                "best_graph": best_by_graph.best_graph_fitness,
-                "best_graph_test": best_by_graph.best_graph_fitness_test,
+                "best_graph": best_individual.best_graph_fitness,
+                "best_graph_test": best_individual.best_graph_fitness_test,
                 "best_graph_n_nodes": training_graph.number_of_nodes(),
                 "best_graph_n_edges": training_graph.number_of_edges(),
-                "best_graph_are_all_outputs_reachable": training_graph.are_all_outputs_reachable(task.parameters["graph_n_inputs"], task.parameters["graph_n_outputs"]),
+                **graph_reachability_fields(training_graph, task),
                 "n_variables": optimiser.n_variables,
                 "max_stagnment": optimiser.max_stagnment,
                 "goal_achieved": optimiser.goal_achieved,

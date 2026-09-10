@@ -78,6 +78,7 @@ def resolved_manifest():
 
     return {
         "algorithm": "EA",
+        "stop_on_target": False,
         "optimizer_seeds": list(FINAL_OPTIMIZER_SEEDS),
         "models": list(MODELS),
         "policy_hebbian_options": list(POLICY_HEBBIAN_OPTIONS),
@@ -168,7 +169,7 @@ def run_one(task_class, model, policy_hebbian, seed, output_root):
 
     start = time.time()
     try:
-        output = experiment(task, optimisation_algorithm="EA", seed=seed)
+        output = experiment(task, optimisation_algorithm="EA", seed=seed, stop_on_target=False)
         optimiser = output["optimiser"]
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         output_file = folder / (

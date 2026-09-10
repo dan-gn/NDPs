@@ -97,7 +97,8 @@ class Task:
                 terminated = False
                 truncated = False
                 cumulative_reward = 0.0
-                actions_hist = []
+                if verbose:
+                    actions_hist = []
 
                 while not terminated and not truncated:
                     obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
@@ -105,7 +106,8 @@ class Task:
                     output = ann(obs)
 
                     action = self.compute_action(output)
-                    actions_hist.append(action)
+                    if verbose:
+                        actions_hist.append(action)
 
                     obs, reward, terminated, truncated, _ = env.step(action)
 

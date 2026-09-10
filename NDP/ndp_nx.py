@@ -249,34 +249,22 @@ class NeuralDevelopmentalProgram:
     def predict_weights(self, graph:Graphnx) -> Graphnx:
         """
         Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings.
-        There are two versions:
-        1. The first version only upudates existing edges, similar to the original implementation.
-        2. The second verstion updates all possible pair of nodes. This matches more how it's described in the original paper. 
-        Choosing version one, mainly because it makes everything faster.
-        Fix: On version 2, two edges for each pair are created. But how do I choose which one to create when it doesn't exist?
         """
-        # 1st version: only updates existing edges
+        # Get list of edges
+        edges = np.asarray(list(graph.edges()), dtype=np.int64).reshape(-1, 2)
+        if len(edges) == 0:
+            # If there's no edges return the graph
+            return graph
+        # Get the graph weights and node states
         weights = graph.get_weight_matrix()
-        for input_id, output_id in graph.edges():
-            input_node_state = torch.tensor(graph.nodes_states[input_id], dtype=torch.float32)
-            output_node_state = torch.tensor(graph.nodes_states[output_id], dtype=torch.float32)
-            # print('input', input_node_state)
-            # print('output', output_node_state)
-            new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
-            weights[input_id, output_id] = new_weight
+        nodes_states = torch.as_tensor(graph.nodes_states, dtype=torch.float32)
+        edge_indices = torch.as_tensor(edges, dtype=torch.long)
+        source_states = nodes_states[edge_indices[:, 0]]
+        target_states = nodes_states[edge_indices[:, 1]]
+        # Predict new weights and update weight matrix
+        new_weights = self.weight_prediction_model(source_states, target_states).squeeze(-1)
+        weights[edges[:, 0], edges[:, 1]] = new_weights.detach().cpu().numpy()
         graph.update_weight_matrix(weights)
-
-        # 2nd veresion: update values for all pair of nodes in the graph
-        # for input_node in graph.nodes:
-        #     for output_node in graph.nodes:
-        #         if not graph.is_this_edge_valid(input_node, output_node):
-        #             continue
-        #         input_node_state = torch.tensor(input_node.state, dtype=torch.float32)
-        #         output_node_state = torch.tensor(output_node.state, dtype=torch.float32)
-        #         new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
-        #         # graph.edges[(input_node.node_id, output_node.node_id)] = new_weight
-        #         graph.add_edge(input_node.node_id, output_node.node_id, new_weight)
-
         return graph
 
     def prune(self, graph:Graphnx) -> Graphnx:

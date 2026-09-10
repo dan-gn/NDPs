@@ -50,13 +50,18 @@ Simple Test with optimisation:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
-def is_experiment_completed(experiment_path:Path):
-    if experiment_path.exists():
+def is_experiment_completed(experiment_path:str):
+    path = Path(experiment_path)
+    if path.exists():
         return True
     return False
 
+def create_experiment_completed(experiment_path:str):
+    path = Path(experiment_path)
+    path.write_text(experiment_path, encoding="utf-8")
 
-def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
+
+def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_on_target:bool=True):
 
     # Params
     ndp_params = task.parameters
@@ -126,7 +131,8 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None):
             max_stagnment = task.parameters['stagnant_generation'],
             objective_function = evaluate_ndp,
             run_in_parallel = run_in_parallel,
-            cores = cores
+            cores = cores,
+            stop_on_target = stop_on_target
         )
 
         best_params, best_loss = optimiser.run(task.target, seed)
@@ -175,11 +181,11 @@ def main():
 
 
     initial_seed = 0
-    final_seed = 3
+    final_seed = 1
     optimisation_algorithm = 'EA'
 
     for task in tasks:
-        output_folder = f'Results/september2026_ICLR_7/experiments_2/{task.name}'
+        output_folder = f'Results/september2026_ICLR_9/experiments_2/{task.name}'
         if is_running_in_colab():
             output_folder = '../drive/MyDrive/' + output_folder
         os.makedirs(output_folder, exist_ok=True)
@@ -188,8 +194,9 @@ def main():
             for hebbian_flag in hebbian_flags:
                 task.parameters['hebbian'] = hebbian_flag
                 for seed in range(initial_seed, final_seed):
-                    output_filename = f'{output_folder}/output-{task.name}-{optimisation_algorithm}-seed_{seed}'
-                    if is_experiment_completed(output_filename + '_completed'):
+                    output_filename = f'{output_folder}/output--{model}--hebbian{hebbian_flag}-{task.name}-{optimisation_algorithm}-seed_{seed}'
+                    completed_filename = f'{output_filename}_completed'
+                    if is_experiment_completed(completed_filename):
                         print(f'Test skipped: {output_filename}')
                         continue
                     start_time = time.time()
@@ -198,6 +205,7 @@ def main():
                     output_filename = f'{output_filename}-time_{timestamp}.pkl'
                     with open(output_filename, 'wb') as file:
                         pickle.dump(output, file)
+                    create_experiment_completed(completed_filename)
 
                     log_file = f'{output_folder}/experiments_log.csv'
                     optimiser = output['optimiser']

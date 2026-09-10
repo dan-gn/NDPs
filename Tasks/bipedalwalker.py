@@ -50,7 +50,7 @@ BIPEDALWALKER_PARAMETERS = {
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
-    'population_size': 128,
+    'population_size': 64,
     'generations': 1000,
     # 'population_size': 10,
     # 'generations': 1,

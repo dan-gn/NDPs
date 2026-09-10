@@ -52,7 +52,7 @@ CARTPOLE_PARAMETERS = {
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
     'population_size': 64,
-    'generations': 500,
+    'generations': 100,
     # 'population_size': 10,
     # 'generations': 1,
     'stagnant_generation': 250
