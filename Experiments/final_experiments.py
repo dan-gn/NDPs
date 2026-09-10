@@ -40,7 +40,8 @@ MODELS = ("standard_ndp", "hebbian_ndp")
 POLICY_HEBBIAN_OPTIONS = (False, True)
 INITIAL_OPTIMIZER_SEEDS = tuple(range(10))
 FINAL_OPTIMIZER_SEEDS = tuple(range(30))
-COLAB_DRIVE_ROOT = Path("/content/drive/MyDrive/ICLR")
+COLAB_MOUNT_ROOT = Path("/content/drive/MyDrive")
+COLAB_RESULTS_ROOT = COLAB_MOUNT_ROOT / "ICLR"
 
 
 def json_default(value):
@@ -58,15 +59,15 @@ def resolve_output_root(output_root):
 
     if output_root.is_absolute():
         try:
-            output_root.relative_to(COLAB_DRIVE_ROOT)
+            output_root.relative_to(COLAB_RESULTS_ROOT)
         except ValueError as error:
             raise ValueError(
                 "On Colab, an absolute --output path must be inside "
-                f"{COLAB_DRIVE_ROOT}."
+                f"{COLAB_RESULTS_ROOT}."
             ) from error
         return output_root
 
-    return COLAB_DRIVE_ROOT / output_root
+    return COLAB_RESULTS_ROOT / output_root
 
 
 def resolved_manifest():
@@ -213,9 +214,9 @@ def main():
 
     colab = is_running_in_colab()
     args.output = resolve_output_root(args.output)
-    if colab and not args.dry_run and not COLAB_DRIVE_ROOT.exists():
+    if colab and not args.dry_run and not COLAB_MOUNT_ROOT.exists():
         raise RuntimeError(
-            f"Google Drive is not mounted at {COLAB_DRIVE_ROOT}. "
+            f"Google Drive is not mounted at {COLAB_MOUNT_ROOT}. "
             "Mount Drive before starting the experiments."
         )
 
