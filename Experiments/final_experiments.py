@@ -126,7 +126,7 @@ def parse_arguments():
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("Results/september2026_final"),
+        default=Path("Results/september2026_final_fixed_budget"),
     )
     return parser.parse_args()
 

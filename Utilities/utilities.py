@@ -114,6 +114,7 @@ def create_experiment_log(
                 **graph_reachability_fields(training_graph, task),
                 "n_variables": len(optimiser.best_params),
                 "max_stagnment": None,
+                "stop_on_target": False,
                 "goal_achieved": None,
                 "stop_reason": ", ".join(optimiser.es.stop().keys()),
             }
@@ -136,8 +137,9 @@ def create_experiment_log(
                 **graph_reachability_fields(training_graph, task),
                 "n_variables": optimiser.n_variables,
                 "max_stagnment": optimiser.max_stagnment,
+                "stop_on_target": optimiser.stop_on_target,
                 "goal_achieved": optimiser.goal_achieved,
-                "stop_reason": "target_achieved" if optimiser.goal_achieved else "stopped_without_target",
+                "stop_reason": "target_achieved" if optimiser.goal_achieved and optimiser.stop_on_target else "completed_budget",
             }
         )
 
