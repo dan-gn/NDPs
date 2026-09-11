@@ -38,7 +38,7 @@ PENDULUM_PARAMETERS = {
     'graph_n_outputs': env.action_space.shape[0],      # 1
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 10,
+    'n_rollouts': 25,
 
     # Policy configuration
     'hebbian': False,

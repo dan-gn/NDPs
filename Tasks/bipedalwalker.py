@@ -36,7 +36,7 @@ BIPEDALWALKER_PARAMETERS = {
     'graph_n_outputs': env.action_space.shape[0],   # 4
     'n_cycles': 6,
     'n_repeats': 1,
-    'n_rollouts': 25,
+    'n_rollouts': 100,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant
@@ -51,7 +51,7 @@ BIPEDALWALKER_PARAMETERS = {
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
     'population_size': 64,
-    'generations': 1000,
+    'generations': 2000,
     # 'population_size': 10,
     # 'generations': 1,
     'stagnant_generation': 250,
