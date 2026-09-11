@@ -36,7 +36,7 @@ BIPEDALWALKER_PARAMETERS = {
     'graph_n_outputs': env.action_space.shape[0],   # 4
     'n_cycles': 6,
     'n_repeats': 1,
-    'n_rollouts': 10,
+    'n_rollouts': 25,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant

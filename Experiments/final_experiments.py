@@ -70,7 +70,7 @@ def resolve_output_root(output_root):
     return COLAB_RESULTS_ROOT / output_root
 
 
-def resolved_manifest():
+def resolved_manifest(stop_on_target):
     task_settings = {}
     for task_name in TASKS:
         task = TASKS[task_name]()
@@ -78,7 +78,7 @@ def resolved_manifest():
 
     return {
         "algorithm": "EA",
-        "stop_on_target": False,
+        "stop_on_target": stop_on_target,
         "optimizer_seeds": list(FINAL_OPTIMIZER_SEEDS),
         "models": list(MODELS),
         "policy_hebbian_options": list(POLICY_HEBBIAN_OPTIONS),
@@ -121,6 +121,7 @@ def parse_arguments():
     parser.add_argument(
         "--seeds", nargs="+", type=int, default=list(INITIAL_OPTIMIZER_SEEDS)
     )
+    parser.add_argument("--stop-on-target", action="store_true")
     parser.add_argument("--cores", type=int, default=6)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -149,7 +150,7 @@ def failure_path(folder, seed):
     return folder / f"seed_{seed}.failure.txt"
 
 
-def run_one(task_class, model, policy_hebbian, seed, output_root):
+def run_one(task_class, model, policy_hebbian, seed, output_root, stop_on_target):
     task = task_class()
     configure_task(task, model, policy_hebbian)
 
@@ -169,7 +170,7 @@ def run_one(task_class, model, policy_hebbian, seed, output_root):
 
     start = time.time()
     try:
-        output = experiment(task, optimisation_algorithm="EA", seed=seed, stop_on_target=False)
+        output = experiment(task, optimisation_algorithm="EA", seed=seed, stop_on_target=stop_on_target)
         optimiser = output["optimiser"]
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         output_file = folder / (
@@ -244,12 +245,12 @@ def main():
         )
         print(
             f"DRY RUN: current batch={planned_runs} EA runs, seeds={args.seeds}, "
-            f"cores={args.cores}, output={args.output}"
+            f"cores={args.cores}, stop_on_target={args.stop_on_target}, output={args.output}"
         )
         print(f"FINAL STUDY: {final_study_runs} EA runs, seeds=0-29")
         return
 
-    manifest = resolved_manifest()
+    manifest = resolved_manifest(args.stop_on_target)
     write_or_validate_manifest(args.output, manifest)
 
     counts = {"completed": 0, "skipped": 0, "failed": 0}
@@ -264,6 +265,7 @@ def main():
                         policy_hebbian,
                         seed,
                         args.output,
+                        args.stop_on_target
                     )
                     counts[status] += 1
 
