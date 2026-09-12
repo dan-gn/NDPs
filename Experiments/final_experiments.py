@@ -36,13 +36,32 @@ TASKS = {
     "bipedalwalker": BipedalWalker,
 }
 
-MODELS = ("standard_ndp", "hebbian_ndp")
-POLICY_HEBBIAN_OPTIONS = (False, True)
+# MODELS = ("standard_ndp", "hebbian_ndp")
+# POLICY_HEBBIAN_OPTIONS = (False, True)
+
+NDP_CONDITIONS = (
+    ("standard_ndp", False),
+    ("standard_ndp", True),
+    ("hebbian_ndp", False),
+    ("hebbian_ndp", True),
+)
+
+FIXED_MLP_TASKS = {"pendulum", "lunarlander"}
+
+
 INITIAL_OPTIMIZER_SEEDS = tuple(range(10))
 FINAL_OPTIMIZER_SEEDS = tuple(range(30))
 COLAB_MOUNT_ROOT = Path("/content/drive/MyDrive")
 COLAB_RESULTS_ROOT = COLAB_MOUNT_ROOT / "ICLR"
 
+
+def conditions_for_task(task_name):
+    conditions = list(NDP_CONDITIONS)
+
+    if task_name in FIXED_MLP_TASKS:
+        conditions.append(("fixed_mlp", False))
+
+    return conditions
 
 def json_default(value):
     if hasattr(value, "tolist"):
@@ -80,8 +99,16 @@ def resolved_manifest(stop_on_target):
         "algorithm": "EA",
         "stop_on_target": stop_on_target,
         "optimizer_seeds": list(FINAL_OPTIMIZER_SEEDS),
-        "models": list(MODELS),
-        "policy_hebbian_options": list(POLICY_HEBBIAN_OPTIONS),
+        "conditions_by_task": {
+            task_name: [
+                {
+                    "model": model,
+                    "policy_hebbian": policy_hebbian,
+                }
+                for model, policy_hebbian in conditions_for_task(task_name)
+            ]
+            for task_name in TASKS
+        },
         "tasks": task_settings,
     }
 
@@ -234,13 +261,13 @@ def main():
                 f"rollouts={task.parameters['n_rollouts']}, "
                 f"repeats={task.parameters['n_repeats']}"
             )
-        planned_runs = len(selected_tasks) * len(MODELS) * len(
-            POLICY_HEBBIAN_OPTIONS
-        ) * len(args.seeds)
+        planned_runs = (
+            sum(len(conditions_for_task(task_name)) for task_name in selected_tasks)
+            * len(args.seeds)
+        )
+
         final_study_runs = (
-            len(TASKS)
-            * len(MODELS)
-            * len(POLICY_HEBBIAN_OPTIONS)
+            sum(len(conditions_for_task(task_name)) for task_name in TASKS)
             * len(FINAL_OPTIMIZER_SEEDS)
         )
         print(
@@ -256,18 +283,17 @@ def main():
     counts = {"completed": 0, "skipped": 0, "failed": 0}
 
     for task_name in selected_tasks:
-        for model in MODELS:
-            for policy_hebbian in POLICY_HEBBIAN_OPTIONS:
-                for seed in args.seeds:
-                    status = run_one(
-                        TASKS[task_name],
-                        model,
-                        policy_hebbian,
-                        seed,
-                        args.output,
-                        args.stop_on_target
-                    )
-                    counts[status] += 1
+        for model, policy_hebbian in conditions_for_task(task_name):
+            for seed in args.seeds:
+                status = run_one(
+                    TASKS[task_name],
+                    model,
+                    policy_hebbian,
+                    seed,
+                    args.output,
+                    args.stop_on_target
+                )
+                counts[status] += 1
 
     print(
         "Final experiment summary: "

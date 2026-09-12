@@ -19,6 +19,7 @@ sys.path.append(parent)
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
+from Baseline.fixed_mlp import FixedMLP
 from Graph.graph_nx import Graphnx
 
 '''
@@ -60,70 +61,74 @@ class Task:
     # Evaluations
     # ---------------------------------------------------------------------------------------
 
-    # Graph Evaluation (runs multiple rollouts)
-    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=0, render:bool=False, hebbian:bool=False, verbose:bool=False):
+    def evaluate_policy(self, policy, hebbian:bool=False, n_rollouts:int=None, env_seed:int=0, render:bool=False, verbose:bool=False):
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
 
+        # Create the environment
         if self.name == 'LunarLander-v3':
             env = gym.make(self.name, continuous=False, gravity=-10.0, enable_wind=False, render_mode="human" if render else None)
         else:
             env = gym.make(self.name, render_mode="human" if render else None)
 
+        rewards = []
+        for i in range(n_rollouts):
 
-        if n_rollouts is None:
-            n_rollouts = self.n_rollouts
+            seed = env_seed + i if env_seed is not None else None
+            obs, _ = env.reset(seed=seed)
 
-        with torch.no_grad():
-            if verbose:
-                print('Creating ANN from graph')
-
+            policy.reset_activations()
             if hebbian:
-                ann = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
-            else:
-                ann = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+                policy.reset_weights()
+
+            terminated = False
+            truncated = False
+            cumulative_reward = 0.0
+            if verbose:
+                actions_hist = []
+
+            while not terminated and not truncated:
+                obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+
+                output = policy(obs)
+
+                action = self.compute_action(output)
+                if verbose:
+                    actions_hist.append(action)
+
+                obs, reward, terminated, truncated, _ = env.step(action)
+
+                cumulative_reward += reward
+
+            if truncated:
+                cumulative_reward -= self.truncated_penalty
 
             if verbose:
-                print('Done!')
-
-            rewards = []
-            for i in range(n_rollouts):
-
-                seed = env_seed + i if env_seed is not None else None
-                obs, _ = env.reset(seed=seed)
-
-                ann.reset_activations()
-                if hebbian:
-                    ann.reset_weights()
-
-                terminated = False
-                truncated = False
-                cumulative_reward = 0.0
-                if verbose:
-                    actions_hist = []
-
-                while not terminated and not truncated:
-                    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-
-                    output = ann(obs)
-
-                    action = self.compute_action(output)
-                    if verbose:
-                        actions_hist.append(action)
-
-                    obs, reward, terminated, truncated, _ = env.step(action)
-
-                    cumulative_reward += reward
-
-                if truncated:
-                    cumulative_reward -= self.truncated_penalty
-
-                if verbose:
-                    print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
-                rewards.append(-cumulative_reward)
+                print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
+            rewards.append(-cumulative_reward)
 
         env.close()
 
-        return np.sum(rewards), rewards
+        return np.mean(rewards), rewards
 
+
+    # Graph Evaluation (runs multiple rollouts)
+    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=0, render:bool=False, hebbian:bool=False, verbose:bool=False):
+        if verbose:
+            print('Creating ANN from graph')
+
+        if hebbian:
+            policy = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+        else:
+            policy = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+
+        if verbose:
+            print('Done!')
+
+        return self.evaluate_policy(policy, hebbian, n_rollouts, env_seed, render, verbose)
+
+
+       
     # NDP Evaluation (develops graphs and evaluates them)
     def evaluate_ndp(self, ndp_vector:np.array, n_rollouts:int=None, env_seed:int=0, return_rollouts:bool=True, render:bool=False):
 
@@ -152,7 +157,6 @@ class Task:
 
         ndp.update_mlp_weights(weights)
 
-
         # Develope and evaluate the NDP
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
@@ -160,14 +164,14 @@ class Task:
         graphs = []
         rewards = []
         rollouts = []
-        for _ in range(self.n_repeats):
-            graph = ndp.develope(self.n_cycles)
+        with torch.no_grad():
+            for _ in range(self.n_repeats):
+                graph = ndp.develope(self.n_cycles)
+                reward, rollout = self.evaluate_graph(graph, n_rollouts, env_seed, render=render, hebbian=ndp_config['hebbian'])
 
-            reward, rollout = self.evaluate_graph(graph, n_rollouts, env_seed, render=render, hebbian=ndp_config['hebbian'])
-
-            graphs.append(graph)
-            rewards.append(reward)
-            rollouts.extend(rollout)
+                graphs.append(graph)
+                rewards.append(reward)
+                rollouts.extend(rollout)
 
         best_reward_idx = np.argmin(rewards)
         best_reward = rewards[best_reward_idx] 
@@ -175,6 +179,39 @@ class Task:
 
         if return_rollouts:
             return np.mean(rewards), rollouts, best_graph, best_reward
+        else:
+            return np.mean(rewards)
+
+    # Evaluates fixed mlp
+    def evaluate_fixed_mlp(self, mlp_vector:np.array, n_rollouts:int=None, env_seed:int=0, return_rollouts:bool=True, render:bool=False):
+        # Set up the NDP
+        mlp_config = dict(self.parameters)
+
+        # params_bounded = np.tanh(params)
+        params_bounded = np.clip(mlp_vector, -1.0, 1.0, dtype=np.float32)
+
+        model = FixedMLP(mlp_config)
+
+        model.update_mlp_weights(params_bounded)
+
+        # Develope and evaluate the NDP
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
+
+        rewards = []
+        rollouts = []
+        with torch.no_grad():
+            for _ in range(self.n_repeats):
+                reward, rollout = self.evaluate_policy(model, mlp_config['hebbian'], n_rollouts, env_seed, render)
+
+                rewards.append(reward)
+                rollouts.extend(rollout)
+
+        best_reward_idx = np.argmin(rewards)
+        best_reward = rewards[best_reward_idx] 
+
+        if return_rollouts:
+            return np.mean(rewards), rollouts, None, best_reward
         else:
             return np.mean(rewards)
 

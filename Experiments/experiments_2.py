@@ -23,6 +23,7 @@ sys.path.append(parent)
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from Baseline.fixed_mlp import FixedMLP
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -69,18 +70,21 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_o
 
     # Initial parameters
     if ndp_params['model'] == 'standard_ndp':
-        ndp = NeuralDevelopmentalProgram(ndp_params)
+        model = NeuralDevelopmentalProgram(ndp_params)
     elif ndp_params['model'] == 'hebbian_ndp':
-        ndp = HebbianNeuralDevelopmentalProgram(ndp_params)
+        model = HebbianNeuralDevelopmentalProgram(ndp_params)
+    elif ndp_params['model'] == 'fixed_mlp':
+        model = FixedMLP(ndp_params)
+        evaluate_ndp = task.evaluate_fixed_mlp
     else:
-        raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
+        raise ValueError('Model on task should be standard_ndp, hebbian_ndp or fixed_mlp.')
 
     print('Experiment begins!')
     task.summary()
-    ndp.summary()
+    model.summary()
 
-    n_params = ndp.get_total_number_of_mlp_parameters()
-    if ndp_params['initial_node_state_mode'] == 'coevolve':
+    n_params = model.get_total_number_of_mlp_parameters()
+    if (ndp_params['initial_node_state_mode'] == 'coevolve') and (ndp_params['model'] != 'fixed_mlp'):
         if ndp_params['model'] == 'hebbian_ndp':
             n_params += 1 + (ndp_params['state_dim'] * ndp_params['n_nodes'])
         else:

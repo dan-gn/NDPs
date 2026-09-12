@@ -65,11 +65,13 @@ class CartPole(Task):
     def __init__(self, parameters=CARTPOLE_PARAMETERS):
         super().__init__(parameters)
         self.name = 'CartPole-v1'
-        self.target = parameters['n_rollouts'] * (-500)
+        # self.target = parameters['n_rollouts'] * (-500)
+        self.target = -500
 
 class CartPoleJax(TaskJax):
 
     def __init__(self, parameters=CARTPOLE_PARAMETERS):
         super().__init__(parameters)
         self.name = 'CartPole-v1'
-        self.target = parameters['n_rollouts'] * (-500)
+        # self.target = parameters['n_rollouts'] * (-500)
+        self.target = -500

@@ -66,7 +66,8 @@ class MountainCar(Task):
     def __init__(self, parameters=MOUNTAINCAR_PARAMETERS):
         super().__init__(parameters)
         self.name = 'MountainCar-v0'
-        self.target = parameters['n_rollouts'] * 110
+        # self.target = parameters['n_rollouts'] * 110
+        self.target = 110
         self.truncated_penalty = 200
 
 
@@ -75,5 +76,6 @@ class MountainCarJax(TaskJax):
     def __init__(self, parameters=MOUNTAINCAR_PARAMETERS):
         super().__init__(parameters)
         self.name = 'MountainCar-v0'
-        self.target = parameters['n_rollouts'] * 110
+        # self.target = parameters['n_rollouts'] * 110
+        self.target = 110
         self.truncated_penalty = 200

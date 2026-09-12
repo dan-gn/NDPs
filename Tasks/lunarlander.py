@@ -36,7 +36,7 @@ LUNARLANDER_PARAMETERS = {
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 100,
+    'n_rollouts': 10,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant
@@ -55,6 +55,7 @@ LUNARLANDER_PARAMETERS = {
     # 'population_size': 10,
     # 'generations': 1,
     'stagnant_generation': 250,
+    'fixed_mlp_hidden_size': 64
 }
 
 
@@ -63,4 +64,4 @@ class LunarLander(Task):
     def __init__(self, parameters=LUNARLANDER_PARAMETERS):
         super().__init__(parameters)
         self.name = 'LunarLander-v3'
-        self.target = parameters['n_rollouts'] * (-200)
+        self.target = -200

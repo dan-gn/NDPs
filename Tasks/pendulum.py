@@ -38,7 +38,7 @@ PENDULUM_PARAMETERS = {
     'graph_n_outputs': env.action_space.shape[0],      # 1
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 25,
+    'n_rollouts': 10,
 
     # Policy configuration
     'hebbian': False,
@@ -59,6 +59,9 @@ PENDULUM_PARAMETERS = {
     # 'population_size': 10,
     # 'generations': 1,
     'stagnant_generation': 250,
+
+    # FixedMLP
+    'fixed_mlp_hidden_size':32
 }
 
 
@@ -70,4 +73,5 @@ class Pendulum(Task):
         self.action_space_type = 'continuous'
         self.action_low = env.action_space.low
         self.action_high = env.action_space.high
-        self.target = parameters['n_rollouts'] * 200
+        # self.target = parameters['n_rollouts'] * 200
+        self.target = 200

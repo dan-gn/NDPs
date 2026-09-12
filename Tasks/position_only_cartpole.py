@@ -75,4 +75,4 @@ class PositionOnlyCartPole(Task):
 
         # A complete 200-step rollout returns approximately 1.0.
         # evaluate_graph minimizes the negative cumulative reward.
-        self.target = parameters['n_rollouts'] * (-1.0)
+        self.target = -1.0

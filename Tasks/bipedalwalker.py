@@ -36,7 +36,7 @@ BIPEDALWALKER_PARAMETERS = {
     'graph_n_outputs': env.action_space.shape[0],   # 4
     'n_cycles': 6,
     'n_repeats': 1,
-    'n_rollouts': 100,
+    'n_rollouts': 10,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant
@@ -66,4 +66,5 @@ class BipedalWalker(Task):
         self.action_space_type = 'continuous'
         self.action_low = env.action_space.low
         self.action_high = env.action_space.high
-        self.target = parameters['n_rollouts'] * (-300)
+        # self.target = parameters['n_rollouts'] * (-300)
+        self.target = -300
