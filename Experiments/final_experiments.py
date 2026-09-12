@@ -56,12 +56,23 @@ COLAB_RESULTS_ROOT = COLAB_MOUNT_ROOT / "ICLR"
 
 
 def conditions_for_task(task_name):
-    conditions = list(NDP_CONDITIONS)
-
     if task_name in FIXED_MLP_TASKS:
-        conditions.append(("fixed_mlp", False))
+        return [("fixed_mlp", False), *NDP_CONDITIONS]
 
-    return conditions
+    return list(NDP_CONDITIONS)
+
+
+def selected_conditions(task_name, requested_models=None):
+    conditions = conditions_for_task(task_name)
+
+    if requested_models is None:
+        return conditions
+
+    return [
+        condition
+        for condition in conditions
+        if condition[0] in requested_models
+    ]
 
 def json_default(value):
     if hasattr(value, "tolist"):
@@ -147,6 +158,12 @@ def parse_arguments():
     )
     parser.add_argument(
         "--seeds", nargs="+", type=int, default=list(INITIAL_OPTIMIZER_SEEDS)
+    )
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        default=["all"],
+        choices=["all", "standard_ndp", "hebbian_ndp", "fixed_mlp"],
     )
     parser.add_argument("--stop-on-target", action="store_true")
     parser.add_argument("--cores", type=int, default=6)
@@ -251,6 +268,18 @@ def main():
 
     os.environ["NDP_MAX_CORES"] = str(args.cores)
     selected_tasks = list(TASKS) if "all" in args.tasks else args.tasks
+    requested_models = None if "all" in args.models else set(args.models)
+
+    unavailable = [
+        task_name
+        for task_name in selected_tasks
+        if not selected_conditions(task_name, requested_models)
+    ]
+    if unavailable:
+        raise ValueError(
+            "None of the requested models are available for tasks: "
+            + ", ".join(unavailable)
+        )
 
     if args.dry_run:
         for task_name in selected_tasks:
@@ -262,7 +291,10 @@ def main():
                 f"repeats={task.parameters['n_repeats']}"
             )
         planned_runs = (
-            sum(len(conditions_for_task(task_name)) for task_name in selected_tasks)
+            sum(
+                len(selected_conditions(task_name, requested_models))
+                for task_name in selected_tasks
+            )
             * len(args.seeds)
         )
 
@@ -283,7 +315,10 @@ def main():
     counts = {"completed": 0, "skipped": 0, "failed": 0}
 
     for task_name in selected_tasks:
-        for model, policy_hebbian in conditions_for_task(task_name):
+        for model, policy_hebbian in selected_conditions(
+            task_name,
+            requested_models,
+        ):
             for seed in args.seeds:
                 status = run_one(
                     TASKS[task_name],
