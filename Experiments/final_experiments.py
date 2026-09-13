@@ -62,16 +62,21 @@ def conditions_for_task(task_name):
     return list(NDP_CONDITIONS)
 
 
-def selected_conditions(task_name, requested_models=None):
+def selected_conditions(
+    task_name,
+    requested_models=None,
+    requested_policy_hebbian=None,
+):
     conditions = conditions_for_task(task_name)
-
-    if requested_models is None:
-        return conditions
 
     return [
         condition
         for condition in conditions
-        if condition[0] in requested_models
+        if (requested_models is None or condition[0] in requested_models)
+        and (
+            requested_policy_hebbian is None
+            or condition[1] in requested_policy_hebbian
+        )
     ]
 
 def json_default(value):
@@ -169,6 +174,12 @@ def parse_arguments():
         "--algorithm",
         choices=["EA", "CMA"],
         default="EA",
+    )
+    parser.add_argument(
+        "--policy-hebbian",
+        nargs="+",
+        default=["all"],
+        choices=["all", "false", "true"],
     )
     parser.add_argument("--stop-on-target", action="store_true")
     parser.add_argument("--cores", type=int, default=6)
@@ -270,8 +281,6 @@ def main():
         raise ValueError("--cores must be at least 1.")
     if not args.seeds:
         raise ValueError("At least one optimizer seed is required.")
-    if args.algorithm == "CMA" and args.stop_on_target:
-        raise ValueError("--stop-on-target is only supported for EA.")
     invalid_seeds = sorted(set(args.seeds) - set(FINAL_OPTIMIZER_SEEDS))
     if invalid_seeds:
         raise ValueError(
@@ -290,11 +299,20 @@ def main():
     os.environ["NDP_MAX_CORES"] = str(args.cores)
     selected_tasks = list(TASKS) if "all" in args.tasks else args.tasks
     requested_models = None if "all" in args.models else set(args.models)
+    requested_policy_hebbian = (
+        None
+        if "all" in args.policy_hebbian
+        else {value == "true" for value in args.policy_hebbian}
+    )
 
     unavailable = [
         task_name
         for task_name in selected_tasks
-        if not selected_conditions(task_name, requested_models)
+        if not selected_conditions(
+            task_name,
+            requested_models,
+            requested_policy_hebbian,
+        )
     ]
     if unavailable:
         raise ValueError(
@@ -313,7 +331,13 @@ def main():
             )
         planned_runs = (
             sum(
-                len(selected_conditions(task_name, requested_models))
+                len(
+                    selected_conditions(
+                        task_name,
+                        requested_models,
+                        requested_policy_hebbian,
+                    )
+                )
                 for task_name in selected_tasks
             )
             * len(args.seeds)
@@ -342,6 +366,7 @@ def main():
         for model, policy_hebbian in selected_conditions(
             task_name,
             requested_models,
+            requested_policy_hebbian,
         ):
             for seed in args.seeds:
                 status = run_one(
