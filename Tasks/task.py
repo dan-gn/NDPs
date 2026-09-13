@@ -56,6 +56,19 @@ class Task:
             ndp = NeuralDevelopmentalProgram(self.parameters)
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
+    def normalize_observation(self, observation, observation_space):
+        if not self.parameters.get("normalize_observations", False):
+            return observation
+
+        low = np.asarray(observation_space.low, dtype=np.float32)
+        high = np.asarray(observation_space.high, dtype=np.float32)
+
+        scale = np.maximum(np.abs(low), np.abs(high))
+        scale = np.where(scale > 0.0, scale, 1.0)
+
+        normalized = np.asarray(observation, dtype=np.float32) / scale
+
+        return np.clip(normalized, -1.0, 1.0)
 
     # ---------------------------------------------------------------------------------------
     # Evaluations
@@ -88,6 +101,7 @@ class Task:
                 actions_hist = []
 
             while not terminated and not truncated:
+                obs = self.normalize_observation(obs, env.observation_space)
                 obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
                 output = policy(obs)

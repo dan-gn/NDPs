@@ -61,7 +61,8 @@ PENDULUM_PARAMETERS = {
     'stagnant_generation': 250,
 
     # FixedMLP
-    'fixed_mlp_hidden_size':32
+    'fixed_mlp_hidden_size': 32,
+    'normalize_observations': True
 }
 
 
