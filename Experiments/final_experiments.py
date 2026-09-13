@@ -100,14 +100,14 @@ def resolve_output_root(output_root):
     return COLAB_RESULTS_ROOT / output_root
 
 
-def resolved_manifest(stop_on_target):
+def resolved_manifest(algorithm, stop_on_target):
     task_settings = {}
     for task_name in TASKS:
         task = TASKS[task_name]()
         task_settings[task.name] = dict(task.parameters)
 
     return {
-        "algorithm": "EA",
+        "algorithm": algorithm,
         "stop_on_target": stop_on_target,
         "optimizer_seeds": list(FINAL_OPTIMIZER_SEEDS),
         "conditions_by_task": {
@@ -165,6 +165,11 @@ def parse_arguments():
         default=["all"],
         choices=["all", "standard_ndp", "hebbian_ndp", "fixed_mlp"],
     )
+    parser.add_argument(
+        "--algorithm",
+        choices=["EA", "CMA"],
+        default="EA",
+    )
     parser.add_argument("--stop-on-target", action="store_true")
     parser.add_argument("--cores", type=int, default=6)
     parser.add_argument("--dry-run", action="store_true")
@@ -194,7 +199,15 @@ def failure_path(folder, seed):
     return folder / f"seed_{seed}.failure.txt"
 
 
-def run_one(task_class, model, policy_hebbian, seed, output_root, stop_on_target):
+def run_one(
+    task_class,
+    model,
+    policy_hebbian,
+    seed,
+    output_root,
+    algorithm,
+    stop_on_target,
+):
     task = task_class()
     configure_task(task, model, policy_hebbian)
 
@@ -204,7 +217,8 @@ def run_one(task_class, model, policy_hebbian, seed, output_root, stop_on_target
     failure = failure_path(folder, seed)
 
     label = (
-        f"{task.name} | {model} | policy_hebbian={policy_hebbian} | seed={seed}"
+        f"{task.name} | {algorithm} | {model} | "
+        f"policy_hebbian={policy_hebbian} | seed={seed}"
     )
 
     if completion.exists():
@@ -214,11 +228,16 @@ def run_one(task_class, model, policy_hebbian, seed, output_root, stop_on_target
 
     start = time.time()
     try:
-        output = experiment(task, optimisation_algorithm="EA", seed=seed, stop_on_target=stop_on_target)
+        output = experiment(
+            task,
+            optimisation_algorithm=algorithm,
+            seed=seed,
+            stop_on_target=stop_on_target,
+        )
         optimiser = output["optimiser"]
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         output_file = folder / (
-            f"output-{task.name}-EA-seed_{seed}-time_{timestamp}.pkl"
+            f"output-{task.name}-{algorithm}-seed_{seed}-time_{timestamp}.pkl"
         )
 
         with output_file.open("wb") as file:
@@ -226,7 +245,7 @@ def run_one(task_class, model, policy_hebbian, seed, output_root, stop_on_target
 
         log = create_experiment_log(
             str(output_file),
-            "EA",
+            algorithm,
             task,
             seed,
             optimiser,
@@ -251,6 +270,8 @@ def main():
         raise ValueError("--cores must be at least 1.")
     if not args.seeds:
         raise ValueError("At least one optimizer seed is required.")
+    if args.algorithm == "CMA" and args.stop_on_target:
+        raise ValueError("--stop-on-target is only supported for EA.")
     invalid_seeds = sorted(set(args.seeds) - set(FINAL_OPTIMIZER_SEEDS))
     if invalid_seeds:
         raise ValueError(
@@ -303,13 +324,16 @@ def main():
             * len(FINAL_OPTIMIZER_SEEDS)
         )
         print(
-            f"DRY RUN: current batch={planned_runs} EA runs, seeds={args.seeds}, "
+            f"DRY RUN: current batch={planned_runs} {args.algorithm} runs, "
+            f"seeds={args.seeds}, "
             f"cores={args.cores}, stop_on_target={args.stop_on_target}, output={args.output}"
         )
-        print(f"FINAL STUDY: {final_study_runs} EA runs, seeds=0-29")
+        print(
+            f"FINAL STUDY: {final_study_runs} {args.algorithm} runs, seeds=0-29"
+        )
         return
 
-    manifest = resolved_manifest(args.stop_on_target)
+    manifest = resolved_manifest(args.algorithm, args.stop_on_target)
     write_or_validate_manifest(args.output, manifest)
 
     counts = {"completed": 0, "skipped": 0, "failed": 0}
@@ -326,7 +350,8 @@ def main():
                     policy_hebbian,
                     seed,
                     args.output,
-                    args.stop_on_target
+                    args.algorithm,
+                    args.stop_on_target,
                 )
                 counts[status] += 1
 
