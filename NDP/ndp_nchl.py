@@ -217,7 +217,10 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return sorted(candidates, key=lambda edge: edge[0])
 
     # Sample n edges per source node 
-    def sample_n_disconnected_edges_per_node(self, candidate_edges:list) -> list:
+    def sample_n_disconnected_edges_per_node(self, candidate_edges:list) -> np.ndarray:
+
+        candidate_edges = sorted(candidate_edges)
+
         # Split by source
         rearranged_candidate_edges = [list(group) for source, group in groupby(candidate_edges, key=lambda x:x[0])] 
 
@@ -230,7 +233,7 @@ class HebbianNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
             else:
                 sampled_candidate_edges.extend(possible_edges_per_source)
 
-        return np.array(sampled_candidate_edges, dtype=np.int32)
+        return np.asarray(sampled_candidate_edges, dtype=np.int32).reshape(-1, 2)
  
     # Choose candidates using the node state similarity
     def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
