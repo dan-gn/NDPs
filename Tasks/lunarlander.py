@@ -18,7 +18,7 @@ env = gym.make("LunarLander-v3")
 
 LUNARLANDER_PARAMETERS = {
     # Standard NDP Parameters
-    'state_dim': 16,
+    'state_dim': 5,
     'weighted_graph_flag': True,
     'initial_graph': 'one_node',
     'network_extra_thinking': 5,
