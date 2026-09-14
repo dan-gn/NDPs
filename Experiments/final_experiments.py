@@ -129,6 +129,63 @@ def resolved_manifest(algorithm, stop_on_target):
     }
 
 
+def manifest_differences(existing, requested, path=""):
+    differences = []
+
+    if isinstance(existing, dict) and isinstance(requested, dict):
+        for key in sorted(set(existing) | set(requested)):
+            key_path = f"{path}.{key}" if path else key
+            if key not in existing:
+                differences.append(
+                    (key_path, "<missing>", requested[key])
+                )
+            elif key not in requested:
+                differences.append(
+                    (key_path, existing[key], "<missing>")
+                )
+            else:
+                differences.extend(
+                    manifest_differences(
+                        existing[key],
+                        requested[key],
+                        key_path,
+                    )
+                )
+        return differences
+
+    if isinstance(existing, list) and isinstance(requested, list):
+        for index in range(max(len(existing), len(requested))):
+            item_path = f"{path}[{index}]"
+            if index >= len(existing):
+                differences.append(
+                    (item_path, "<missing>", requested[index])
+                )
+            elif index >= len(requested):
+                differences.append(
+                    (item_path, existing[index], "<missing>")
+                )
+            else:
+                differences.extend(
+                    manifest_differences(
+                        existing[index],
+                        requested[index],
+                        item_path,
+                    )
+                )
+        return differences
+
+    if existing != requested:
+        differences.append((path, existing, requested))
+
+    return differences
+
+
+def format_manifest_value(value):
+    if value == "<missing>":
+        return value
+    return json.dumps(value, sort_keys=True, default=json_default)
+
+
 def write_or_validate_manifest(output_root, manifest):
     output_root.mkdir(parents=True, exist_ok=True)
     manifest_path = output_root / "experiment_manifest.json"
@@ -143,8 +200,15 @@ def write_or_validate_manifest(output_root, manifest):
     if manifest_path.exists():
         existing = json.loads(manifest_path.read_text(encoding="utf-8"))
         if existing != resolved:
+            differences = manifest_differences(existing, resolved)
+            difference_text = "\n".join(
+                f"  - {path}: existing={format_manifest_value(old)}, "
+                f"requested={format_manifest_value(new)}"
+                for path, old, new in differences
+            )
             raise ValueError(
-                f"Configuration differs from existing manifest: {manifest_path}. "
+                f"Configuration differs from existing manifest: {manifest_path}.\n"
+                f"Differences:\n{difference_text}\n"
                 "Use a different --output folder for a different experiment."
             )
         print(f"Validated existing manifest: {manifest_path}")
