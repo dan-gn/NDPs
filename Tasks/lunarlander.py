@@ -18,7 +18,7 @@ env = gym.make("LunarLander-v3")
 
 LUNARLANDER_PARAMETERS = {
     # Standard NDP Parameters
-    'state_dim': 5,
+    'state_dim': 16,
     'weighted_graph_flag': True,
     'initial_graph': 'one_node',
     'network_extra_thinking': 5,
@@ -36,7 +36,7 @@ LUNARLANDER_PARAMETERS = {
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 10,
+    'n_rollouts': 100,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant
