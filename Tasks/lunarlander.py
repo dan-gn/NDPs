@@ -36,7 +36,7 @@ LUNARLANDER_PARAMETERS = {
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 100,
+    'n_rollouts': 25,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant
