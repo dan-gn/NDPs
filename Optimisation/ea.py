@@ -70,6 +70,9 @@ class EvolutionaryAlgorithm:
             elitism_proportion: float = 0.1, 
             run_in_parallel: bool = False,
             cores: int = 4,
+            graph_n_inputs: int = None,
+            model: str = None,
+            graph_n_outputs: int = None,
             stop_on_target: bool = True
         ):
         self.n_variables = n_variables
@@ -89,6 +92,9 @@ class EvolutionaryAlgorithm:
         self.optimisation_evaluations = 0
         self.training_reevaluations = 0
         self.heldout_evaluations = 0
+        self.model = model
+        self.graph_n_inputs = graph_n_inputs
+        self.graph_n_outputs = graph_n_outputs
         self.init_best_individual()
 
     # Sets seed 
@@ -383,7 +389,12 @@ class EvolutionaryAlgorithm:
                     self.update_population(executor)
                 # if self.i % int(self.max_iterations/200) == 0:
                 if self.i % 25 == 0:
-                    print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
+                    # print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
+                    if self.model is not None and 'ndp' in self.model:
+                        print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Used nodes = {self.best_individual.best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)}, Used edges = {self.best_individual.best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)}, Iteration time = {time.time() - start_time:.2f}')
+                    else:
+                        print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Iteration time = {time.time() - start_time:.2f}')
+
                 if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                     print('Target achieved!')
                     self.goal_achieved = True

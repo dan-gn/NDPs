@@ -136,7 +136,10 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_o
             objective_function = evaluate_ndp,
             run_in_parallel = run_in_parallel,
             cores = cores,
-            stop_on_target = stop_on_target
+            stop_on_target = stop_on_target,
+            model = ndp_params['model'],
+            graph_n_inputs = ndp_params['graph_n_inputs'],
+            graph_n_outputs = ndp_params['graph_n_outputs']
         )
 
         best_params, best_loss = optimiser.run(task.target, seed)

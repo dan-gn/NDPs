@@ -139,6 +139,80 @@ class Graphnx():
     def successors(self, node_id) -> set:
         return set(self._graph.successors(node_id))
 
+    def predecessors(self, node_id) -> set:
+        return set(self._graph.predecessors(node_id))
+
+    def reachable_nodes_from_source(self, source_node_ids:set[int]) -> set[int]:
+        reachable = set(source_node_ids)
+        nodes_to_visit = list(source_node_ids)
+        while nodes_to_visit:
+            node_id = nodes_to_visit.pop()
+            for succesor_id in self._graph.successors(node_id):
+                if succesor_id not in reachable:
+                    reachable.add(succesor_id)
+                    nodes_to_visit.append(succesor_id)
+        return reachable
+
+    def can_reach_target_nodes(self, target_node_ids:set[int]) -> set[int]:
+        can_reach = set(target_node_ids)
+        nodes_to_visit = list(target_node_ids)
+        while nodes_to_visit:
+            node_id = nodes_to_visit.pop()
+            for predecessor_id in self._graph.predecessors(node_id):
+                if predecessor_id not in can_reach:
+                    can_reach.add(predecessor_id)
+                    nodes_to_visit.append(predecessor_id)
+        return can_reach
+
+    def get_used_node_ids(self, n_inputs, n_outputs) -> list[int]:
+        # Get input and output nodes
+        n_nodes = self.number_of_nodes()
+        if n_inputs > n_nodes:
+            return []
+        elif n_inputs + n_outputs > n_nodes:
+            n_outputs = n_nodes - n_inputs
+
+        input_node_ids = set(range(n_inputs))
+        output_node_ids = set(range(n_nodes - n_outputs, n_nodes))
+
+        # Get reachable nodes from inputs and nodes that can reach outputs
+        reachable_from_inputs = self.reachable_nodes_from_source(input_node_ids)
+        can_reach_outputs = self.can_reach_target_nodes(output_node_ids)
+
+        # Used nodes need to fullfill both criterias
+        nodes_on_functional_paths = reachable_from_inputs.intersection(can_reach_outputs)
+
+        # Include input and output nodes
+        used_node_ids = nodes_on_functional_paths.union(input_node_ids).union(output_node_ids)
+
+        # Sort and return output
+        return sorted(used_node_ids)
+
+    def get_number_of_used_nodes(self, n_inputs:int, n_outputs:int) -> int:
+        return len(self.get_used_node_ids(n_inputs, n_outputs))
+
+    def get_used_edge_ids(self, n_inputs:int, n_outputs:int) -> list[tuple[int, int]]:
+        # Get input and output nodes
+        n_nodes = self.number_of_nodes()
+        if n_inputs > n_nodes:
+            return []
+        elif n_inputs + n_outputs > n_nodes:
+            n_outputs = n_nodes - n_inputs
+
+        input_node_ids = set(range(n_inputs))
+        output_node_ids = set(range(n_nodes - n_outputs, n_nodes))
+
+        # Get reachable nodes from inputs and nodes that can reach outputs
+        reachable_from_inputs = self.reachable_nodes_from_source(input_node_ids)
+        can_reach_outputs = self.can_reach_target_nodes(output_node_ids)
+
+        used_edge_ids = [(source_id, target_id) for source_id, target_id in self.edges() if ((source_id in reachable_from_inputs) and (target_id in can_reach_outputs))]
+        return used_edge_ids
+
+    def get_number_of_used_edges(self, n_inputs:int, n_outputs:int) -> int:
+        return len(self.get_used_edge_ids(n_inputs, n_outputs))
+
+
     # ---------------------------------------------------------------------------------------
     # Graph Stats
     # ---------------------------------------------------------------------------------------

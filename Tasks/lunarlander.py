@@ -29,9 +29,9 @@ LUNARLANDER_PARAMETERS = {
     'add_hidden_node_to_minimal_network': False,
     'pruning_flag': False,
     'pruning_threshold': 0.5,
-    'gca_hidden_size': 10,
-    'rm_hidden_size': 10,
-    'wp_hidden_size': 10,
+    'gca_hidden_size': 5,
+    'rm_hidden_size': 5,
+    'wp_hidden_size': 5,
     'graph_n_inputs': env.observation_space.shape[0],  # 4
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
@@ -42,7 +42,7 @@ LUNARLANDER_PARAMETERS = {
     # Choose between starndard or variant
     'model': 'standard_ndp',
     # Variant NDP Parameters
-    'n_nodes': 64,
+    'n_nodes': 128,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -50,8 +50,8 @@ LUNARLANDER_PARAMETERS = {
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
-    'population_size': 512,
-    'generations': 1000,
+    'population_size': 64,
+    'generations': 2000,
     # 'population_size': 10,
     # 'generations': 1,
     'stagnant_generation': 250,
