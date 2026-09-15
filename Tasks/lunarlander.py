@@ -42,7 +42,7 @@ LUNARLANDER_PARAMETERS = {
     # Choose between starndard or variant
     'model': 'standard_ndp',
     # Variant NDP Parameters
-    'n_nodes': 128,
+    'n_nodes': 64,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -50,11 +50,11 @@ LUNARLANDER_PARAMETERS = {
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
-    'population_size': 64,
+    'population_size': 128,
     'generations': 2000,
     # 'population_size': 10,
     # 'generations': 1,
-    'stagnant_generation': 250,
+    'stagnant_generation': 500,
     'fixed_mlp_hidden_size': 64,
     'normalize_observations': False
 }
