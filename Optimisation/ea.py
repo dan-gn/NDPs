@@ -389,11 +389,39 @@ class EvolutionaryAlgorithm:
                     self.update_population(executor)
                 # if self.i % int(self.max_iterations/200) == 0:
                 if self.i % 25 == 0:
+                    fitness_values = np.asarray(
+                        [individual.fitness for individual in self.population],
+                        dtype=float,
+                    )
+
+                    q25, median, q75 = np.percentile(fitness_values, [25, 50, 75])
+
+                    fitness_summary = (
+                        f"Mean fitness = {np.mean(fitness_values):.4f}, "
+                        f"Best population fitness = {np.min(fitness_values):.4f}, "
+                        f"Q25 = {q25:.4f}, "
+                        f"Median = {median:.4f}, "
+                        f"Q75 = {q75:.4f}, "
+                        f"Worst = {np.max(fitness_values):.4f}, "
+                        f"Best-ever fitness = {self.best_individual.fitness:.4f}"
+                    )
                     # print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
                     if self.model is not None and 'ndp' in self.model:
-                        print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Used nodes = {self.best_individual.best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)}, Used edges = {self.best_individual.best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)}, Iteration time = {time.time() - start_time:.2f}')
+                        print(
+                            f"Iteration = {self.i}, "
+                            f"{fitness_summary}, "
+                            f"Used nodes = "
+                            f"{self.best_individual.best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)}, "
+                            f"Used edges = "
+                            f"{self.best_individual.best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)}, "
+                            f"Iteration time = {time.time() - start_time:.2f}"
+                        )
                     else:
-                        print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Iteration time = {time.time() - start_time:.2f}')
+                        print(
+                            f"Iteration = {self.i}, "
+                            f"{fitness_summary}, "
+                            f"Iteration time = {time.time() - start_time:.2f}"
+                        )
 
                 if self.best_individual.fitness <= stop_criteria and not self.goal_achieved:
                     print('Target achieved!')

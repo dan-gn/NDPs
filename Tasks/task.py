@@ -79,10 +79,7 @@ class Task:
             n_rollouts = self.n_rollouts
 
         # Create the environment
-        if self.name == 'LunarLander-v3':
-            env = gym.make(self.name, continuous=False, gravity=-10.0, enable_wind=False, render_mode="human" if render else None)
-        else:
-            env = gym.make(self.name, render_mode="human" if render else None)
+        env = gym.make(self.name, render_mode="human" if render else None)
 
         rewards = []
         for i in range(n_rollouts):
