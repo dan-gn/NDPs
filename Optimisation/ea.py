@@ -64,7 +64,7 @@ class EvolutionaryAlgorithm:
             population_size: int,
             max_iterations: int,
             max_stagnment: int,
-            mutation_probability: float = 0.01, 
+            mutation_probability: float = None, 
             mutation_eta: float = 5, 
             sbx_eta: float = 5, 
             elitism_proportion: float = 0.1, 
@@ -80,8 +80,8 @@ class EvolutionaryAlgorithm:
         self.population_size = population_size
         self.max_iterations = max_iterations
         self.max_stagnment = max_stagnment
-        # self.mutation_probability = 1 / n_variables
-        self.mutation_probability = mutation_probability
+        self.mutation_probability = 1 / n_variables
+        # self.mutation_probability = mutation_probability
         self.mutation_eta = mutation_eta
         self.sbx_eta = sbx_eta
         self.elitism_proportion = elitism_proportion
