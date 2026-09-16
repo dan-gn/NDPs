@@ -47,6 +47,8 @@ class Individual:
         self.best_graph = best_graph
         self.best_graph_fitness = best_graph_fitness
         self.best_graph_fitness_test = best_graph_fitness_test
+        self.best_graph_used_nodes = None
+        self.best_graph_used_edges = None
 
     def random_initialise(self):
         self.genotype = np.random.uniform(-self.initial_value_range, self.initial_value_range, self.n_variables)
@@ -289,6 +291,8 @@ class EvolutionaryAlgorithm:
             self.best_individual_by_graph.fitness = offspring[0].fitness
             self.best_individual_by_graph.best_graph = offspring[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = offspring[0].best_graph_fitness
+            self.best_individual_by_graph.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+            self.best_individual_by_graph.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
 
         self.population = sorted(self.population, key=lambda x: x.fitness)
         offspring = sorted(offspring, key=lambda x: x.fitness)
@@ -299,6 +303,8 @@ class EvolutionaryAlgorithm:
             self.best_individual.fitness = offspring[0].fitness
             self.best_individual.best_graph = offspring[0].best_graph
             self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
+            self.best_individual.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+            self.best_individual.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
 
@@ -398,12 +404,12 @@ class EvolutionaryAlgorithm:
 
                     fitness_summary = (
                         f"Mean fitness = {np.mean(fitness_values):.4f}, "
-                        f"Best population fitness = {np.min(fitness_values):.4f}, "
+                        f"Best fitness = {np.min(fitness_values):.4f}, "
                         f"Q25 = {q25:.4f}, "
                         f"Median = {median:.4f}, "
                         f"Q75 = {q75:.4f}, "
                         f"Worst = {np.max(fitness_values):.4f}, "
-                        f"Best-ever fitness = {self.best_individual.fitness:.4f}"
+                        # f"Best-ever fitness = {self.best_individual.fitness:.4f}"
                     )
                     # print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
                     if self.model is not None and 'ndp' in self.model:
@@ -411,9 +417,9 @@ class EvolutionaryAlgorithm:
                             f"Iteration = {self.i}, "
                             f"{fitness_summary}, "
                             f"Used nodes = "
-                            f"{self.best_individual.best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)}, "
+                            f"{self.best_individual.best_graph_used_nodes}, "
                             f"Used edges = "
-                            f"{self.best_individual.best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)}, "
+                            f"{self.best_individual.best_graph_used_edges}, "
                             f"Iteration time = {time.time() - start_time:.2f}"
                         )
                     else:

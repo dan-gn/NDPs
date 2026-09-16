@@ -119,7 +119,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_o
         # EA
         colab = is_running_in_colab()
         available_cores = max(1, os.cpu_count() - 1)
-        default_max_cores = available_cores if colab else 6
+        default_max_cores = available_cores if colab else 4
         max_cores = int(os.environ.get('NDP_MAX_CORES', default_max_cores))
         cores = max(1, (min(available_cores, max_cores)))
         run_in_parallel = True if cores > 1 else False
@@ -167,23 +167,23 @@ def main():
 
     tasks = [
         # XOR(),
-        CartPole(),
+        # CartPole(),
         # Acrobot(),
         # MountainCar(), 
-        # LunarLander(),
+        LunarLander(),
         # BipedalWalker(),
         # Pendulum(),
         # PositionOnlyCartPole()
     ]
 
     models = [
-        'standard_ndp',
+        # 'standard_ndp',
         'hebbian_ndp'
     ]
 
     hebbian_flags = [
         False,
-        True
+        # True
     ]
 
 

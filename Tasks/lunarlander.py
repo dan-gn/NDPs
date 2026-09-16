@@ -36,7 +36,7 @@ LUNARLANDER_PARAMETERS = {
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 25,
+    'n_rollouts': 20,
     # Activate Hebbian Version
     'hebbian': False,  
     # Choose between starndard or variant
@@ -50,11 +50,11 @@ LUNARLANDER_PARAMETERS = {
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
     # Optimizer parameters
-    'population_size': 128,
+    'population_size': 64,
     'generations': 2000,
     # 'population_size': 10,
     # 'generations': 1,
-    'stagnant_generation': 500,
+    'stagnant_generation': 250,
     'fixed_mlp_hidden_size': 64,
     'normalize_observations': False
 }
