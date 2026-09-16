@@ -408,6 +408,7 @@ class EvolutionaryAlgorithm:
         executor = None
 
         try:
+            self.summary()
             print('Initialising population...')
             if self.run_in_parallel:
                 executor = ProcessPoolExecutor(max_workers=self.cores, mp_context=mp.get_context("spawn"))
@@ -491,3 +492,13 @@ class EvolutionaryAlgorithm:
         self.record[self.i + 1] = self.best_individual.fitness
         self.evaluate_final_heldout()
         return self.best_individual.genotype, self.best_individual.fitness
+
+    def summary(self):
+        print('\n------------------------------------')
+        print('Evolutionary Algorithm')
+        print('------------------------------------')
+        print(f"Crossover probability: {self.crossover_probability}")
+        print(f"Mutation probability: {self.mutation_probability}")
+        print(f"Mutation eta: {self.mutation_eta}")
+        print(f"SBX eta: {self.sbx_eta}")
+        print('\n')

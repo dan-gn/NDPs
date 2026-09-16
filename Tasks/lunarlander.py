@@ -54,7 +54,7 @@ LUNARLANDER_PARAMETERS = {
     'add_edge_strategy': 'all_disconnected',
 
     # Optimizer parameters
-    'population_size': 128,
+    'population_size': 64,
     'generations': 2000,
     'stagnant_generation': 250,
     'fixed_mlp_hidden_size': 64,
