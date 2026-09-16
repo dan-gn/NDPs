@@ -32,15 +32,18 @@ LUNARLANDER_PARAMETERS = {
     'gca_hidden_size': 5,
     'rm_hidden_size': 5,
     'wp_hidden_size': 5,
+
+    # Task parameters
     'graph_n_inputs': env.observation_space.shape[0],  # 4
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 20,
-    # Activate Hebbian Version
+
+    # Model selection
     'hebbian': False,  
-    # Choose between starndard or variant
     'model': 'standard_ndp',
+
     # Variant NDP Parameters
     'n_nodes': 64,
     'initial_graph_density': 0.2,
@@ -49,14 +52,17 @@ LUNARLANDER_PARAMETERS = {
     'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
+
     # Optimizer parameters
-    'population_size': 64,
+    'population_size': 128,
     'generations': 2000,
-    # 'population_size': 10,
-    # 'generations': 1,
     'stagnant_generation': 250,
     'fixed_mlp_hidden_size': 64,
-    'normalize_observations': False
+    'normalize_observations': False,
+    'crossover_probability': 0.8,
+    'mutation_probability': None, # If none then 1/n_variables
+    'sbx_eta': 10,
+    'mutation_eta': 10
 }
 
 

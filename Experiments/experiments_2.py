@@ -137,6 +137,10 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_o
             run_in_parallel = run_in_parallel,
             cores = cores,
             stop_on_target = stop_on_target,
+            crossover_probability = task.parameters['crossover_probability'],
+            mutation_probability = task.parameters['mutation_probability'],
+            sbx_eta = task.parameters['sbx_eta'],
+            mutation_eta = task.parameters['mutation_eta'],
             model = ndp_params['model'],
             graph_n_inputs = ndp_params['graph_n_inputs'],
             graph_n_outputs = ndp_params['graph_n_outputs']

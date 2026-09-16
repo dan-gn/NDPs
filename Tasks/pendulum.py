@@ -33,14 +33,14 @@ PENDULUM_PARAMETERS = {
     'rm_hidden_size': 5,
     'wp_hidden_size': 5,
 
-    # Task dimensions
+    # Task parameters
     'graph_n_inputs': env.observation_space.shape[0],  # 3
     'graph_n_outputs': env.action_space.shape[0],      # 1
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 10,
 
-    # Policy configuration
+    # Policy parameters
     'hebbian': False,
     'model': 'standard_ndp',
 
@@ -56,9 +56,11 @@ PENDULUM_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 1000,
-    # 'population_size': 10,
-    # 'generations': 1,
     'stagnant_generation': 250,
+    'crossover_probability': 0.8,
+    'mutation_probability': None, # If none then 1/n_variables
+    'sbx_eta': 10,
+    'mutation_eta': 10,
 
     # FixedMLP
     'fixed_mlp_hidden_size': 32,

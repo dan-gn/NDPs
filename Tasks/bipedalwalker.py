@@ -18,7 +18,7 @@ env = gym.make("BipedalWalker-v3")
 
 BIPEDALWALKER_PARAMETERS = {
     # Standard NDP Parameters
-    'state_dim': 16,
+    'state_dim': 5,
     'weighted_graph_flag': True,
     'initial_graph': 'one_node',
     'network_extra_thinking': 5,
@@ -29,18 +29,21 @@ BIPEDALWALKER_PARAMETERS = {
     'add_hidden_node_to_minimal_network': False,
     'pruning_flag': False,
     'pruning_threshold': 0.5,
-    'gca_hidden_size': 10,
-    'rm_hidden_size': 10,
-    'wp_hidden_size': 10,
+    'gca_hidden_size': 5,
+    'rm_hidden_size': 5,
+    'wp_hidden_size': 5,
+
+    # Task parameters
     'graph_n_inputs': env.observation_space.shape[0],  # 24
     'graph_n_outputs': env.action_space.shape[0],   # 4
     'n_cycles': 6,
     'n_repeats': 1,
-    'n_rollouts': 10,
-    # Activate Hebbian Version
+    'n_rollouts': 20,
+
+    # Model selection
     'hebbian': False,  
-    # Choose between starndard or variant
     'model': 'standard_ndp',
+
     # Variant NDP Parameters
     'n_nodes': 64,
     'initial_graph_density': 0.2,
@@ -49,12 +52,15 @@ BIPEDALWALKER_PARAMETERS = {
     'edge_growing_rate': 2, # Max number of edges to add per node in each cycle
     'creating_threshold': 0,
     'add_edge_strategy': 'all_disconnected',
+
     # Optimizer parameters
-    'population_size': 64,
+    'population_size': 128,
     'generations': 2000,
-    # 'population_size': 10,
-    # 'generations': 1,
     'stagnant_generation': 250,
+    'crossover_probability': 0.8,
+    'mutation_probability': None, # If none then 1/n_variables
+    'sbx_eta': 10,
+    'mutation_eta': 10
 }
 
 

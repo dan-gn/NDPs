@@ -8,7 +8,6 @@ import numpy as np
 import random
 import torch
 import time
-import math
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing as mp
 
@@ -66,6 +65,7 @@ class EvolutionaryAlgorithm:
             population_size: int,
             max_iterations: int,
             max_stagnment: int,
+            crossover_probability: float = 0.8,
             mutation_probability: float = None, 
             mutation_eta: float = 10, 
             sbx_eta: float = 10, 
@@ -82,8 +82,8 @@ class EvolutionaryAlgorithm:
         self.population_size = population_size
         self.max_iterations = max_iterations
         self.max_stagnment = max_stagnment
-        self.mutation_probability = 1 / n_variables
-        # self.mutation_probability = mutation_probability
+        self.crossover_probability = crossover_probability
+        self.mutation_probability = mutation_probability if mutation_probability is not None else 1 / n_variables
         self.mutation_eta = mutation_eta
         self.sbx_eta = sbx_eta
         self.elitism_proportion = elitism_proportion
@@ -138,9 +138,15 @@ class EvolutionaryAlgorithm:
 
     # Random Roulette Wheel for parent selection
     def roulette_wheel(self, p:np.array) -> int:
-        r = np.random.uniform(0, 1) * sum(p)	
-        q = np.cumsum(p)
-        return next(idx for idx, value in enumerate(q) if value >= r)
+        weights = np.asarray(p, dtype=float)
+        total_weight = np.sum(weights)
+
+        if not np.isfinite(total_weight) or total_weight <= 0:
+            return np.random.randint(len(weights))
+
+        r = np.random.uniform(0, total_weight)
+        cumulative_weights = np.cumsum(weights)
+        return min(int(np.searchsorted(cumulative_weights, r, side="right")), len(weights) - 1)
 
     # Parent selection by tournament
     def tournament_selection(self, n_competitors:int=2) -> list:
@@ -155,14 +161,29 @@ class EvolutionaryAlgorithm:
         return [self.population[parents[0]], self.population[parents[1]]]
 
     # Gets parent selection probabilities
-    def compute_parent_selection_prob(self, beta:float=1.0) -> float:
-        # Get an array of all cost of current population, add acceptance criteria value
-        # and divide by the mean of the array to avoid overflow while computing exponential
-        fitness = np.array([member.fitness for member in self.population]) 
-        mean_fitness = abs(np.mean(fitness))
-        if mean_fitness != 0 and mean_fitness != math.inf:
-            fitness /= mean_fitness
-        return np.exp(-beta * fitness)
+    def compute_parent_selection_prob(self, beta:float=1.0) -> np.ndarray:
+        fitness = np.asarray([member.fitness for member in self.population], dtype=float)
+
+        if not np.all(np.isfinite(fitness)):
+            invalid_fitness = fitness[~np.isfinite(fitness)]
+
+            raise ValueError(
+                "Parent selection received non-finite fitness values: "
+                f"{invalid_fitness}"
+            )
+
+        absolute_fitness = np.abs(fitness)
+        maximum_absolute_fitness = float(np.max(absolute_fitness))
+        if maximum_absolute_fitness == 0.0:
+            scale = 1.0
+        else:
+            scale = maximum_absolute_fitness * float(np.mean(absolute_fitness / maximum_absolute_fitness))
+
+        log_weights = -beta * fitness / scale
+        log_weights -= np.max(log_weights)
+
+        weights = np.exp(log_weights)
+        return weights
 
     # ---------------------------------------------------------------------------------------
     # Evolutionary Functions Implemented on Parallel
@@ -186,12 +207,18 @@ class EvolutionaryAlgorithm:
             self.best_individual_by_graph.fitness = population[0].fitness
             self.best_individual_by_graph.best_graph = population[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = population[0].best_graph_fitness
+            if self.model is not None and 'ndp' in self.model:
+                self.best_individual_by_graph.best_graph_used_nodes = population[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+                self.best_individual_by_graph.best_graph_used_edges = population[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
         population = sorted(population, key=lambda x: x.fitness)
         if population[0].fitness < self.best_individual.fitness:
             self.best_individual.genotype = population[0].genotype.copy()
             self.best_individual.fitness = population[0].fitness
             self.best_individual.best_graph = population[0].best_graph
             self.best_individual.best_graph_fitness = population[0].best_graph_fitness
+            if self.model is not None and 'ndp' in self.model:
+                self.best_individual.best_graph_used_nodes = population[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+                self.best_individual.best_graph_used_edges = population[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
         return population
 
     # Runs Single Crossover and Mutation (for parallel execution)
@@ -204,7 +231,7 @@ class EvolutionaryAlgorithm:
         parents = self.tournament_selection() 
 
         # Crossover
-        genotype1, genotype2 = self.sbx(parents)
+        genotype1, genotype2 = self.crossover(parents)
 
         # Mutation
         mutated_g1 = self.mutate(genotype1)
@@ -244,11 +271,17 @@ class EvolutionaryAlgorithm:
                 self.best_individual.fitness = population[i].fitness
                 self.best_individual.best_graph = population[i].best_graph
                 self.best_individual.best_graph_fitness = population[i].best_graph_fitness
+                if self.model is not None and 'ndp' in self.model:
+                    self.best_individual.best_graph_used_nodes = population[i].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+                    self.best_individual.best_graph_used_edges = population[i].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
             if population[i].best_graph_fitness < self.best_individual_by_graph.best_graph_fitness:
                 self.best_individual_by_graph.genotype = population[i].genotype.copy()
                 self.best_individual_by_graph.fitness = population[i].fitness
                 self.best_individual_by_graph.best_graph = population[i].best_graph
                 self.best_individual_by_graph.best_graph_fitness = population[i].best_graph_fitness
+                if self.model is not None and 'ndp' in self.model:
+                    self.best_individual_by_graph.best_graph_used_nodes = population[i].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+                    self.best_individual_by_graph.best_graph_used_edges = population[i].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
         return population
 
     # Parent selection 
@@ -291,8 +324,9 @@ class EvolutionaryAlgorithm:
             self.best_individual_by_graph.fitness = offspring[0].fitness
             self.best_individual_by_graph.best_graph = offspring[0].best_graph
             self.best_individual_by_graph.best_graph_fitness = offspring[0].best_graph_fitness
-            self.best_individual_by_graph.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
-            self.best_individual_by_graph.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
+            if self.model is not None and 'ndp' in self.model:
+                self.best_individual_by_graph.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+                self.best_individual_by_graph.best_graph_used_edges = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
 
         self.population = sorted(self.population, key=lambda x: x.fitness)
         offspring = sorted(offspring, key=lambda x: x.fitness)
@@ -303,10 +337,21 @@ class EvolutionaryAlgorithm:
             self.best_individual.fitness = offspring[0].fitness
             self.best_individual.best_graph = offspring[0].best_graph
             self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
-            self.best_individual.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
-            self.best_individual.best_graph_used_edges = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
+            if self.model is not None and 'ndp' in self.model:
+                self.best_individual.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
+                self.best_individual.best_graph_used_edges = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
+
+    # Crossover
+    def crossover(self, parents:list) -> tuple:
+        random_value = np.random.uniform()
+        if random_value <= self.crossover_probability:
+            return self.sbx(parents)
+        else:
+            parent1 = np.asarray(parents[0].genotype).copy()
+            parent2 = np.asarray(parents[1].genotype).copy()
+            return parent1, parent2 
 
     # Mutation
     def mutate(self, genotype:np.array) -> np.array:
@@ -321,7 +366,7 @@ class EvolutionaryAlgorithm:
     def crossover_and_mutation(self, parents:list) -> list:
         offspring = []
         for p in parents:
-            genotype1, genotype2 = self.sbx(p)
+            genotype1, genotype2 = self.crossover(p)
             mutated_g1 = self.mutate(genotype1)
             fitness_g1, _, best_graph_g1, best_graph_fitness_g1 = self.objective_function(mutated_g1)
             offspring.append(Individual(self.n_variables, genotype=mutated_g1, fitness=fitness_g1, best_graph=best_graph_g1, best_graph_fitness=best_graph_fitness_g1))

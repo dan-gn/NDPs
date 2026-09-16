@@ -20,10 +20,16 @@ class FakeTask:
             "initial_node_state_mode": "coevolve",
             "state_dim": 5,
             "n_nodes": 16,
+            "graph_n_inputs": 1,
+            "graph_n_outputs": 1,
             "hebbian": False,
             "population_size": 8,
             "generations": 12,
             "stagnant_generation": 4,
+            "crossover_probability": 0.8,
+            "mutation_probability": None,
+            "mutation_eta": 10,
+            "sbx_eta": 10,
         }
 
     def evaluate_ndp(self, vector, env_seed=0):
@@ -122,6 +128,10 @@ def test_experiment_passes_budget_and_calls_ea_with_target_and_seed():
         optimiser = FakeEA.instance
         assert optimiser.kwargs["population_size"] == 8
         assert optimiser.kwargs["max_iterations"] == 12
+        assert optimiser.kwargs["crossover_probability"] == 0.8
+        assert optimiser.kwargs["mutation_probability"] is None
+        assert optimiser.kwargs["mutation_eta"] == 10
+        assert optimiser.kwargs["sbx_eta"] == 10
         assert optimiser.run_arguments == (task.target, 7)
         assert output["optimiser"] is optimiser
     finally:

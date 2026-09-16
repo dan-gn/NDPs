@@ -15,6 +15,11 @@ from Tasks.task import Task
 class RecordingEnvironment:
     def __init__(self):
         self.reset_seeds = []
+        self.observation_space = task_module.gym.spaces.Box(
+            low=np.array([-1.0], dtype=np.float32),
+            high=np.array([1.0], dtype=np.float32),
+            dtype=np.float32,
+        )
 
     def reset(self, seed=None):
         self.reset_seeds.append(seed)
@@ -44,6 +49,7 @@ class StubPolicy:
 def make_task(n_rollouts=10):
     task = object.__new__(Task)
     task.name = "RecordingEnvironment-v0"
+    task.parameters = {"normalize_observations": False}
     task.graph_n_inputs = 1
     task.graph_n_outputs = 1
     task.network_extra_thinking = 0
