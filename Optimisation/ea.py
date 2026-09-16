@@ -304,7 +304,7 @@ class EvolutionaryAlgorithm:
             self.best_individual.best_graph = offspring[0].best_graph
             self.best_individual.best_graph_fitness = offspring[0].best_graph_fitness
             self.best_individual.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_nodes(self.graph_n_inputs, self.graph_n_outputs)
-            self.best_individual.best_graph_used_nodes = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
+            self.best_individual.best_graph_used_edges = offspring[0].best_graph.get_number_of_used_edges(self.graph_n_inputs, self.graph_n_outputs)
             self.stagnment_iterations = -1
         self.stagnment_iterations += 1
 
