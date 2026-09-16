@@ -54,15 +54,18 @@ LUNARLANDER_PARAMETERS = {
     'add_edge_strategy': 'all_disconnected',
 
     # Optimizer parameters
-    'population_size': 64,
+    'population_size': 128,
     'generations': 2000,
     'stagnant_generation': 250,
     'fixed_mlp_hidden_size': 64,
     'normalize_observations': False,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
-    'sbx_eta': 10,
-    'mutation_eta': 10
+    'mutation_eta_min': 5,
+    'mutation_eta_max': 15,
+    'sbx_eta_min': 5,
+    'sbx_eta_max': 15,
+    'eta_schedule_iterations': 100
 }
 
 

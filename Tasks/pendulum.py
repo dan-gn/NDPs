@@ -45,7 +45,7 @@ PENDULUM_PARAMETERS = {
     'model': 'standard_ndp',
 
     # Variant NDP parameters
-    'n_nodes': 16,
+    'n_nodes': 32,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -59,8 +59,11 @@ PENDULUM_PARAMETERS = {
     'stagnant_generation': 250,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
-    'sbx_eta': 10,
-    'mutation_eta': 10,
+    'mutation_eta_min': 5,
+    'mutation_eta_max': 15,
+    'sbx_eta_min': 5,
+    'sbx_eta_max': 15,
+    'eta_schedule_iterations': 100,
 
     # FixedMLP
     'fixed_mlp_hidden_size': 32,

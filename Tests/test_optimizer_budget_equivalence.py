@@ -28,8 +28,11 @@ class FakeTask:
             "stagnant_generation": 4,
             "crossover_probability": 0.8,
             "mutation_probability": None,
-            "mutation_eta": 10,
-            "sbx_eta": 10,
+            "mutation_eta_min": 5,
+            "mutation_eta_max": 15,
+            "sbx_eta_min": 5,
+            "sbx_eta_max": 15,
+            "eta_schedule_iterations": 100,
         }
 
     def evaluate_ndp(self, vector, env_seed=0):
@@ -130,8 +133,11 @@ def test_experiment_passes_budget_and_calls_ea_with_target_and_seed():
         assert optimiser.kwargs["max_iterations"] == 12
         assert optimiser.kwargs["crossover_probability"] == 0.8
         assert optimiser.kwargs["mutation_probability"] is None
-        assert optimiser.kwargs["mutation_eta"] == 10
-        assert optimiser.kwargs["sbx_eta"] == 10
+        assert optimiser.kwargs["mutation_eta_min"] == 5
+        assert optimiser.kwargs["mutation_eta_max"] == 15
+        assert optimiser.kwargs["sbx_eta_min"] == 5
+        assert optimiser.kwargs["sbx_eta_max"] == 15
+        assert optimiser.kwargs["eta_schedule_iterations"] == 100
         assert optimiser.run_arguments == (task.target, 7)
         assert output["optimiser"] is optimiser
     finally:

@@ -67,8 +67,11 @@ class EvolutionaryAlgorithm:
             max_stagnment: int,
             crossover_probability: float = 0.8,
             mutation_probability: float = None, 
-            mutation_eta: float = 10, 
-            sbx_eta: float = 10, 
+            mutation_eta_min: float = 5, 
+            mutation_eta_max: float = 15, 
+            sbx_eta_min: float = 5, 
+            sbx_eta_max: float = 15,
+            eta_schedule_iterations:int = 100, 
             elitism_proportion: float = 0.1, 
             run_in_parallel: bool = False,
             cores: int = 4,
@@ -84,8 +87,11 @@ class EvolutionaryAlgorithm:
         self.max_stagnment = max_stagnment
         self.crossover_probability = crossover_probability
         self.mutation_probability = mutation_probability if mutation_probability is not None else 1 / n_variables
-        self.mutation_eta = mutation_eta
-        self.sbx_eta = sbx_eta
+        self.mutation_eta_min = mutation_eta_min
+        self.mutation_eta_max = mutation_eta_max
+        self.sbx_eta_min = sbx_eta_min
+        self.sbx_eta_max = sbx_eta_max
+        self.eta_schedule_iterations = eta_schedule_iterations
         self.elitism_proportion = elitism_proportion
         self.elitism_index = max(1, int(self.elitism_proportion * self.population_size))
         self.run_in_parallel = run_in_parallel
@@ -184,6 +190,11 @@ class EvolutionaryAlgorithm:
 
         weights = np.exp(log_weights)
         return weights
+
+    def update_eta_schedule(self):
+        progress = min(self.iterations_since_restart / self.eta_schedule_iterations, 1.0)
+        self.mutation_eta = self.mutation_eta_min + progress * (self.mutation_eta_max - self.mutation_eta_min)
+        self.sbx_eta = self.sbx_eta_min + progress * (self.sbx_eta_max - self.sbx_eta_min)
 
     # ---------------------------------------------------------------------------------------
     # Evolutionary Functions Implemented on Parallel
@@ -399,6 +410,8 @@ class EvolutionaryAlgorithm:
         self.heldout_evaluations = 0
         self.record = np.zeros(self.max_iterations + 1)
         self.stagnment_iterations = 0
+        self.iterations_since_restart = 0
+        self.update_eta_schedule()
 
     # Runs the Evolutionary Algorithm 
     def run(self, stop_criteria:int, seed:int) -> tuple:
@@ -419,10 +432,13 @@ class EvolutionaryAlgorithm:
             print('Done!')
             for self.i in range(self.max_iterations):
                 start_time = time.time()
+                self.update_eta_schedule()
                 self.record[self.i] = self.best_individual.fitness
                 if self.stagnment_iterations >= self.max_stagnment:
                     print('Restart population!')
                     self.stagnment_iterations = -1
+                    self.iterations_since_restart = 0
+                    self.update_eta_schedule()
                     if self.run_in_parallel:
                         self.population = self.parallel_initialise_population(executor)
                     else:
@@ -439,6 +455,9 @@ class EvolutionaryAlgorithm:
                         )
                 else:
                     self.update_population(executor)
+                    self.iterations_since_restart += 1
+
+
                 # if self.i % int(self.max_iterations/200) == 0:
                 if self.i % 25 == 0:
                     fitness_values = np.asarray(
@@ -449,12 +468,12 @@ class EvolutionaryAlgorithm:
                     q25, median, q75 = np.percentile(fitness_values, [25, 50, 75])
 
                     fitness_summary = (
-                        f"Mean fitness = {np.mean(fitness_values):.4f}, "
-                        f"Best fitness = {np.min(fitness_values):.4f}, "
+                        f"Mean = {np.mean(fitness_values):.4f}, "
+                        f"Best = {np.min(fitness_values):.4f}, "
                         f"Q25 = {q25:.4f}, "
                         f"Median = {median:.4f}, "
                         f"Q75 = {q75:.4f}, "
-                        f"Worst = {np.max(fitness_values):.4f}, "
+                        f"Worst = {np.max(fitness_values):.4f},"
                         # f"Best-ever fitness = {self.best_individual.fitness:.4f}"
                     )
                     # print(f'Iteration = {self.i}, Mean fitness = {np.mean([xi.fitness for xi in self.population]):.4f}, Best fitness = {self.best_individual.fitness:.4f}, Best graph fitness = {self.best_individual_by_graph.best_graph_fitness:0.4f}, Iteration time = {time.time() - start_time:.2f}')
@@ -466,6 +485,8 @@ class EvolutionaryAlgorithm:
                             f"{self.best_individual.best_graph_used_nodes}, "
                             f"Used edges = "
                             f"{self.best_individual.best_graph_used_edges}, "
+                            f"Mutation eta = {self.mutation_eta:.2f}, "
+                            f"SBX eta = {self.sbx_eta:.2f}, "
                             f"Iteration time = {time.time() - start_time:.2f}"
                         )
                     else:
@@ -501,4 +522,5 @@ class EvolutionaryAlgorithm:
         print(f"Mutation probability: {self.mutation_probability}")
         print(f"Mutation eta: {self.mutation_eta}")
         print(f"SBX eta: {self.sbx_eta}")
+        print('------------------------------------')
         print('\n')
