@@ -39,6 +39,7 @@ LUNARLANDER_PARAMETERS = {
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 20,
+    'normalize_observations': True,
 
     # Model selection
     'hebbian': False,  
@@ -58,13 +59,12 @@ LUNARLANDER_PARAMETERS = {
     'generations': 2000,
     'stagnant_generation': 200,
     'fixed_mlp_hidden_size': 64,
-    'normalize_observations': False,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
     'mutation_eta_min': 10,
     'mutation_eta_max': 10,
-    'sbx_eta_min': 10,
-    'sbx_eta_max': 10,
+    'sbx_eta_min': 15,
+    'sbx_eta_max': 15,
     'eta_schedule_iterations': 100
 }
 
