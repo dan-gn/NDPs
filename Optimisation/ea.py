@@ -528,5 +528,4 @@ class EvolutionaryAlgorithm:
         print(f"Mutation probability: {self.mutation_probability}")
         print(f"Mutation eta: {self.mutation_eta}")
         print(f"SBX eta: {self.sbx_eta}")
-        print('------------------------------------')
-        print('\n')
+        print('------------------------------------\n')

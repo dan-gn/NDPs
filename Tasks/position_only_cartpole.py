@@ -61,7 +61,7 @@ POSITION_ONLY_CARTPOLE_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 500,
-    'stagnant_generation': 250,
+    'stagnant_generation': 200,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
     'mutation_eta_min': 5,

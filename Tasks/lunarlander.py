@@ -56,15 +56,15 @@ LUNARLANDER_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 2000,
-    'stagnant_generation': 250,
+    'stagnant_generation': 200,
     'fixed_mlp_hidden_size': 64,
     'normalize_observations': False,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
-    'mutation_eta_min': 5,
-    'mutation_eta_max': 15,
-    'sbx_eta_min': 5,
-    'sbx_eta_max': 15,
+    'mutation_eta_min': 1,
+    'mutation_eta_max': 30,
+    'sbx_eta_min': 1,
+    'sbx_eta_max': 30,
     'eta_schedule_iterations': 100
 }
 

@@ -56,7 +56,7 @@ PENDULUM_PARAMETERS = {
     # Optimizer parameters
     'population_size': 64,
     'generations': 1000,
-    'stagnant_generation': 250,
+    'stagnant_generation': 200,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
     'mutation_eta_min': 5,
