@@ -60,9 +60,9 @@ BIPEDALWALKER_PARAMETERS = {
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
     'mutation_eta_min': 5,
-    'mutation_eta_max': 15,
-    'sbx_eta_min': 5,
-    'sbx_eta_max': 15,
+    'mutation_eta_max': 20,
+    'sbx_eta_min': 10,
+    'sbx_eta_max': 30,
     'eta_schedule_iterations': 100
 }
 
