@@ -46,6 +46,11 @@ class StubPolicy:
         return torch.zeros((1, self.n_outputs), dtype=torch.float32)
 
 
+class StubGraph:
+    def get_unreachable_outputs(self, n_inputs, n_outputs):
+        return []
+
+
 def make_task(n_rollouts=10):
     task = object.__new__(Task)
     task.name = "RecordingEnvironment-v0"
@@ -70,7 +75,7 @@ def recorded_rollout_seeds(monkey_env, hebbian, env_seed):
         task_module.NcHebbianLearningPolicyNetwork = StubPolicy
 
         make_task().evaluate_graph(
-            graph=object(),
+            graph=StubGraph(),
             env_seed=env_seed,
             hebbian=hebbian,
         )
