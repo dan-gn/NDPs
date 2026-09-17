@@ -246,6 +246,22 @@ class Graphnx():
             return self.get_maximum_directed_distance()
         return self.get_largest_subgraph_diameter()    
 
+    def is_there_a_path(self, source_node_ids:set[int], target_node_ids:set[int]) -> bool:
+        reachable = set(source_node_ids)
+        unreached_targets = set(target_node_ids)
+        nodes_to_visit = list(source_node_ids)
+
+        while nodes_to_visit and unreached_targets:
+            node_id = nodes_to_visit.pop()
+            for succesor_id in self._graph.successors(node_id):
+                if succesor_id in unreached_targets:
+                    unreached_targets.discard(succesor_id)
+                if succesor_id not in reachable:
+                    reachable.add(succesor_id)
+                    nodes_to_visit.append(succesor_id)
+
+        return not unreached_targets
+
     def get_unreachable_outputs(self, n_inputs: int, n_outputs: int) -> list[int]:
         n_nodes = self.number_of_nodes()
 
@@ -260,7 +276,17 @@ class Graphnx():
         return [output_node_id for output_node_id in output_node_ids if output_node_id not in reachable_node_ids]
 
     def are_all_outputs_reachable(self, n_inputs:int, n_outputs:int) -> bool:
-        return len(self.get_unreachable_outputs(n_inputs, n_outputs)) == 0
+        # return len(self.get_unreachable_outputs(n_inputs, n_outputs)) == 0
+        n_nodes = self.number_of_nodes()
+
+        if n_nodes < n_inputs + n_outputs:
+            return False
+
+        input_node_ids = set(range(n_inputs))
+        output_node_ids = range(n_nodes - n_outputs, n_nodes)
+
+        return self.is_there_a_path(input_node_ids, output_node_ids)
+
 
 
 

@@ -47,8 +47,8 @@ class StubPolicy:
 
 
 class StubGraph:
-    def get_unreachable_outputs(self, n_inputs, n_outputs):
-        return []
+    def are_all_outputs_reachable(self, n_inputs, n_outputs):
+        return True
 
 
 def make_task(n_rollouts=10):

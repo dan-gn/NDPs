@@ -16,9 +16,9 @@ class FakeGraph:
         self.unreachable_outputs = list(unreachable_outputs)
         self.calls = []
 
-    def get_unreachable_outputs(self, n_inputs, n_outputs):
+    def are_all_outputs_reachable(self, n_inputs, n_outputs):
         self.calls.append((n_inputs, n_outputs))
-        return self.unreachable_outputs
+        return not self.unreachable_outputs
 
 
 def make_parameters(**overrides):

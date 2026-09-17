@@ -47,7 +47,7 @@ LUNARLANDER_PARAMETERS = {
     'model': 'standard_ndp',
 
     # Variant NDP Parameters
-    'n_nodes': 64,
+    'n_nodes': 32,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -64,8 +64,8 @@ LUNARLANDER_PARAMETERS = {
     'mutation_probability': None, # If none then 1/n_variables
     'mutation_eta_min': 10,
     'mutation_eta_max': 10,
-    'sbx_eta_min': 15,
-    'sbx_eta_max': 15,
+    'sbx_eta_min': 10,
+    'sbx_eta_max': 10,
     'eta_schedule_iterations': 100
 }
 

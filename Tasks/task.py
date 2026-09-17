@@ -129,8 +129,7 @@ class Task:
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
 
-        unreachable_outputs = graph.get_unreachable_outputs(self.graph_n_inputs, self.graph_n_outputs)
-        if unreachable_outputs:
+        if not graph.are_all_outputs_reachable(self.graph_n_inputs, self.graph_n_outputs):
             return self.invalid_graph_fitness, [self.invalid_graph_fitness] * n_rollouts
 
         if verbose:
