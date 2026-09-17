@@ -17,6 +17,7 @@ Acrobot
 env = gym.make("Acrobot-v1")
 
 ACROBOT_PARAMETERS = {
+    'invalid_graph_fitness': 1_000.0,
     # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,

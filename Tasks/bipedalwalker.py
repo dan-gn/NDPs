@@ -17,6 +17,7 @@ Bipedal Walker
 env = gym.make("BipedalWalker-v3")
 
 BIPEDALWALKER_PARAMETERS = {
+    'invalid_graph_fitness': 2_000.0,
     # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,

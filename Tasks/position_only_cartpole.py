@@ -22,6 +22,7 @@ env = gym.make(ENVIRONMENT_NAME)
 
 
 POSITION_ONLY_CARTPOLE_PARAMETERS = {
+    'invalid_graph_fitness': 1_000.0,
     # Standard NDP parameters
     'state_dim': 5,
     'weighted_graph_flag': True,

@@ -43,6 +43,7 @@ class Task:
         self.truncated_penalty = 0  
         self.action_low = None  # Minimum action value for continuous action spaces
         self.action_high = None # Maximum action value for continuous action spaces
+        self.invalid_graph_fitness = parameters.get("invalid_graph_fitness", 1_000_000.0)
         # Graph parameters
         self.graph_n_inputs = parameters['graph_n_inputs']
         self.graph_n_outputs = parameters['graph_n_outputs']
@@ -125,6 +126,13 @@ class Task:
 
     # Graph Evaluation (runs multiple rollouts)
     def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=0, render:bool=False, hebbian:bool=False, verbose:bool=False):
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
+
+        unreachable_outputs = graph.get_unreachable_outputs(self.graph_n_inputs, self.graph_n_outputs)
+        if unreachable_outputs:
+            return self.invalid_graph_fitness, [self.invalid_graph_fitness] * n_rollouts
+
         if verbose:
             print('Creating ANN from graph')
 
@@ -178,6 +186,7 @@ class Task:
         with torch.no_grad():
             for _ in range(self.n_repeats):
                 graph = ndp.develope(self.n_cycles)
+
                 reward, rollout = self.evaluate_graph(graph, n_rollouts, env_seed, render=render, hebbian=ndp_config['hebbian'])
 
                 graphs.append(graph)

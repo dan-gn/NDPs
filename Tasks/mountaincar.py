@@ -18,6 +18,7 @@ MountainCar
 env = gym.make("MountainCar-v0")
 
 MOUNTAINCAR_PARAMETERS = {
+    'invalid_graph_fitness': 1_000.0,
     # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,

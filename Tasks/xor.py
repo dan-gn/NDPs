@@ -34,6 +34,7 @@ Y_XOR = torch.tensor([
 ])
 
 XOR_PARAMETERS = {
+    'invalid_graph_fitness': 10.0,
     # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,
@@ -130,4 +131,3 @@ class XOR(Task):
             return np.mean(loss_list), predictions_list, best_graph, best_loss
         else:
             return np.mean(loss_list)
-

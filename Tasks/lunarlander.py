@@ -17,6 +17,7 @@ Lunar Lander
 env = gym.make("LunarLander-v3")
 
 LUNARLANDER_PARAMETERS = {
+    'invalid_graph_fitness': 1_000.0,
     # Standard NDP Parameters
     'state_dim': 5,
     'weighted_graph_flag': True,
@@ -39,7 +40,7 @@ LUNARLANDER_PARAMETERS = {
     'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 20,
-    'normalize_observations': True,
+    'normalize_observations': False,
 
     # Model selection
     'hebbian': False,  
