@@ -91,7 +91,7 @@ class EvolutionaryAlgorithm:
         self.mutation_eta_max = mutation_eta_max
         self.sbx_eta_min = sbx_eta_min
         self.sbx_eta_max = sbx_eta_max
-        self.eta_schedule_iterations = eta_schedule_iterations
+        self.eta_schedule_iterations = eta_schedule_iterations 
         self.elitism_proportion = elitism_proportion
         self.elitism_index = max(1, int(self.elitism_proportion * self.population_size))
         self.run_in_parallel = run_in_parallel
@@ -192,7 +192,8 @@ class EvolutionaryAlgorithm:
         return weights
 
     def update_eta_schedule(self):
-        progress = min(self.iterations_since_restart / self.eta_schedule_iterations, 1.0)
+        self.adaptability_coefficient = np.clip(self.adaptability_coefficient, 0, self.eta_schedule_iterations)
+        progress = self.adaptability_coefficient / self.eta_schedule_iterations
         self.mutation_eta = self.mutation_eta_min + progress * (self.mutation_eta_max - self.mutation_eta_min)
         self.sbx_eta = self.sbx_eta_min + progress * (self.sbx_eta_max - self.sbx_eta_min)
 
@@ -410,7 +411,7 @@ class EvolutionaryAlgorithm:
         self.heldout_evaluations = 0
         self.record = np.zeros(self.max_iterations + 1)
         self.stagnment_iterations = 0
-        self.iterations_since_restart = 0
+        self.adaptability_coefficient = 0
         self.update_eta_schedule()
 
     # Runs the Evolutionary Algorithm 
@@ -436,9 +437,9 @@ class EvolutionaryAlgorithm:
                 self.record[self.i] = self.best_individual.fitness
                 if self.stagnment_iterations >= self.max_stagnment:
                     print('Restart population!')
-                    self.stagnment_iterations = -1
-                    self.iterations_since_restart = 0
-                    self.update_eta_schedule()
+                    self.stagnment_iterations = 0
+                    self.adaptability_coefficient = 0
+                    self.update_eta_schedule()  # Just updating the values to get them on the print
                     if self.run_in_parallel:
                         self.population = self.parallel_initialise_population(executor)
                     else:
@@ -455,7 +456,12 @@ class EvolutionaryAlgorithm:
                         )
                 else:
                     self.update_population(executor)
-                    self.iterations_since_restart += 1
+                    if (self.stagnment_iterations >= (self.max_stagnment - self.eta_schedule_iterations)):
+                        self.adaptability_coefficient -= 1
+                    else:
+                        self.adaptability_coefficient += 1
+
+
 
 
                 # if self.i % int(self.max_iterations/200) == 0:
@@ -480,7 +486,7 @@ class EvolutionaryAlgorithm:
                     if self.model is not None and 'ndp' in self.model:
                         print(
                             f"Iteration = {self.i}, "
-                            f"{fitness_summary}, "
+                            f"{fitness_summary} "
                             f"Used nodes = "
                             f"{self.best_individual.best_graph_used_nodes}, "
                             f"Used edges = "
