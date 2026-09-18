@@ -39,7 +39,7 @@ LUNARLANDER_PARAMETERS = {
     'graph_n_outputs': env.action_space.n,
     'n_cycles': 5,
     'n_repeats': 1,
-    'n_rollouts': 20,
+    'n_rollouts': 50,
     'normalize_observations': False,
 
     # Model selection
