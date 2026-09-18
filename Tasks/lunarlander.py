@@ -64,8 +64,8 @@ LUNARLANDER_PARAMETERS = {
     'mutation_probability': None, # If none then 1/n_variables
     'mutation_eta_min': 10,
     'mutation_eta_max': 10,
-    'sbx_eta_min': 10,
-    'sbx_eta_max': 10,
+    'sbx_eta_min': 15,
+    'sbx_eta_max': 15,
     'eta_schedule_iterations': 100
 }
 
