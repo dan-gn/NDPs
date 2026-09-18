@@ -37,7 +37,7 @@ BIPEDALWALKER_PARAMETERS = {
     # Task parameters
     'graph_n_inputs': env.observation_space.shape[0],  # 24
     'graph_n_outputs': env.action_space.shape[0],   # 4
-    'n_cycles': r,
+    'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 20,
 
