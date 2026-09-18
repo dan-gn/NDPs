@@ -37,7 +37,7 @@ BIPEDALWALKER_PARAMETERS = {
     # Task parameters
     'graph_n_inputs': env.observation_space.shape[0],  # 24
     'graph_n_outputs': env.action_space.shape[0],   # 4
-    'n_cycles': 5,
+    'n_cycles': r,
     'n_repeats': 1,
     'n_rollouts': 20,
 
@@ -60,10 +60,10 @@ BIPEDALWALKER_PARAMETERS = {
     'stagnant_generation': 200,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
-    'mutation_eta_min': 5,
-    'mutation_eta_max': 20,
-    'sbx_eta_min': 10,
-    'sbx_eta_max': 30,
+    'mutation_eta_min': 10,
+    'mutation_eta_max': 10,
+    'sbx_eta_min': 15,
+    'sbx_eta_max': 15,
     'eta_schedule_iterations': 100
 }
 
