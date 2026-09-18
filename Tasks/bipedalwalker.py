@@ -37,7 +37,7 @@ BIPEDALWALKER_PARAMETERS = {
     # Task parameters
     'graph_n_inputs': env.observation_space.shape[0],  # 24
     'graph_n_outputs': env.action_space.shape[0],   # 4
-    'n_cycles': 6,
+    'n_cycles': 5,
     'n_repeats': 1,
     'n_rollouts': 20,
 
@@ -46,7 +46,7 @@ BIPEDALWALKER_PARAMETERS = {
     'model': 'standard_ndp',
 
     # Variant NDP Parameters
-    'n_nodes': 64,
+    'n_nodes': 32,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
@@ -55,7 +55,7 @@ BIPEDALWALKER_PARAMETERS = {
     'add_edge_strategy': 'all_disconnected',
 
     # Optimizer parameters
-    'population_size': 128,
+    'population_size': 64,
     'generations': 2000,
     'stagnant_generation': 200,
     'crossover_probability': 0.8,
