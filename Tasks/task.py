@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import gymnasium as gym
+import time
 
 import os
 import sys
@@ -16,8 +17,10 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.policy_network import PolicyNetwork
-from Graph.ndp_graph import Graphnx
+from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
+from Baseline.fixed_mlp import FixedMLP
+from Graph.graph_nx import Graphnx
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -27,98 +30,167 @@ General task
 
 class Task:
 
+    # ---------------------------------------------------------------------------------------
+    # Initialisation
+    # ---------------------------------------------------------------------------------------
+
     def __init__(self, parameters:dict):
         self.parameters = dict(parameters)
+        # Task parameteres
         self.name = None
+        self.action_space_type = 'discrete'
+        self.target = parameters['target'] if 'target' in parameters else None
+        self.truncated_penalty = 0  
+        self.action_low = None  # Minimum action value for continuous action spaces
+        self.action_high = None # Maximum action value for continuous action spaces
+        self.invalid_graph_fitness = parameters.get("invalid_graph_fitness", 1_000_000.0)
+        # Graph parameters
         self.graph_n_inputs = parameters['graph_n_inputs']
         self.graph_n_outputs = parameters['graph_n_outputs']
-        self.n_cycles = parameters['n_cycles']
-        self.n_repeats = parameters['n_repeats']
-        self.n_rollouts = parameters['n_rollouts'] if 'n_rollouts' in parameters else None
-        self.target = parameters['target'] if 'target' in parameters else None
-        self.truncated_penalty = 0
-        if parameters['shared_initial_node_state_flag']:
-            ndp = NeuralDevelopmentalProgram(parameters)
+        self.network_extra_thinking = parameters['network_extra_thinking']
+        # NDP Evaluation parameters
+        self.n_cycles = parameters['n_cycles']  # Developmental cycles
+        self.n_repeats = parameters['n_repeats']   # Developmental repetitions 
+        self.n_rollouts = parameters['n_rollouts']  # Rollouts on the task for each developed graph
+        if parameters['initial_node_state_mode'] == 'random_shared':
+            self.parameters['shared_initial_node_state'] = np.zeros((1, parameters['state_dim']))
+            ndp = NeuralDevelopmentalProgram(self.parameters)
             self.parameters['shared_initial_node_state'] = ndp._genereate_node_state()
 
+    def normalize_observation(self, observation, observation_space):
+        if not self.parameters.get("normalize_observations", False):
+            return observation
 
-    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=None, render:str=False, verbose:bool=False):
-        """
-        Evaluates a developed NDP graph on task.
+        low = np.asarray(observation_space.low, dtype=np.float32)
+        high = np.asarray(observation_space.high, dtype=np.float32)
 
-        Returns:
-            mean_reward: average cumulative reward over rollouts
-            rewards: list with cumulative reward of each rollout
-        """
+        scale = np.maximum(np.abs(low), np.abs(high))
+        scale = np.where(scale > 0.0, scale, 1.0)
 
-        env = gym.make(self.name, render_mode="human" if render else None)
+        normalized = np.asarray(observation, dtype=np.float32) / scale
 
+        return np.clip(normalized, -1.0, 1.0)
+
+    # ---------------------------------------------------------------------------------------
+    # Evaluations
+    # ---------------------------------------------------------------------------------------
+
+    def evaluate_policy(self, policy, hebbian:bool=False, n_rollouts:int=None, env_seed:int=0, render:bool=False, verbose:bool=False):
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
 
+        # Create the environment
+        env = gym.make(self.name, render_mode="human" if render else None)
+
         rewards = []
-        with torch.no_grad():
-            if verbose:
-                print('Creating ANN from graph')
-            ann = PolicyNetwork(graph, n_inputs=self.graph_n_inputs, n_outputs=self.graph_n_outputs)
-            if verbose:
-                print('Done!')
+        for i in range(n_rollouts):
 
-            for i in range(n_rollouts):
+            seed = env_seed + i if env_seed is not None else None
+            obs, _ = env.reset(seed=seed)
+
+            policy.reset_activations()
+            if hebbian:
+                policy.reset_weights()
+
+            terminated = False
+            truncated = False
+            cumulative_reward = 0.0
+            if verbose:
                 actions_hist = []
-                seed = env_seed + i if env_seed is not None else None
-                obs, _ = env.reset(seed=seed)
 
-                done = False
-                truncated = False
-                cumulative_reward = 0.0
+            while not terminated and not truncated:
+                obs = self.normalize_observation(obs, env.observation_space)
+                obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
-                while not done and not truncated:
-                    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                output = policy(obs)
 
-                    output = ann(obs)
-
-                    action = self.compute_action(output)
+                action = self.compute_action(output)
+                if verbose:
                     actions_hist.append(action)
 
-                    obs, reward, done, truncated, _ = env.step(action)
+                obs, reward, terminated, truncated, _ = env.step(action)
 
-                    cumulative_reward += reward
+                cumulative_reward += reward
 
-                if truncated:
-                    cumulative_reward -= self.truncated_penalty
+            if truncated:
+                cumulative_reward -= self.truncated_penalty
 
-                # print(np.min(actions_hist), np.mean(actions_hist), np.max(actions_hist), len(actions_hist))
-                # a = np.mean(actions_hist)
-                # if not a.is_integer():
-                #     print(np.min(actions_hist), np.mean(actions_hist), np.max(actions_hist), len(actions_hist), cumulative_reward)
-                #     # print(a, cumulative_reward)
-                if verbose:
-                    print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
-                rewards.append(-cumulative_reward)
+            if verbose:
+                print(f'Rollout {i}: Reward = {cumulative_reward}, Mean Action = {np.mean(actions_hist)}')
+            rewards.append(-cumulative_reward)
 
         env.close()
 
-        return np.sum(rewards), rewards
+        return np.mean(rewards), rewards
 
-    def evaluate_ndp(self, params:np.array, n_rollouts:int=None, return_rollouts:bool=True, render:str=False):
-        ndp = NeuralDevelopmentalProgram(self.parameters)
-        # weights = np.tanh(params)
-        weights = np.clip(params, -1.0, 1.0)
+
+    # Graph Evaluation (runs multiple rollouts)
+    def evaluate_graph(self, graph:Graphnx, n_rollouts:int=None, env_seed:int=0, render:bool=False, hebbian:bool=False, verbose:bool=False):
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
+
+        if not graph.are_all_outputs_reachable(self.graph_n_inputs, self.graph_n_outputs):
+            return self.invalid_graph_fitness, [self.invalid_graph_fitness] * n_rollouts
+
+        if verbose:
+            print('Creating ANN from graph')
+
+        if hebbian:
+            policy = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+        else:
+            policy = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+
+        if verbose:
+            print('Done!')
+
+        return self.evaluate_policy(policy, hebbian, n_rollouts, env_seed, render, verbose)
+
+
+       
+    # NDP Evaluation (develops graphs and evaluates them)
+    def evaluate_ndp(self, ndp_vector:np.array, n_rollouts:int=None, env_seed:int=0, return_rollouts:bool=True, render:bool=False):
+
+        # Set up the NDP
+        ndp_config = dict(self.parameters)
+
+        # params_bounded = np.tanh(params)
+        params_bounded = np.clip(ndp_vector, -1.0, 1.0, dtype=np.float32)
+
+        if ndp_config['initial_node_state_mode'] == 'coevolve':
+            if ndp_config['model'] == 'hebbian_ndp':
+                split_index = 1 + (ndp_config['state_dim'] * ndp_config['n_nodes'])
+            elif ndp_config['model'] == 'standard_ndp':
+                split_index = ndp_config['state_dim']
+            ndp_config['shared_initial_node_state'] = params_bounded[np.newaxis, :split_index]
+            weights = params_bounded[split_index:]
+        else:
+            weights = params_bounded
+
+        if ndp_config['model'] == 'standard_ndp':
+            ndp = NeuralDevelopmentalProgram(ndp_config)
+        elif ndp_config['model'] == 'hebbian_ndp':
+            ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
+        else:
+            raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
+
         ndp.update_mlp_weights(weights)
 
+        # Develope and evaluate the NDP
         if n_rollouts is None:
             n_rollouts = self.n_rollouts
 
         graphs = []
         rewards = []
         rollouts = []
-        for _ in range(self.n_repeats):
-            graph = ndp.develope(self.n_cycles)
-            reward, rollout = self.evaluate_graph(graph, n_rollouts, render=render)
-            graphs.append(graph)
-            rewards.append(reward)
-            rollouts.extend(rollout)
+        with torch.no_grad():
+            for _ in range(self.n_repeats):
+                graph = ndp.develope(self.n_cycles)
+
+                reward, rollout = self.evaluate_graph(graph, n_rollouts, env_seed, render=render, hebbian=ndp_config['hebbian'])
+
+                graphs.append(graph)
+                rewards.append(reward)
+                rollouts.extend(rollout)
 
         best_reward_idx = np.argmin(rewards)
         best_reward = rewards[best_reward_idx] 
@@ -129,16 +201,71 @@ class Task:
         else:
             return np.mean(rewards)
 
-    def compute_action(self, output=None):
-        if self.graph_n_outputs == 1:   # Binary output
-            action =  torch.sigmoid(output)
-            return int(torch.round(action))
-        else:   # Integer output
-            # print(output, output.shape)
-            probs =  F.softmax(output, dim=1)
-            # print(probs)
-            return int(probs.argmax())
+    # Evaluates fixed mlp
+    def evaluate_fixed_mlp(self, mlp_vector:np.array, n_rollouts:int=None, env_seed:int=0, return_rollouts:bool=True, render:bool=False):
+        # Set up the NDP
+        mlp_config = dict(self.parameters)
+
+        # params_bounded = np.tanh(params)
+        params_bounded = np.clip(mlp_vector, -1.0, 1.0, dtype=np.float32)
+
+        model = FixedMLP(mlp_config)
+
+        model.update_mlp_weights(params_bounded)
+
+        # Develope and evaluate the NDP
+        if n_rollouts is None:
+            n_rollouts = self.n_rollouts
+
+        rewards = []
+        rollouts = []
+        with torch.no_grad():
+            for _ in range(self.n_repeats):
+                reward, rollout = self.evaluate_policy(model, mlp_config['hebbian'], n_rollouts, env_seed, render)
+
+                rewards.append(reward)
+                rollouts.extend(rollout)
+
+        best_reward_idx = np.argmin(rewards)
+        best_reward = rewards[best_reward_idx] 
+
+        if return_rollouts:
+            return np.mean(rewards), rollouts, None, best_reward
+        else:
+            return np.mean(rewards)
+
+    # ---------------------------------------------------------------------------------------
+    # Action according to the task
+    # ---------------------------------------------------------------------------------------
+
+    def compute_action(self, output:torch.Tensor):
+        # Discrete action space
+        if self.action_space_type == 'discrete':
+            # Binary output
+            if self.graph_n_outputs == 1:   
+                action =  torch.sigmoid(output)
+                return int(torch.round(action))
+            # Integer output
+            else:   
+                probs =  F.softmax(output, dim=1)
+                return int(probs.argmax())
+
+        # Continuous action space
+        elif self.action_space_type == 'continuous':
+            action = torch.tanh(output).numpy().reshape(-1)
+
+            if self.action_low is not None and self.action_high is not None:
+                normalised_action = (action + 1.0) * 0.5
+                action = self.action_low + normalised_action * (self.action_high - self.action_low)
+            return action.astype(np.float32)
+
+        else:
+            raise ValueError('Action Space Type should be either discrete or continuous.')
     
+    # ---------------------------------------------------------------------------------------
+    # Summary
+    # ---------------------------------------------------------------------------------------
+
     def summary(self):
         print('-------------------------------------')
         print('Task')

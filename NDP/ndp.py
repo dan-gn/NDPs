@@ -16,8 +16,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from NDP.ndp_mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
-from Graph.ndp_graph import Node, Graph
+from NDP.mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
+from Graph.graph import Node, Graph
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
