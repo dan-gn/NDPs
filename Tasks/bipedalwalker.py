@@ -55,8 +55,8 @@ BIPEDALWALKER_PARAMETERS = {
     'add_edge_strategy': 'all_disconnected',
 
     # Optimizer parameters
-    'population_size': 128,
-    'generations': 2000,
+    'population_size': 256,
+    'generations': 500,
     'stagnant_generation': 200,
     'crossover_probability': 0.8,
     'mutation_probability': None, # If none then 1/n_variables
