@@ -10,7 +10,7 @@ import numpy as np
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from Optimisation.ea import EvolutionaryAlgorithm
 from Tasks.acrobot import Acrobot
@@ -39,8 +39,8 @@ TASK_CLASSES = [
 MODEL_CONFIGURATIONS = [
     ("standard_ndp", False),
     ("standard_ndp", True),
-    ("hebbian_ndp", False),
-    ("hebbian_ndp", True),
+    ("rewiring_ndp", False),
+    ("rewiring_ndp", True),
 ]
 
 
@@ -62,15 +62,15 @@ def configure_for_smoke_test(task):
 def get_number_of_variables(task):
     if task.parameters["model"] == "standard_ndp":
         ndp = NeuralDevelopmentalProgram(task.parameters)
-    elif task.parameters["model"] == "hebbian_ndp":
-        ndp = HebbianNeuralDevelopmentalProgram(task.parameters)
+    elif task.parameters["model"] in ("rewiring_ndp", "hebbian_ndp"):
+        ndp = RewiringNeuralDevelopmentalProgram(task.parameters)
     else:
         raise ValueError("Unknown NDP model.")
 
     n_variables = ndp.get_total_number_of_mlp_parameters()
 
     if task.parameters["initial_node_state_mode"] == "coevolve":
-        if task.parameters["model"] == "hebbian_ndp":
+        if task.parameters["model"] in ("rewiring_ndp", "hebbian_ndp"):
             n_variables += 1 + (
                 task.parameters["state_dim"] * task.parameters["n_nodes"]
             )

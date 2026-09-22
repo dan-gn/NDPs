@@ -36,14 +36,14 @@ TASKS = {
     "bipedalwalker": BipedalWalker,
 }
 
-# MODELS = ("standard_ndp", "hebbian_ndp")
+# MODELS = ("standard_ndp", "rewiring_ndp")
 # POLICY_HEBBIAN_OPTIONS = (False, True)
 
 NDP_CONDITIONS = (
     ("standard_ndp", False),
     ("standard_ndp", True),
-    ("hebbian_ndp", False),
-    ("hebbian_ndp", True),
+    ("rewiring_ndp", False),
+    ("rewiring_ndp", True),
 )
 
 FIXED_MLP_TASKS = {"pendulum", "lunarlander"}
@@ -232,7 +232,7 @@ def parse_arguments():
         "--models",
         nargs="+",
         default=["all"],
-        choices=["all", "standard_ndp", "hebbian_ndp", "fixed_mlp"],
+        choices=["all", "standard_ndp", "rewiring_ndp", "hebbian_ndp", "fixed_mlp"],
     )
     parser.add_argument(
         "--algorithm",
@@ -362,7 +362,10 @@ def main():
 
     os.environ["NDP_MAX_CORES"] = str(args.cores)
     selected_tasks = list(TASKS) if "all" in args.tasks else args.tasks
-    requested_models = None if "all" in args.models else set(args.models)
+    requested_models = None if "all" in args.models else {
+        "rewiring_ndp" if model == "hebbian_ndp" else model
+        for model in args.models
+    }
     requested_policy_hebbian = (
         None
         if "all" in args.policy_hebbian

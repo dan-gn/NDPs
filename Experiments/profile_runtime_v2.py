@@ -6,7 +6,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.policy_network import NcHebbianLearningPolicyNetwork, PolicyNetwork
 from Tasks.bipedalwalker import BipedalWalker
@@ -23,7 +23,7 @@ TASKS = (CartPole, Pendulum, PositionOnlyCartPole, BipedalWalker)
 
 def develop(task, model, seed):
     cfg = dict(task.parameters); cfg["model"] = model
-    cls = NeuralDevelopmentalProgram if model == "standard_ndp" else HebbianNeuralDevelopmentalProgram
+    cls = NeuralDevelopmentalProgram if model == "standard_ndp" else RewiringNeuralDevelopmentalProgram
     base = cls(cfg); n = base.get_total_number_of_mlp_parameters()
     state_n = 0
     if cfg["initial_node_state_mode"] == "coevolve":
@@ -75,7 +75,7 @@ def main():
     for task_cls in TASKS:
       task = task_cls(); horizon = HORIZON[task.name]
       budget = task.parameters["population_size"] * (task.parameters["generations"] + 1)
-      for model in ("standard_ndp", "hebbian_ndp"):
+      for model in ("standard_ndp", "rewiring_ndp"):
        for seed in SEEDS:
         graph, dev, n_params = develop(task, model, seed)
         complete = graph.number_of_nodes() >= task.graph_n_inputs + task.graph_n_outputs

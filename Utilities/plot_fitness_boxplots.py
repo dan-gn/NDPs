@@ -37,6 +37,9 @@ MODEL_ORDER = [
 MODEL_LABELS = {
     ("standard_ndp", False): "NDP",
     ("standard_ndp", True): "NDP + HL",
+    ("rewiring_ndp", False): "R-NDP",
+    ("rewiring_ndp", True): "R-NDP + HL",
+    # Legacy identifier retained for previously generated result logs.
     ("hebbian_ndp", False): "R-NDP",
     ("hebbian_ndp", True): "R-NDP + HL",
 }

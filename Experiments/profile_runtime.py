@@ -11,7 +11,7 @@ import torch
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.policy_network import NcHebbianLearningPolicyNetwork, PolicyNetwork
 from Tasks.bipedalwalker import BipedalWalker
@@ -30,7 +30,7 @@ TASK_CLASSES = [
     PositionOnlyCartPole,
     BipedalWalker,
 ]
-MODELS = ["standard_ndp", "hebbian_ndp"]
+MODELS = ["standard_ndp", "rewiring_ndp"]
 POLICY_HEBBIAN_FLAGS = [False, True]
 
 
@@ -46,14 +46,14 @@ def build_ndp_and_develop(task, model, seed):
 
     if model == "standard_ndp":
         ndp = NeuralDevelopmentalProgram(config)
-    elif model == "hebbian_ndp":
-        ndp = HebbianNeuralDevelopmentalProgram(config)
+    elif model in ("rewiring_ndp", "hebbian_ndp"):
+        ndp = RewiringNeuralDevelopmentalProgram(config)
     else:
         raise ValueError(f"Unknown model: {model}")
 
     n_parameters = ndp.get_total_number_of_mlp_parameters()
     if config["initial_node_state_mode"] == "coevolve":
-        if model == "hebbian_ndp":
+        if model in ("rewiring_ndp", "hebbian_ndp"):
             n_parameters += 1 + config["state_dim"] * config["n_nodes"]
         else:
             n_parameters += config["state_dim"]
@@ -63,7 +63,7 @@ def build_ndp_and_develop(task, model, seed):
     vector = np.clip(vector, -1.0, 1.0)
 
     if config["initial_node_state_mode"] == "coevolve":
-        if model == "hebbian_ndp":
+        if model in ("rewiring_ndp", "hebbian_ndp"):
             split_index = 1 + config["state_dim"] * config["n_nodes"]
         else:
             split_index = config["state_dim"]
@@ -75,7 +75,7 @@ def build_ndp_and_develop(task, model, seed):
     if model == "standard_ndp":
         ndp = NeuralDevelopmentalProgram(config)
     else:
-        ndp = HebbianNeuralDevelopmentalProgram(config)
+        ndp = RewiringNeuralDevelopmentalProgram(config)
     ndp.update_mlp_weights(weights)
 
     np.random.seed(seed)

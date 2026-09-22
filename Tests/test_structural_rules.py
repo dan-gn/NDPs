@@ -7,12 +7,12 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from Graph.graph_nx import Graphnx
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 
 
 def make_ndp(n_inputs=2, max_edges=2, seed=123):
     """Build only the state needed by the structural helper methods."""
-    ndp = object.__new__(HebbianNeuralDevelopmentalProgram)
+    ndp = object.__new__(RewiringNeuralDevelopmentalProgram)
     ndp.graph_n_inputs = n_inputs
     ndp.max_edges_to_add_per_node = max_edges
     ndp.rng = np.random.default_rng(seed)

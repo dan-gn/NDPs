@@ -18,6 +18,14 @@ class FakeGraph:
     def number_of_edges(self):
         return 11
 
+    def get_number_of_used_nodes(self, n_inputs, n_outputs):
+        assert (n_inputs, n_outputs) == (2, 1)
+        return 5
+
+    def get_number_of_used_edges(self, n_inputs, n_outputs):
+        assert (n_inputs, n_outputs) == (2, 1)
+        return 9
+
     def are_all_outputs_reachable(self, n_inputs, n_outputs):
         assert (n_inputs, n_outputs) == (2, 1)
         return True
@@ -42,7 +50,7 @@ def fake_task():
         name="TestEnvironment-v0",
         parameters={
             "initial_node_state_mode": "coevolve",
-            "model": "hebbian_ndp",
+            "model": "rewiring_ndp",
             "hebbian": True,
             "graph_n_inputs": 2,
             "graph_n_outputs": 1,
@@ -83,6 +91,8 @@ def make_ea():
             best_graph=graph,
             best_graph_fitness=-25.0,
             best_graph_fitness_test=-20.0,
+            best_graph_used_nodes=5,
+            best_graph_used_edges=9,
         ),
         best_individual_by_graph=SimpleNamespace(
             best_graph=graph,
@@ -121,6 +131,8 @@ def test_cma_values():
     assert log["best_graph_test"] == -20.0
     assert log["best_graph_n_nodes"] == 7
     assert log["best_graph_n_edges"] == 11
+    assert log["best_graph_used_nodes"] == 5
+    assert log["best_graph_used_edges"] == 9
     assert log["best_graph_are_all_outputs_reachable"] is True
     assert log["best_graph_n_unreachable_outputs"] == 0
     assert log["best_graph_unreachable_output_ids"] == "[]"
@@ -145,6 +157,8 @@ def test_ea_values():
     assert log["best_graph_test"] == -20.0
     assert log["best_graph_n_nodes"] == 7
     assert log["best_graph_n_edges"] == 11
+    assert log["best_graph_used_nodes"] == 5
+    assert log["best_graph_used_edges"] == 9
     assert log["best_graph_are_all_outputs_reachable"] is True
     assert log["best_graph_n_unreachable_outputs"] == 0
     assert log["best_graph_unreachable_output_ids"] == "[]"
@@ -169,6 +183,8 @@ def test_scalar_cma_objective_is_safe():
     assert log["best_graph_test"] is None
     assert log["best_graph_n_nodes"] is None
     assert log["best_graph_n_edges"] is None
+    assert log["best_graph_used_nodes"] is None
+    assert log["best_graph_used_edges"] is None
     assert log["best_graph_are_all_outputs_reachable"] is None
     assert log["best_graph_n_unreachable_outputs"] is None
     assert log["best_graph_unreachable_output_ids"] is None

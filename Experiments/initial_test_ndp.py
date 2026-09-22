@@ -16,7 +16,7 @@ sys.path.append(parent)
 
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -125,7 +125,7 @@ def test_with_optimisation():
 
     # Initial parameters
     ndp = NeuralDevelopmentalProgram(ndp_params)
-    # ndp = HebbianNeuralDevelopmentalProgram(ndp_params)
+    # ndp = RewiringNeuralDevelopmentalProgram(ndp_params)
 
     print('This is an initial test of the NDP!')
     task.summary()
@@ -134,7 +134,7 @@ def test_with_optimisation():
     n_params = ndp.get_total_number_of_mlp_parameters()
     
     if ndp_params['initial_node_state_mode'] == 'coevolve':
-        if isinstance(ndp, HebbianNeuralDevelopmentalProgram):
+        if isinstance(ndp, RewiringNeuralDevelopmentalProgram):
             n_params += 1 + (ndp_params['state_dim'] * ndp_params['n_nodes'])
         else:
             n_params += ndp_params['state_dim']
@@ -147,7 +147,7 @@ def test_with_optimisation():
 
     if 'hebbian' not in ndp_params:
         ndp_params['hebbian'] = False
-    print(f'Hebbian model = {ndp_params['hebbian']}')
+    print(f"Hebbian model = {ndp_params['hebbian']}")
 
     if optimisation_algorithm == 'CMA':
         # CMA
@@ -228,4 +228,3 @@ Main function
 if __name__ == '__main__':
 
     simple_test_v1()
-

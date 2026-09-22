@@ -21,6 +21,14 @@ class FakeGraph:
     def number_of_edges(self):
         return 11
 
+    def get_number_of_used_nodes(self, n_inputs, n_outputs):
+        assert (n_inputs, n_outputs) == (2, 3)
+        return 5
+
+    def get_number_of_used_edges(self, n_inputs, n_outputs):
+        assert (n_inputs, n_outputs) == (2, 3)
+        return 9
+
     def get_unreachable_outputs(self, n_inputs, n_outputs):
         assert (n_inputs, n_outputs) == (2, 3)
         return self.unreachable_outputs.copy()
@@ -31,7 +39,7 @@ def make_task():
         name="TestEnvironment-v0",
         parameters={
             "initial_node_state_mode": "coevolve",
-            "model": "hebbian_ndp",
+            "model": "rewiring_ndp",
             "hebbian": False,
             "graph_n_inputs": 2,
             "graph_n_outputs": 3,
@@ -47,11 +55,20 @@ def make_ea(graph):
         i=12,
         n_variables=4,
         max_stagnment=10,
+        stop_on_target=False,
         goal_achieved=False,
         optimisation_evaluations=104,
         training_reevaluations=0,
         heldout_evaluations=2,
-        best_individual=SimpleNamespace(fitness=-50.0, fitness_test=-45.0),
+        best_individual=SimpleNamespace(
+            fitness=-50.0,
+            fitness_test=-45.0,
+            best_graph=graph,
+            best_graph_fitness=-25.0,
+            best_graph_fitness_test=-18.0,
+            best_graph_used_nodes=5,
+            best_graph_used_edges=9,
+        ),
         best_individual_by_graph=SimpleNamespace(
             best_graph=graph,
             best_graph_fitness=-25.0,

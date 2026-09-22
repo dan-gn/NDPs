@@ -6,7 +6,7 @@ import numpy as np
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 
 
@@ -49,7 +49,7 @@ def variant_config(strategy, seed_gene=-1.0):
         "graph_n_outputs": 1,
         "add_edge_strategy": strategy,
         "hebbian": False,
-        "model": "hebbian_ndp",
+        "model": "rewiring_ndp",
     }
 
 
@@ -96,12 +96,12 @@ def assert_same_graph(first, second):
 
 def test_variant_reproducibility(strategy):
     config = variant_config(strategy)
-    template, model_vector = build_ndp(HebbianNeuralDevelopmentalProgram, config)
+    template, model_vector = build_ndp(RewiringNeuralDevelopmentalProgram, config)
     del template
 
     for cycles in (0, 1, 2):
         first, _ = build_ndp(
-            HebbianNeuralDevelopmentalProgram,
+            RewiringNeuralDevelopmentalProgram,
             config,
             model_vector,
         )
@@ -111,7 +111,7 @@ def test_variant_reproducibility(strategy):
         np.random.uniform(size=1000)
 
         second, _ = build_ndp(
-            HebbianNeuralDevelopmentalProgram,
+            RewiringNeuralDevelopmentalProgram,
             config,
             model_vector,
         )
@@ -124,11 +124,11 @@ def test_variant_seed_changes_initial_topology():
     second_config = variant_config("all_disconnected", seed_gene=1.0)
 
     first, model_vector = build_ndp(
-        HebbianNeuralDevelopmentalProgram,
+        RewiringNeuralDevelopmentalProgram,
         first_config,
     )
     second, _ = build_ndp(
-        HebbianNeuralDevelopmentalProgram,
+        RewiringNeuralDevelopmentalProgram,
         second_config,
         model_vector,
     )

@@ -29,7 +29,7 @@ TASKS = {
     "pendulum": Pendulum,
     "positiononlycartpole": PositionOnlyCartPole,
 }
-MODELS = ("standard_ndp", "hebbian_ndp")
+MODELS = ("standard_ndp", "rewiring_ndp")
 HEBBIAN_FLAGS = (False, True)
 
 
