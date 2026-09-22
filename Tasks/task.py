@@ -17,7 +17,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from NDP.ndp_nx import NeuralDevelopmentalProgram
-from NDP.ndp_nchl import HebbianNeuralDevelopmentalProgram
+from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
 from Baseline.fixed_mlp import FixedMLP
 from Graph.graph_nx import Graphnx
@@ -157,7 +157,7 @@ class Task:
         params_bounded = np.clip(ndp_vector, -1.0, 1.0, dtype=np.float32)
 
         if ndp_config['initial_node_state_mode'] == 'coevolve':
-            if ndp_config['model'] == 'hebbian_ndp':
+            if ndp_config['model'] in ('rewiring_ndp', 'hebbian_ndp'):
                 split_index = 1 + (ndp_config['state_dim'] * ndp_config['n_nodes'])
             elif ndp_config['model'] == 'standard_ndp':
                 split_index = ndp_config['state_dim']
@@ -168,10 +168,10 @@ class Task:
 
         if ndp_config['model'] == 'standard_ndp':
             ndp = NeuralDevelopmentalProgram(ndp_config)
-        elif ndp_config['model'] == 'hebbian_ndp':
-            ndp = HebbianNeuralDevelopmentalProgram(ndp_config)
+        elif ndp_config['model'] in ('rewiring_ndp', 'hebbian_ndp'):
+            ndp = RewiringNeuralDevelopmentalProgram(ndp_config)
         else:
-            raise ValueError('Model on task should be standard_ndp or hebbian_ndp.')
+            raise ValueError('Model on task should be standard_ndp or rewiring_ndp.')
 
         ndp.update_mlp_weights(weights)
 
