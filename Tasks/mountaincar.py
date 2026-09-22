@@ -47,7 +47,7 @@ MOUNTAINCAR_PARAMETERS = {
     'model': 'standard_ndp',
 
     # Variant NDP Parameters
-    'n_nodes': 16,
+    'n_nodes': 32,
     'initial_graph_density': 0.2,
     'create_edge_hidden_size': 5,
     'remove_edge_hidden_size': 5,
