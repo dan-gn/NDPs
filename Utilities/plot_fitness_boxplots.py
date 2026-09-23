@@ -37,23 +37,20 @@ MODEL_ORDER = [
 MODEL_LABELS = {
     ("standard_ndp", False): "NDP",
     ("standard_ndp", True): "NDP + HL",
-    ("rewiring_ndp", False): "R-NDP",
-    ("rewiring_ndp", True): "R-NDP + HL",
-    # Legacy identifier retained for previously generated result logs.
     ("hebbian_ndp", False): "R-NDP",
     ("hebbian_ndp", True): "R-NDP + HL",
 }
 
 SPLIT_COLOURS = {
-    "Training": "#4C78A8",
-    "Testing": "#F58518",
+    "Training": "#52A376",
+    "Testing": "#918D8D",
 }
 
 TASK_ORDER = [
     "CartPole-v1",
+    "popgym-PositionOnlyCartPoleEasy-v0",
     "Acrobot-v1",
     "MountainCar-v0",
-    "popgym-PositionOnlyCartPoleEasy-v0",
     "LunarLander-v3",
 ]
 

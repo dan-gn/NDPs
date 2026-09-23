@@ -40,7 +40,8 @@ class CMA_ES:
             seed:int = None,
             test_seed:int = None,
             population_size:int = None, 
-            max_iterations:int = None
+            max_iterations:int = None,
+            stop_on_target:bool = False
         ):
 
         self.fitness_function = fitness_function
@@ -60,6 +61,7 @@ class CMA_ES:
         self.test_seed = test_seed
         self.population_size = population_size
         self.max_iterations = max_iterations
+        self.stop_on_target = stop_on_target
 
         self.es = cma.CMAEvolutionStrategy(x0, sigma0, cma_options)
 
@@ -101,7 +103,7 @@ class CMA_ES:
         return fitness_values
 
 
-    def run(self):
+    def run(self, stop_criteria=None):
         self.init_optimisation_variables()
         self.set_seed(self.seed)
 
@@ -111,6 +113,9 @@ class CMA_ES:
             self.es.tell(solutions, fitness_values)
             self.es.logger.add()
             self.es.disp()
+            if stop_criteria is not None and min(fitness_values) <= stop_criteria:
+                if self.stop_on_target:
+                    break
 
         self.es.result_pretty()
         # cma.plot()

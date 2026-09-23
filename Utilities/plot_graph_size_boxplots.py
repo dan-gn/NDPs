@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import math
 import pickle
 import sys
 from pathlib import Path
@@ -11,6 +10,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.patches import Patch
 
 # Saved experiment objects reference project packages such as Tasks, NDP,
 # Graph, and Optimisation. When this file is launched from Utilities, Python
@@ -37,11 +37,9 @@ MODEL_COLOURS = {
 METRICS = {
     "used_nodes": {
         "label": "Number of used nodes",
-        "stem": "best_graph_nodes_boxplots",
     },
     "used_edges": {
         "label": "Number of used edges",
-        "stem": "best_graph_edges_boxplots",
     },
 }
 
@@ -123,7 +121,7 @@ def parse_arguments() -> argparse.Namespace:
         nargs="+",
         help=(
             "Optional task names to include. By default, the five study tasks "
-            "are shown, including empty panels for unavailable tasks."
+            "are shown, including empty groups for unavailable tasks."
         ),
     )
     parser.add_argument(
@@ -134,72 +132,67 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def draw_panel(
+def draw_grouped_boxplots(
     axis: plt.Axes,
-    task_results: pd.DataFrame,
-    task_name: str,
+    results: pd.DataFrame,
+    tasks: list[str],
     metric: str,
     show_outliers: bool,
 ) -> None:
-    centres = np.arange(len(MODEL_ORDER), dtype=float)
+    task_centres = np.arange(len(tasks), dtype=float)
+    model_offsets = np.linspace(-0.3, 0.3, len(MODEL_ORDER))
     rng = np.random.default_rng(2026)
 
-    for centre, model_label in zip(centres, MODEL_ORDER):
-        values = task_results.loc[
-            task_results["model_label"] == model_label,
-            metric,
-        ].dropna().to_numpy(dtype=float)
-        if not values.size:
-            continue
+    for task_centre, task_name in zip(task_centres, tasks):
+        task_results = results[results["task"] == task_name]
+        for model_offset, model_label in zip(model_offsets, MODEL_ORDER):
+            values = task_results.loc[
+                task_results["model_label"] == model_label,
+                metric,
+            ].dropna().to_numpy(dtype=float)
+            if not values.size:
+                continue
 
-        boxes = axis.boxplot(
-            [values],
-            positions=[centre],
-            widths=0.58,
-            patch_artist=True,
-            showfliers=show_outliers,
-            medianprops={"color": "black", "linewidth": 1.4},
-            whiskerprops={"color": "#555555", "linewidth": 1.0},
-            capprops={"color": "#555555", "linewidth": 1.0},
-            boxprops={"edgecolor": "#333333", "linewidth": 1.0},
-            flierprops={
-                "marker": "o",
-                "markersize": 3,
-                "markerfacecolor": MODEL_COLOURS[model_label],
-                "markeredgecolor": "none",
-                "alpha": 0.5,
-            },
-        )
-        boxes["boxes"][0].set_facecolor(MODEL_COLOURS[model_label])
-        boxes["boxes"][0].set_alpha(0.82)
+            position = task_centre + model_offset
+            boxes = axis.boxplot(
+                [values],
+                positions=[position],
+                widths=0.16,
+                patch_artist=True,
+                showfliers=show_outliers,
+                medianprops={"color": "black", "linewidth": 1.3},
+                whiskerprops={"color": "#555555", "linewidth": 0.9},
+                capprops={"color": "#555555", "linewidth": 0.9},
+                boxprops={"edgecolor": "#333333", "linewidth": 0.9},
+                flierprops={
+                    "marker": "o",
+                    "markersize": 2.5,
+                    "markerfacecolor": MODEL_COLOURS[model_label],
+                    "markeredgecolor": "none",
+                    "alpha": 0.5,
+                },
+            )
+            boxes["boxes"][0].set_facecolor(MODEL_COLOURS[model_label])
+            boxes["boxes"][0].set_alpha(0.82)
 
-        jitter = rng.uniform(-0.07, 0.07, size=len(values))
-        axis.scatter(
-            centre + jitter,
-            values,
-            s=12,
-            color=MODEL_COLOURS[model_label],
-            edgecolors="white",
-            linewidths=0.25,
-            alpha=0.5,
-            zorder=3,
-        )
+            jitter = rng.uniform(-0.025, 0.025, size=len(values))
+            axis.scatter(
+                position + jitter,
+                values,
+                s=8,
+                color=MODEL_COLOURS[model_label],
+                edgecolors="white",
+                linewidths=0.2,
+                alpha=0.45,
+                zorder=3,
+            )
 
-    if task_results.empty or task_results[metric].dropna().empty:
-        axis.text(
-            0.5,
-            0.5,
-            "No results available",
-            transform=axis.transAxes,
-            ha="center",
-            va="center",
-            color="#666666",
-            fontsize=11,
-            fontstyle="italic",
-        )
-
-    axis.set_title(TASK_LABELS.get(task_name, task_name))
-    axis.set_xticks(centres, MODEL_ORDER, rotation=18, ha="right")
+    labels = [
+        TASK_LABELS.get(task, task).replace("PositionOnlyCartPole", "PositionOnly\nCartPole")
+        for task in tasks
+    ]
+    axis.set_xticks(task_centres, labels)
+    axis.set_xlim(-0.6, len(tasks) - 0.4)
     axis.grid(axis="y", color="#D9D9D9", linewidth=0.7, alpha=0.8)
     axis.set_axisbelow(True)
     axis.spines[["top", "right"]].set_visible(False)
@@ -208,14 +201,9 @@ def draw_panel(
 def create_figure(
     results: pd.DataFrame,
     tasks: list[str],
-    metric: str,
     output_dir: Path,
     show_outliers: bool,
 ) -> tuple[Path, Path]:
-    settings = METRICS[metric]
-    n_columns = min(2, len(tasks))
-    n_rows = math.ceil(len(tasks) / n_columns)
-
     plt.rcParams.update(
         {
             "font.family": "serif",
@@ -225,24 +213,30 @@ def create_figure(
         }
     )
     figure, axes = plt.subplots(
-        n_rows,
-        n_columns,
-        figsize=(7.2 * n_columns, 4.2 * n_rows),
+        2,
+        1,
+        sharex=True,
+        figsize=(max(9.5, 2.0 * len(tasks)), 8.5),
         constrained_layout=True,
-        squeeze=False,
+    )
+    for axis, metric in zip(axes, METRICS):
+        draw_grouped_boxplots(axis, results, tasks, metric, show_outliers)
+        axis.set_ylabel(METRICS[metric]["label"])
+    axes[0].tick_params(labelbottom=False)
+
+    figure.legend(
+        handles=[
+            Patch(facecolor=MODEL_COLOURS[model], edgecolor="#333333", label=model)
+            for model in MODEL_ORDER
+        ],
+        loc="outside upper center",
+        ncol=len(MODEL_ORDER),
+        frameon=False,
     )
 
-    for axis, task_name in zip(axes.flat, tasks):
-        task_results = results[results["task"] == task_name]
-        draw_panel(axis, task_results, task_name, metric, show_outliers)
-        axis.set_ylabel(settings["label"])
-
-    for axis in axes.flat[len(tasks):]:
-        axis.set_visible(False)
-
     output_dir.mkdir(parents=True, exist_ok=True)
-    png_path = output_dir / f"{settings['stem']}.png"
-    pdf_path = output_dir / f"{settings['stem']}.pdf"
+    png_path = output_dir / "best_graph_size_boxplots.png"
+    pdf_path = output_dir / "best_graph_size_boxplots.pdf"
     figure.savefig(png_path, dpi=300, bbox_inches="tight")
     figure.savefig(pdf_path, bbox_inches="tight")
     plt.close(figure)
@@ -265,16 +259,14 @@ def main() -> None:
     if not tasks_to_plot:
         raise ValueError("No tasks were selected for plotting.")
 
-    for metric in METRICS:
-        png_path, pdf_path = create_figure(
-            results,
-            tasks_to_plot,
-            metric,
-            args.output_dir,
-            args.show_outliers,
-        )
-        print(f"{METRICS[metric]['label']} PNG: {png_path}")
-        print(f"{METRICS[metric]['label']} PDF: {pdf_path}")
+    png_path, pdf_path = create_figure(
+        results,
+        tasks_to_plot,
+        args.output_dir,
+        args.show_outliers,
+    )
+    print(f"Combined graph-size PNG: {png_path}")
+    print(f"Combined graph-size PDF: {pdf_path}")
 
     counts = (
         results.groupby(["task", "model_label"], observed=True)["seed"]

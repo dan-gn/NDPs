@@ -110,10 +110,11 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_o
             seed = seed,
             test_seed = TEST_SEED,
             population_size = task.parameters['population_size'],
-            max_iterations = task.parameters['generations'] + 1
+            max_iterations = task.parameters['generations'] + 1,
+            stop_on_target = stop_on_target,
         )
 
-        best_params, best_loss = optimiser.run()
+        best_params, best_loss = optimiser.run(task.target)
 
     else:
         # EA

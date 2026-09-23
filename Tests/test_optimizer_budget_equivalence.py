@@ -95,7 +95,7 @@ def test_cma_options_are_applied():
     assert optimiser.max_iterations == 12
 
 
-def test_experiment_passes_budget_and_calls_cma_without_arguments():
+def test_experiment_passes_budget_and_calls_cma_with_target():
     original_ndp = experiments.NeuralDevelopmentalProgram
     original_cma = experiments.CMA_ES
 
@@ -110,7 +110,8 @@ def test_experiment_passes_budget_and_calls_cma_without_arguments():
         assert optimiser.kwargs["population_size"] == 8
         assert optimiser.kwargs["max_iterations"] == 13
         assert optimiser.kwargs["test_seed"] == TEST_SEED
-        assert optimiser.run_arguments == ()
+        assert optimiser.kwargs["stop_on_target"] is True
+        assert optimiser.run_arguments == (task.target,)
         assert output["optimiser"] is optimiser
     finally:
         experiments.NeuralDevelopmentalProgram = original_ndp
@@ -148,7 +149,7 @@ def test_experiment_passes_budget_and_calls_ea_with_target_and_seed():
 def main():
     tests = [
         test_cma_options_are_applied,
-        test_experiment_passes_budget_and_calls_cma_without_arguments,
+        test_experiment_passes_budget_and_calls_cma_with_target,
         test_experiment_passes_budget_and_calls_ea_with_target_and_seed,
     ]
 

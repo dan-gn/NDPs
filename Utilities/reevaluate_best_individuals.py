@@ -188,7 +188,8 @@ def reevaluate(row: pd.Series, n_rollouts: int, test_seed: int):
     ci_half_width = 1.96 * standard_error if np.isfinite(standard_error) else np.nan
     model_label = MODEL_LABELS.get(
         (str(row["model"]), bool(row["hebbian"])),
-        str(row["model"]),
+        ("R-NDP + HL" if bool(row["hebbian"]) else "R-NDP")
+        if str(row["model"]) == "rewiring_ndp" else str(row["model"]),
     )
 
     original_test_fitness = pd.to_numeric(
