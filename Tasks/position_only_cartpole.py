@@ -69,7 +69,11 @@ POSITION_ONLY_CARTPOLE_PARAMETERS = {
     'mutation_eta_max': 10,
     'sbx_eta_min': 15,
     'sbx_eta_max': 15,
-    'eta_schedule_iterations': 100
+    'eta_schedule_iterations': 100,
+
+    'fixed_mlp_hidden_size': 32,
+
+
 }
 
 

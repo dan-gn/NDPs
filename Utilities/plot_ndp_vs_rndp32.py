@@ -28,7 +28,7 @@ from plot_graph_size_boxplots import add_used_graph_sizes
 
 
 KEY = ["task", "hebbian", "seed"]
-FITNESS_COLOURS = {"Training": "#4E8098", "Testing": "#DDB771"}
+FITNESS_COLOURS = {"Training": "#4E8098", "Testing": "#D26760"}
 MODEL_ORDER = ("NDP", "R-NDP 32", "NDP + HL", "R-NDP 32 + HL")
 MODEL_COLOURS = {
     "NDP": "#4E8098",
@@ -49,7 +49,8 @@ SCOPES = (
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ndp_results", type=Path, help="Results containing standard NDP runs")
-    parser.add_argument("rndp32_results", type=Path, help="Results containing 32-node R-NDP runs")
+    parser.add_argument("rndp32_results", type=Path, nargs="?",
+                        help="Results containing 32-node R-NDP runs; defaults to the first root")
     parser.add_argument(
         "--extra-ndp-results", type=Path, action="append", default=[],
         help="Optional additional standard NDP result root (e.g. LunarLander)",
@@ -60,6 +61,11 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-dir", type=Path, default=Path("Results/ndp_vs_rndp32_figures")
+    )
+    parser.add_argument(
+        "--test-summary", type=Path,
+        help="100-seed re-evaluation summary CSV; defaults to the first root's "
+             "posthoc_test_evaluation/best_individual_reevaluation_summary.csv",
     )
     parser.add_argument("--tasks", nargs="+", help="Optional exact task IDs")
     parser.add_argument("--hide-outliers", action="store_true")
@@ -164,6 +170,52 @@ def load_matched_results(ndp_roots: list[Path], rndp_roots: list[Path]) -> pd.Da
     return results.sort_values(["task", "hebbian", "seed", "configuration"])
 
 
+def use_reevaluated_testing(results: pd.DataFrame, summary_path: Path) -> pd.DataFrame:
+    if not summary_path.is_file():
+        raise FileNotFoundError(f"100-seed testing summary not found: {summary_path}")
+    summary = pd.read_csv(summary_path)
+    required = {
+        "task", "model", "hebbian", "optimizer_seed", "test_seed_start",
+        "test_seed_end", "n_test_rollouts", "test_fitness_mean",
+    }
+    missing = required - set(summary.columns)
+    if missing:
+        raise ValueError(f"{summary_path} lacks columns: {sorted(missing)}")
+    summary = summary.copy()
+    summary["hebbian"] = summary["hebbian"].map(fitness_plots.parse_boolean)
+    summary["seed"] = pd.to_numeric(summary["optimizer_seed"], errors="raise").astype(int)
+    for column, expected in (
+        ("test_seed_start", 10_000), ("test_seed_end", 10_099),
+        ("n_test_rollouts", 100),
+    ):
+        values = pd.to_numeric(summary[column], errors="raise")
+        if not values.eq(expected).all():
+            raise ValueError(f"{summary_path}: {column} must be {expected} for every run")
+    summary["test_fitness_mean"] = pd.to_numeric(
+        summary["test_fitness_mean"], errors="raise"
+    )
+    keys = ["task", "model", "hebbian", "seed"]
+    if summary.duplicated(keys).any():
+        raise ValueError(f"Duplicate task/model/Hebbian/seed rows in {summary_path}")
+    if results.duplicated(keys).any():
+        raise ValueError("Duplicate task/model/Hebbian/seed rows in experiment logs")
+    merged = results.merge(
+        summary[keys + ["test_fitness_mean"]], on=keys,
+        how="left", validate="one_to_one", indicator=True,
+    )
+    if not merged["_merge"].eq("both").all():
+        absent = merged.loc[merged["_merge"] != "both", keys]
+        raise ValueError(
+            "Some plotted runs lack a 100-seed testing result:\n"
+            + absent.head(10).to_string(index=False)
+        )
+    merged = merged.drop(columns="_merge")
+    merged["original_test_fitness"] = merged["best_score_test"]
+    merged["best_score_test"] = merged["test_fitness_mean"]
+    print(f"Using 100-seed testing fitness for {len(merged)} runs from {summary_path}")
+    return merged
+
+
 def save_fitness_figure(results: pd.DataFrame, tasks: list[str], output_dir: Path,
                         show_outliers: bool) -> None:
     long_results = fitness_plots.reshape_results(results)
@@ -266,7 +318,7 @@ def add_diversity(results: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     args = parse_arguments()
     ndp_roots = [args.ndp_results, *args.extra_ndp_results]
-    rndp_roots = [args.rndp32_results, *args.extra_rndp_results]
+    rndp_roots = [args.rndp32_results or args.ndp_results, *args.extra_rndp_results]
     results = load_matched_results(ndp_roots, rndp_roots)
     tasks = args.tasks or fitness_plots.TASK_ORDER
     unsupported = set(tasks) - set(fitness_plots.TASK_LABELS)
@@ -275,6 +327,11 @@ def main() -> None:
     results = results.loc[results["task"].isin(tasks)].copy()
     if results.empty:
         raise ValueError("No matched runs for the selected tasks")
+    summary_path = args.test_summary or (
+        args.ndp_results / "posthoc_test_evaluation"
+        / "best_individual_reevaluation_summary.csv"
+    )
+    results = use_reevaluated_testing(results, summary_path)
     print("Matched run counts:\n", results.groupby(["task", "model_label"]).size().to_string())
     args.output_dir.mkdir(parents=True, exist_ok=True)
     previous_fitness_colours = fitness_plots.SPLIT_COLOURS

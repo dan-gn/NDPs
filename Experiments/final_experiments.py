@@ -46,7 +46,14 @@ NDP_CONDITIONS = (
     ("rewiring_ndp", True),
 )
 
-FIXED_MLP_TASKS = {"pendulum", "lunarlander"}
+FIXED_MLP_TASKS = {
+    "cartpole",
+    "positiononlycartpole",
+    "acrobot",
+    "mountaincar",
+    "lunarlander",
+    "pendulum",
+}
 
 
 INITIAL_OPTIMIZER_SEEDS = tuple(range(10))

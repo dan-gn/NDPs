@@ -42,8 +42,8 @@ MODEL_LABELS = {
 }
 
 SPLIT_COLOURS = {
-    "Training": "#52A376",
-    "Testing": "#918D8D",
+    "Training": "#4E8098",
+    "Testing": "#D26760",
 }
 
 TASK_ORDER = [
@@ -313,21 +313,21 @@ def plot_results(
             "axes.labelsize": 10,
         }
     )
-    figure, axes = plt.subplots(
-        n_rows,
-        n_columns,
-        figsize=(7.2 * n_columns, 4.2 * n_rows),
-        constrained_layout=True,
-        squeeze=False,
+    figure = plt.figure(
+        figsize=(7.2 * n_columns, 4.2 * n_rows), constrained_layout=True,
     )
-
-    for axis, task_name in zip(axes.flat, tasks):
+    # Each panel occupies two grid columns. For an odd number of tasks, the
+    # final panel occupies the middle two columns rather than the left half.
+    grid = figure.add_gridspec(n_rows, 2 * n_columns)
+    for index, task_name in enumerate(tasks):
+        row = index // n_columns
+        start = (index % n_columns) * 2
+        if n_columns == 2 and index == len(tasks) - 1 and len(tasks) % 2:
+            start = 1
+        axis = figure.add_subplot(grid[row, start:start + 2])
         task_results = long_results[long_results["task"] == task_name]
         draw_task_panel(axis, task_results, task_name, show_outliers)
         axis.set_ylabel("Fitness (lower is better)")
-
-    for axis in axes.flat[len(tasks):]:
-        axis.set_visible(False)
 
     legend = [
         Patch(facecolor=colour, edgecolor="#333333", label=label)
