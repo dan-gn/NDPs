@@ -6,7 +6,6 @@ Libraries
 
 import numpy as np
 import torch 
-import torch.nn as nn
 import time
 import warnings
 
@@ -16,8 +15,10 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from NDP.ndp_mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
-from Graph.ndp_graph import Node, Graphnx
+from NDP.mlps import GraphCellularAutomata, ReplicationModel, WeightPredictionModel
+from Graph.graph_nx import Graphnx
+
+from Utilities.utilities import get_number_of_model_parameters
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,35 +27,26 @@ Default parameters
 '''
 
 DEFAULT_PARAMETERS = {
-    'state_dim' : 5,
-    'weighted_graph_flag' : True,
-    'initial_graph' : 'one_node',
-    'node_state_random_init' : False,
-    'shared_initial_node_state_flag' : False,
+    'state_dim': 5,
+    'weighted_graph_flag': True,
+    'initial_graph': 'one_node',
+    'add_hidden_node_to_minimal_network': True,    # Required if initial_graph == 'minimal_network'
+    'network_extra_thinking': 0,
+    'initial_node_state_mode': 'coevolve', 
     'shared_initial_node_state': None,
-    'noise_while_growing' : False,
-    'noise_while_growing_interval' : 0.15,
-    'add_hidden_node_to_minimal_network' : True,
-    'pruning_flag' : False,
-    'pruning_threshold': 0.01,
-    'gca_hidden_size' : 5,
-    'rm_hidden_size' : 5,
-    'wp_hidden_size' : 5,
-    'graph_n_inputs' : 2,
-    'graph_n_outputs' : 1,
+    'noise_while_growing': False,
+    'noise_while_growing_interval': 0.15,  # Required if noise_while_growing == True
+    'pruning_flag': False,
+    'pruning_threshold': 0.03,  # Required if pruning_flag == True
+    'gca_hidden_size': 5,
+    'rm_hidden_size': 5,
+    'wp_hidden_size': 5,
+    'graph_n_inputs': 2,
+    'graph_n_outputs': 1,
+    'hebbian': False,
+    'model': 'standard_ndp'
 }
  
-
-
-'''
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Utilities
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'''
-
-def get_number_of_model_parameters(model:nn.Module):
-    return sum(p.numel() for p in model.parameters())
-
 
 '''
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,12 +56,19 @@ Neural Developmental Program (Evolutionary-based NDP)
 
 class NeuralDevelopmentalProgram:
 
+    # ---------------------------------------------------------------------------------------
+    # Initialisation
+    # ---------------------------------------------------------------------------------------
+
     def __init__(self, config:dict = None):
+        # Set the algorithm configuration
         self._set_config(config)
+        # Check if config values from argument are valid
+        self._check_valid_config()
 
-    def _set_default_config(self):
-        self.config = dict(DEFAULT_PARAMETERS)
-
+    def _set_default_config(self, default_parameters=DEFAULT_PARAMETERS):
+        self.config = dict(default_parameters)
+    
     def _set_config(self, config:dict):
         # Set default parameters
         self._set_default_config()
@@ -82,11 +81,16 @@ class NeuralDevelopmentalProgram:
                     # Showing if a variable was not defined
                     warnings.warn(f'Variable {key} not defined. Using default value {self.config[key]}.')
         # Set all variables
+        self._set_all_variables()
+        # Create the MLPs
+        self._initialise_mlps()
+
+    def _set_all_variables(self):
         self.state_dim = self.config['state_dim']
         self.weighted_graph_flag = self.config['weighted_graph_flag']
         self.initial_graph = self.config['initial_graph']
-        self.node_state_random_init = self.config['node_state_random_init']
-        self.shared_initial_node_state_flag = self.config['shared_initial_node_state_flag']
+        self.network_extra_thinking = self.config['network_extra_thinking']
+        self.initial_node_state_mode = self.config['initial_node_state_mode']
         self.shared_initial_node_state = self.config['shared_initial_node_state']
         self.add_hidden_node_to_minimal_network = self.config['add_hidden_node_to_minimal_network']
         self.pruning_flag = self.config['pruning_flag']
@@ -95,47 +99,56 @@ class NeuralDevelopmentalProgram:
         self.graph_n_outputs = self.config['graph_n_outputs']
         self.noise_while_growing = self.config['noise_while_growing']
         self.noise_while_growing_interval = self.config['noise_while_growing_interval']
-        # Create the MLPs
-        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
-        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
-        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
-        # Check if config values from argument are valid
-        self._check_valid_config()
-
+        
     def _check_valid_config(self):
         """
         This function checks that some of the input values for each variable is valid.
         FIX: I should do this for all the variables.
+        Variables checked: 3/13
         """
         if self.state_dim < 1:
             raise ValueError('State dimension should be equal or greater than 1.')
         initial_graph_options = ['minimal_network', 'one_node']
         if self.initial_graph not in initial_graph_options:
             raise ValueError(f'Invalid value for the initial graph. Valid options are: {initial_graph_options}.')
-        if self.shared_initial_node_state_flag:
-            if not isinstance(self.shared_initial_node_state, np.array):
-                raise ValueError(f'If shared_initial_node_state_flag is set to True, then shared_initial_node_state needs to be defined as a np.array([state_dim]).')
-            elif len(self.shared_initial_node_state) != self.state_dim:
-                raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state}) must be an array with state_dim ({self.state_dim}) elements.')
+        initial_node_state_mode_options = ['coevolve', 'ones', 'random', 'random_shared']
+        if self.initial_node_state_mode not in initial_node_state_mode_options:
+            raise ValueError(f'Invalid value for the initial node state mode. Valid options are: {initial_node_state_mode_options}.')
+        if self.initial_node_state_mode == 'random_shared':
+            if not isinstance(self.shared_initial_node_state, np.ndarray):
+                raise ValueError(f'If initial_node_state_mode is set to random_shared, then shared_initial_node_state needs to be defined as a np.array([state_dim]) instead of {type(self.shared_initial_node_state), self.shared_initial_node_state}.')
+            elif self.shared_initial_node_state.shape[1] != self.state_dim:
+                print(self.shared_initial_node_state.shape[1])
+                raise ValueError(f'shared_initial_node_state ({self.shared_initial_node_state.shape[0]}) must be an array with state_dim ({self.state_dim}) elements.')
 
+    # ---------------------------------------------------------------------------------------
+    # Multi Layer Perceptrons (MLPs) functions
+    # ---------------------------------------------------------------------------------------
+
+    def _initialise_mlps(self):
+        self.graph_cellular_automata = GraphCellularAutomata(self.state_dim, self.config['gca_hidden_size'])
+        self.replication_model = ReplicationModel(self.state_dim, self.config['rm_hidden_size'])
+        self.weight_prediction_model = WeightPredictionModel(self.state_dim, self.config['wp_hidden_size'])
 
     def get_total_number_of_mlp_parameters(self) -> int:
-        n_params = get_number_of_model_parameters(self.graph_cellular_automata)
-        n_params += get_number_of_model_parameters(self.replication_model)
-        if self.weighted_graph_flag:
-            n_params += get_number_of_model_parameters(self.weight_prediction_model)
-        return n_params
+        n_params = [get_number_of_model_parameters(model) for model in self._get_mlp_models()]
+        return np.sum(n_params)
     
-    def update_mlp_weights(self, weights):
-        """
-        This function sets the weights of the MLPs.
-        """
+    def _get_mlp_models(self) -> list:
         models = [
             self.graph_cellular_automata,
             self.replication_model,
         ]
         if self.weighted_graph_flag:
             models.append(self.weight_prediction_model)
+        return models
+
+    
+    def update_mlp_weights(self, weights):
+        """
+        This function sets the weights of the MLPs.
+        """
+        models = self._get_mlp_models()
 
         if isinstance(weights, np.ndarray):
             weights = torch.tensor(weights, dtype=torch.float32)
@@ -149,12 +162,16 @@ class NeuralDevelopmentalProgram:
                 param.data.copy_(new_values)
                 pointer += n_params
 
+    # ---------------------------------------------------------------------------------------
+    # Developmental Process
+    # ---------------------------------------------------------------------------------------
+
     def _genereate_node_state(self) -> np.array:
         """
         This function generates an array to initialise the state of a node. 
         This is mainly employed while initialising the graph.
         """
-        if self.node_state_random_init:
+        if self.initial_node_state_mode in ['random', 'random_shared']:
             return np.random.uniform(-1, 1, size=(1, self.state_dim)).astype(np.float32)
         else:
             return np.ones((1, self.state_dim)).astype(np.float32)
@@ -167,11 +184,11 @@ class NeuralDevelopmentalProgram:
         'minimal_network' -> All inputs are connect to all outputs (a hidden node could be added too)
         """
         # Create graph
-        graph = Graphnx(self.weighted_graph_flag)
+        graph = Graphnx(self.state_dim, self.weighted_graph_flag)
 
         # One node initial graph
         if self.initial_graph == 'one_node':
-            if self.shared_initial_node_state_flag:
+            if self.initial_node_state_mode in ['coevolve', 'random_shared']:
                 node_state = self.shared_initial_node_state.copy()
             else:
                 node_state = self._genereate_node_state()
@@ -196,7 +213,7 @@ class NeuralDevelopmentalProgram:
             states <- new_states
         """
         for _ in range(steps):
-            weights = graph.get_adjacency_matrix()
+            weights = graph.get_weight_matrix()
             new_states = weights.T @ graph.nodes_states
             new_states = torch.tensor(new_states, dtype=torch.float32)
             new_states = self.graph_cellular_automata(new_states).numpy()
@@ -225,39 +242,29 @@ class NeuralDevelopmentalProgram:
                 new_node_state += np.random.uniform(-self.noise_while_growing_interval, self.noise_while_growing_interval, new_node_state.size)
             new_node_id = graph.add_node(new_node_state)
             for neighbor in neighbors:
-                # graph.add_edge(new_node_id, neighbor)
+                graph.add_edge(new_node_id, neighbor)
                 graph.add_edge(neighbor, new_node_id)
         return graph
     
     def predict_weights(self, graph:Graphnx) -> Graphnx:
         """
         Weight update model W updates connectivity for each pair of nodes based on their concatenated embeddings.
-        There are two versions:
-        1. The first version only upudates existing edges, similar to the original implementation.
-        2. The second verstion updates all possible pair of nodes. This matches more how it's described in the original paper. 
-        Choosing version one, mainly because it makes everything faster.
-        Fix: On version 2, two edges for each pair are created. But how do I choose which one to create when it doesn't exist?
         """
-        # 1st version: only updates existing edges
-        weights = graph.get_adjacency_matrix()
-        for input_id, output_id in graph.edges():
-            input_node_state = torch.tensor(graph.nodes_states[input_id], dtype=torch.float32)
-            output_node_state = torch.tensor(graph.nodes_states[output_id], dtype=torch.float32)
-            new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
-            weights[input_id, output_id] = new_weight
-        graph.update_adjacency_matrix(weights)
-
-        # 2nd veresion: update values for all pair of nodes in the graph
-        # for input_node in graph.nodes:
-        #     for output_node in graph.nodes:
-        #         if not graph.is_this_edge_valid(input_node, output_node):
-        #             continue
-        #         input_node_state = torch.tensor(input_node.state, dtype=torch.float32)
-        #         output_node_state = torch.tensor(output_node.state, dtype=torch.float32)
-        #         new_weight = self.weight_prediction_model(input_node_state, output_node_state).item()
-        #         # graph.edges[(input_node.node_id, output_node.node_id)] = new_weight
-        #         graph.add_edge(input_node.node_id, output_node.node_id, new_weight)
-
+        # Get list of edges
+        edges = np.asarray(list(graph.edges()), dtype=np.int64).reshape(-1, 2)
+        if len(edges) == 0:
+            # If there's no edges return the graph
+            return graph
+        # Get the graph weights and node states
+        weights = graph.get_weight_matrix()
+        nodes_states = torch.as_tensor(graph.nodes_states, dtype=torch.float32)
+        edge_indices = torch.as_tensor(edges, dtype=torch.long)
+        source_states = nodes_states[edge_indices[:, 0]]
+        target_states = nodes_states[edge_indices[:, 1]]
+        # Predict new weights and update weight matrix
+        new_weights = self.weight_prediction_model(source_states, target_states).squeeze(-1)
+        weights[edges[:, 0], edges[:, 1]] = new_weights.detach().cpu().numpy()
+        graph.update_weight_matrix(weights)
         return graph
 
     def prune(self, graph:Graphnx) -> Graphnx:
@@ -265,7 +272,7 @@ class NeuralDevelopmentalProgram:
         Edges with weights below pruning threshold P are removed.
         """
         # Find edges to remove
-        weights = graph.get_adjacency_matrix()
+        weights = graph.get_weight_matrix()
         edges_to_remove = []
         for input_id, output_id in graph.edges():
             w = weights[input_id, output_id]
@@ -302,15 +309,18 @@ class NeuralDevelopmentalProgram:
         the weights are used during the graph convolution. 
         """
         # Compute network diameter D
-        diameter = graph.get_diameter()
+        propagation_distance = graph.get_propagation_distance()
 
-        # # Propagate nodes states En via graph convolution D steps
-        graph = self.graph_convolution(graph, diameter)
+        # Propagate nodes states En via graph convolution D steps
+        steps = propagation_distance + self.network_extra_thinking
+        graph = self.graph_convolution(graph, steps)
+        # graph.summary(full=True)
         
         # Replication model R determines nodes in growing state
         # New nodes are added to each of the growing nodes and their immediate neighbors
         # New nodes' embeddings are defined as the mean embeddings of their parent nodes
         graph = self.grow_graph(graph)
+        # graph.summary(full=True)
 
         # If graph is weighted then
         if self.weighted_graph_flag:
@@ -333,16 +343,20 @@ class NeuralDevelopmentalProgram:
             graph = self.generate_initial_seed_graph()
             if debug:
                 print('Initial graph')
-                graph.summary()
+                graph.summary(full=False)
             for i in range(n_cycles):
                 graph = self._run_a_developmental_cycle(graph)
                 if debug:
                     print(f'Graph at cycle {i}')
-                    graph.summary()
+                    graph.summary(full=False)
     
         if debug:
             print(f'Total development time = {time.time() - start_time}')
         return graph
+
+    # ---------------------------------------------------------------------------------------
+    # Summary 
+    # ---------------------------------------------------------------------------------------
 
     def summary(self):
         print('-------------------------------------')
