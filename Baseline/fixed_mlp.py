@@ -147,7 +147,3 @@ class HebbianFixedMLP(FixedMLP):
         print(f'Hebbian coefficients (eta, A, B, C, D per neuron) = {hebbian_parameters}')
         print(f'Total = {self.get_total_number_of_mlp_parameters()}')
         print('-------------------------------------')
-        print('During each episode: connection weights adapt; biases and coefficients stay fixed.')
-        print('Adaptive weights are clipped to [-1, 1].')
-        print('Call reset_weights() before each episode to restore the evolved initial weights.')
-        print('-------------------------------------\n')
