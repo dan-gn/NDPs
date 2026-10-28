@@ -19,7 +19,7 @@ sys.path.append(parent)
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
-from Baseline.fixed_mlp import FixedMLP
+from Baseline.fixed_mlp import FixedMLP, HebbianFixedMLP
 from Graph.graph_nx import Graphnx
 
 '''
@@ -209,7 +209,7 @@ class Task:
         # params_bounded = np.tanh(params)
         params_bounded = np.clip(mlp_vector, -1.0, 1.0, dtype=np.float32)
 
-        model = FixedMLP(mlp_config)
+        model = FixedMLP(mlp_config) if not mlp_config['hebbian'] else HebbianFixedMLP(mlp_config)
 
         model.update_mlp_weights(params_bounded)
 

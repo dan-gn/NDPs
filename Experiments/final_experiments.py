@@ -64,10 +64,13 @@ COLAB_RESULTS_ROOT = COLAB_MOUNT_ROOT / "ICLR"
 
 def conditions_for_task(task_name):
     if task_name in FIXED_MLP_TASKS:
-        return [("fixed_mlp", False), *NDP_CONDITIONS]
+        return [
+            ("fixed_mlp", False),
+            ("fixed_mlp", True),
+            *NDP_CONDITIONS,
+        ]
 
     return list(NDP_CONDITIONS)
-
 
 def selected_conditions(
     task_name,
@@ -148,6 +151,7 @@ def manifest_differences(existing, requested, path=""):
                 )
             elif key not in requested:
                 differences.append(
+
                     (key_path, existing[key], "<missing>")
                 )
             else:

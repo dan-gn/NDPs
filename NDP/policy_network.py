@@ -155,7 +155,7 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         post = post.squeeze(0)
 
         # Check __init__ for context
-        # delta = (etai+etaj/2) * (Ai*pre + Bj*post + Ci*Cj*pre*post + Di*Dj)
+        # delta = ((etai+etaj)/2) * (Ai*pre + Bj*post + Ci*Cj*pre*post + Di*Dj)
         delta = ETA * (
             A * pre[:, None]
             + B * post[None, :]
