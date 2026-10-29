@@ -48,6 +48,7 @@ class Task:
         self.graph_n_inputs = parameters['graph_n_inputs']
         self.graph_n_outputs = parameters['graph_n_outputs']
         self.network_extra_thinking = parameters['network_extra_thinking']
+        self.policy_bias = parameters.get('policy_bias', False)
         # NDP Evaluation parameters
         self.n_cycles = parameters['n_cycles']  # Developmental cycles
         self.n_repeats = parameters['n_repeats']   # Developmental repetitions 
@@ -136,9 +137,9 @@ class Task:
             print('Creating ANN from graph')
 
         if hebbian:
-            policy = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+            policy = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking, self.policy_bias)
         else:
-            policy = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+            policy = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking, self.policy_bias)
 
         if verbose:
             print('Done!')

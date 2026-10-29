@@ -525,7 +525,7 @@ class EvolutionaryAlgorithm:
         print('Evolutionary Algorithm')
         print('------------------------------------')
         print(f"Crossover probability: {self.crossover_probability}")
-        print(f"Mutation probability: {self.mutation_probability}")
+        print(f"Mutation probability: {self.mutation_probability:.6f}")
         print(f"Mutation eta: {self.mutation_eta}")
         print(f"SBX eta: {self.sbx_eta}")
         print('------------------------------------\n')

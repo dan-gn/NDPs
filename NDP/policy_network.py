@@ -29,7 +29,7 @@ class PolicyNetwork(nn.Module):
     # Initialisation
     # ---------------------------------------------------------------------------------------
 
-    def __init__(self, graph:Graphnx, n_inputs, n_outputs, network_extra_thinking):
+    def __init__(self, graph:Graphnx, n_inputs:int, n_outputs:int, network_extra_thinking:int, policy_bias:bool=False):
         super().__init__()
         
         self.graph = graph
@@ -55,9 +55,16 @@ class PolicyNetwork(nn.Module):
             weights = temp_weights
             adjacency_matrix = temp_adjacency
 
+        self.policy_bias = policy_bias
+        biases = torch.zeros(self.n_nodes, dtype=torch.float32)
+        if self.policy_bias:
+            nodes_states = torch.as_tensor(graph.nodes_states, dtype=torch.float32)
+            biases[:graph.number_of_nodes()] = nodes_states[:, -1]
+            biases[:self.n_inputs] = 0.0
 
         self.register_buffer('weights', weights)
         self.register_buffer('adjacency_matrix', adjacency_matrix)
+        self.register_buffer('biases', biases)
         self.reset_activations()
 
     def reset_activations(self):
@@ -79,7 +86,7 @@ class PolicyNetwork(nn.Module):
         activations[:, :self.n_inputs] = x
 
         for _ in range(steps):
-            output = activations @ self.weights
+            output = activations @ self.weights + self.biases
             post_activations = torch.tanh(output)
             post_activations[:, :self.n_inputs] = x
             activations = post_activations
@@ -101,12 +108,16 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
     # Initialisation
     # ---------------------------------------------------------------------------------------
 
-    def __init__(self, graph:Graphnx, n_inputs:int, n_outputs:int, network_extra_thinking:int):
-        super().__init__(graph, n_inputs, n_outputs, network_extra_thinking)
+    def __init__(self, graph:Graphnx, n_inputs:int, n_outputs:int, network_extra_thinking:int, policy_bias:bool=False):
+        super().__init__(graph, n_inputs, n_outputs, network_extra_thinking, policy_bias)
 
         self.reset_weights()
 
-        if graph.state_dim < 5:
+        if policy_bias:
+            if graph.state_dim < 6:
+                raise ValueError('NcHL requires graph.state_dim if policy bias is True >= 6.')
+
+        elif graph.state_dim < 5:
             raise ValueError('NcHL requires graph.state_dim >= 5.')
 
         # Check that the all nodes have a state
@@ -195,7 +206,7 @@ class NcHebbianLearningPolicyNetwork(PolicyNetwork):
         for _ in range(steps):
             pre_activations = activations
 
-            output = activations @ weights
+            output = activations @ weights + self.biases
             post_activations = torch.tanh(output)
 
             post_activations[:, :self.n_inputs] = x
