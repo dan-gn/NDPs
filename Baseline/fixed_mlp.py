@@ -25,11 +25,23 @@ class FixedMLP(nn.Module):
         hidden_size = config['fixed_mlp_hidden_size']
         output_size = config['graph_n_outputs']
 
-        self.model = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.Tanh(),
-            nn.Linear(hidden_size, output_size),
-        )
+        if isinstance(hidden_size, int):
+            hidden_size = [hidden_size]
+        else:
+            hidden_size = list(hidden_size)
+
+        self.layer_sizes = [input_size, *hidden_size, output_size]
+        n_layers = len(self.layer_sizes) # Including input, hidden and output
+
+        layers = []
+        for index in range(n_layers - 1):
+            layers.append(nn.Linear(self.layer_sizes[index], self.layer_sizes[index+1]))
+
+            if index < n_layers - 2:
+                layers.append(nn.Tanh())
+
+        self.model = nn.Sequential(*layers)
+
 
     def forward(self, x):
         return self.model(x)
@@ -73,24 +85,31 @@ class HebbianFixedMLP(FixedMLP):
     def __init__(self, config):
         super().__init__(config)
 
-        self.n_inputs = self.model[0].in_features
-        self.n_hidden = self.model[0].out_features
-        self.n_outputs = self.model[2].out_features
+        self.n_inputs = self.layer_sizes[0]
+        self.hidden_sizes = self.layer_sizes[1:-1]
+        self.n_hidden = sum(self.hidden_sizes)
+        self.n_outputs = self.layer_sizes[-1]
+
 
         # Evolved eta, A, B, C, D for every neuron.
-        self.hebbian_coefficients = nn.Parameter(torch.zeros(self.n_inputs + self.n_hidden + self.n_outputs, 5))
+        self.hebbian_coefficients = nn.Parameter(torch.zeros(sum(self.layer_sizes), 5))
 
-        self.register_buffer('current_input_to_hidden_weights', self.model[0].weight.detach().clone())
-        self.register_buffer('current_hidden_to_output_weights', self.model[2].weight.detach().clone())
+        # This get the indices of the linear layers skipping the activation function
+        self.linear_indices = [index for index, layer in enumerate(self.model) if isinstance(layer, nn.Linear)]
+
+        for layer_number, model_index in enumerate(self.linear_indices):
+            self.register_buffer(f'current_weights_{layer_number}', self.model[model_index].weight.detach().clone())
+
 
     def update_mlp_weights(self, parameter_vector):
         super().update_mlp_weights(parameter_vector)
         self.reset_weights()
 
+    @torch.no_grad()
     def reset_weights(self):
-        with torch.no_grad():
-            self.current_input_to_hidden_weights.copy_(self.model[0].weight)
-            self.current_hidden_to_output_weights.copy_(self.model[2].weight)
+        for layer_number, model_index in enumerate(self.linear_indices):
+            current_weights = getattr(self, f'current_weights_{layer_number}')
+            current_weights.copy_(self.model[model_index].weight)
 
     # Compute Hebbian delta
     @staticmethod
@@ -109,28 +128,37 @@ class HebbianFixedMLP(FixedMLP):
         return delta
     
     @torch.no_grad()
-    def apply_hebbian_update(self, x, hidden, output):
-        input_coeff = self.hebbian_coefficients[:self.n_inputs]
-        hidden_coeff = self.hebbian_coefficients[self.n_inputs:self.n_inputs + self.n_hidden]
-        output_coeff = self.hebbian_coefficients[self.n_inputs + self.n_hidden:]
+    def apply_hebbian_update(self, activations):
+        coefficients = torch.split(self.hebbian_coefficients, self.layer_sizes, dim=0)
 
-        input_delta = self.compute_hebbian_delta(x, hidden, input_coeff, hidden_coeff)
-        output_delta = self.compute_hebbian_delta(hidden, torch.tanh(output), hidden_coeff, output_coeff)
+        deltas = [self.compute_hebbian_delta(activations[index], activations[index+1], coefficients[index], coefficients[index+1]) for index in range(len(self.linear_indices))]
 
-        self.current_input_to_hidden_weights.add_(input_delta.T).clamp_(-1, 1)
-        self.current_hidden_to_output_weights.add_(output_delta.T).clamp_(-1, 1)
+        for layer_number, delta in enumerate(deltas):
+            current_weights = getattr(self, f'current_weights_{layer_number}')
+            current_weights.add_(delta.T).clamp_(-1.0, 1.0)
+
 
     @torch.no_grad()
     def forward(self, x):
         if x.ndim != 2 or x.shape[0] != 1:
             raise ValueError('HebbianFixedMLP expects one observation at a time.')
 
-        hidden = torch.tanh(F.linear(x, self.current_input_to_hidden_weights, self.model[0].bias))
-        output = F.linear(hidden, self.current_hidden_to_output_weights, self.model[2].bias)
+        activations = [x]
 
-        self.apply_hebbian_update(x, hidden, output)
+        pre = x
+        for layer_number, model_index in enumerate(self.linear_indices):
+            layer = self.model[model_index]
+            current_weights = getattr(self, f'current_weights_{layer_number}')
 
-        return output
+            post = F.linear(pre, current_weights, layer.bias)
+            pre = torch.tanh(post)
+
+            activations.append(pre)
+
+
+        self.apply_hebbian_update(activations)
+
+        return post
 
     def summary(self):
         network_parameters = sum(parameter.numel() for parameter in self.model.parameters())
