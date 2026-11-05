@@ -1,7 +1,7 @@
 """Create publication-ready training/testing fitness boxplots.
 
 The script recursively discovers ``experiments_log.csv`` files below a result
-directory. It produces a multi-panel figure with one panel per task and
+directory (or several directories). It produces a multi-panel figure with one panel per task and
 side-by-side Training and Testing boxes for every model condition.
 """
 
@@ -28,6 +28,8 @@ REQUIRED_COLUMNS = {
 }
 
 MODEL_ORDER = [
+    "FixedANN",
+    "FixedANN+HL",
     "NDP",
     "NDP + HL",
     "R-NDP",
@@ -35,6 +37,10 @@ MODEL_ORDER = [
 ]
 
 MODEL_LABELS = {
+    ("fixed_mlp", False): "FixedANN",
+    ("fixed_mlp", True): "FixedANN+HL",
+    ("rewiring_ndp", False): "R-NDP",
+    ("rewiring_ndp", True): "R-NDP + HL",
     ("standard_ndp", False): "NDP",
     ("standard_ndp", True): "NDP + HL",
     ("hebbian_ndp", False): "R-NDP",
@@ -75,13 +81,14 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Plot training and held-out testing fitness distributions for each "
-            "NDP model condition."
+            "model condition, including fixed ANN baselines."
         )
     )
     parser.add_argument(
         "results",
+        nargs="+",
         type=Path,
-        help="Root result directory containing experiments_log.csv files.",
+        help="One or more result roots containing experiments_log.csv files.",
     )
     parser.add_argument(
         "--output-dir",
@@ -118,12 +125,17 @@ def parse_boolean(value: object) -> bool:
     raise ValueError(f"Cannot interpret {value!r} as a Boolean value.")
 
 
-def load_results(results_root: Path) -> pd.DataFrame:
-    log_files = sorted(results_root.rglob("experiments_log.csv"))
-    if not log_files:
-        raise FileNotFoundError(
-            f"No experiments_log.csv files were found below {results_root}."
-        )
+def load_results(results_root: Path | list[Path]) -> pd.DataFrame:
+    roots = [results_root] if isinstance(results_root, Path) else results_root
+    log_paths = set()
+    for root in roots:
+        files = list(root.rglob("experiments_log.csv"))
+        if not files:
+            raise FileNotFoundError(
+                f"No experiments_log.csv files were found below {root}."
+            )
+        log_paths.update(path.resolve() for path in files)
+    log_files = sorted(log_paths)
 
     frames = []
     for log_file in log_files:
@@ -156,7 +168,14 @@ def load_results(results_root: Path) -> pd.DataFrame:
     if results.empty:
         raise ValueError("No complete training/testing fitness pairs were found.")
 
-    duplicate_key = ["task", "seed", "model", "hebbian"]
+    duplicate_key = ["task", "seed", "model_label"]
+    # Repeated exports/runs with identical plotted scores count as one seed.
+    score_key = duplicate_key + ["best_score_mean", "best_score_test"]
+    repeated = results.duplicated(score_key, keep="first")
+    if repeated.any():
+        print(f"Ignoring {int(repeated.sum())} repeated seed entries with identical "
+              "training/testing scores.")
+        results = results.loc[~repeated].copy()
     duplicated = results.duplicated(duplicate_key, keep=False)
     if duplicated.any():
         examples = results.loc[duplicated, duplicate_key].drop_duplicates()

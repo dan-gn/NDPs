@@ -61,7 +61,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--models",
         nargs="+",
-        choices=["standard_ndp", "rewiring_ndp", "hebbian_ndp"],
+        choices=["standard_ndp", "rewiring_ndp", "hebbian_ndp", "fixed_mlp"],
         help="Optional stored model identifiers to include.",
     )
     parser.add_argument(
@@ -75,6 +75,11 @@ def parse_arguments() -> argparse.Namespace:
         type=int,
         default=None,
         help="Optional maximum number of runs, useful for a smoke test.",
+    )
+    parser.add_argument(
+        "--duplicate-runs", choices=["error", "first"], default="error",
+        help="How to handle repeated task/model/seed entries (default: error). "
+             "first selects the first logged run, never by test performance.",
     )
     return parser.parse_args()
 
@@ -165,18 +170,36 @@ def reevaluate(row: pd.Series, n_rollouts: int, test_seed: int):
     task = output["task"]
     optimiser = output["optimiser"]
     best_individual = optimiser.best_individual
-    graph = best_individual.best_graph
-    if graph is None:
-        raise ValueError(f"The best individual in {result_file} has no stored graph.")
+    if str(row["model"]) == "fixed_mlp":
+        import torch
+        from Baseline.fixed_mlp import FixedMLP, HebbianFixedMLP
 
-    # Evaluate the exact graph selected during optimisation. This avoids any
-    # additional developmental randomness during the post-hoc comparison.
-    test_fitness, rollout_fitness = task.evaluate_graph(
-        graph,
-        n_rollouts=n_rollouts,
-        env_seed=test_seed,
-        hebbian=bool(row["hebbian"]),
-    )
+        hebbian = bool(row["hebbian"])
+        config = dict(task.parameters)
+        config["hebbian"] = hebbian
+        policy_class = HebbianFixedMLP if hebbian else FixedMLP
+        policy = policy_class(config)
+        # Match the parameter bounds used during optimisation.
+        parameters = np.clip(
+            np.asarray(best_individual.genotype, dtype=np.float32), -1.0, 1.0
+        )
+        if parameters.size != policy.get_total_number_of_mlp_parameters():
+            raise ValueError(f"Saved genotype does not match the fixed MLP in {result_file}")
+        policy.update_mlp_weights(parameters)
+        with torch.no_grad():
+            test_fitness, rollout_fitness = task.evaluate_policy(
+                policy, hebbian=hebbian,
+                n_rollouts=n_rollouts, env_seed=test_seed,
+            )
+    else:
+        graph = best_individual.best_graph
+        if graph is None:
+            raise ValueError(f"The best individual in {result_file} has no stored graph.")
+        # Evaluate the saved graph without additional developmental randomness.
+        test_fitness, rollout_fitness = task.evaluate_graph(
+            graph, n_rollouts=n_rollouts, env_seed=test_seed,
+            hebbian=bool(row["hebbian"]),
+        )
     rollout_fitness = np.asarray(rollout_fitness, dtype=float)
     cumulative_returns = -rollout_fitness
 
@@ -273,6 +296,12 @@ def main() -> None:
 
     duplicate_columns = ["task", "model", "hebbian", "seed"]
     duplicates = results.duplicated(duplicate_columns, keep=False)
+    if duplicates.any() and args.duplicate_runs == "first":
+        repeated = results.duplicated(duplicate_columns, keep="first")
+        print(f"Selecting the first logged run for {int(repeated.sum())} duplicate entries.")
+        print(results.loc[duplicates, duplicate_columns + ["filename"]].to_string(index=False))
+        results = results.loc[~repeated].copy()
+        duplicates = results.duplicated(duplicate_columns, keep=False)
     if duplicates.any():
         examples = results.loc[duplicates, duplicate_columns].drop_duplicates()
         raise ValueError(

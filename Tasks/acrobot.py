@@ -66,7 +66,7 @@ ACROBOT_PARAMETERS = {
     'sbx_eta_max': 15,
     'eta_schedule_iterations': 100,
 
-    'fixed_mlp_hidden_size': 32,
+    'fixed_mlp_hidden_size': [16, 16],
 }
 
 

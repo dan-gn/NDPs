@@ -19,7 +19,7 @@ sys.path.append(parent)
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
 from NDP.policy_network import PolicyNetwork, NcHebbianLearningPolicyNetwork
-from Baseline.fixed_mlp import FixedMLP
+from Baseline.fixed_mlp import FixedMLP, HebbianFixedMLP
 from Graph.graph_nx import Graphnx
 
 '''
@@ -48,6 +48,7 @@ class Task:
         self.graph_n_inputs = parameters['graph_n_inputs']
         self.graph_n_outputs = parameters['graph_n_outputs']
         self.network_extra_thinking = parameters['network_extra_thinking']
+        self.policy_bias = parameters.get('policy_bias', False)
         # NDP Evaluation parameters
         self.n_cycles = parameters['n_cycles']  # Developmental cycles
         self.n_repeats = parameters['n_repeats']   # Developmental repetitions 
@@ -136,9 +137,9 @@ class Task:
             print('Creating ANN from graph')
 
         if hebbian:
-            policy = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+            policy = NcHebbianLearningPolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking, self.policy_bias)
         else:
-            policy = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking)
+            policy = PolicyNetwork(graph, self.graph_n_inputs, self.graph_n_outputs, self.network_extra_thinking, self.policy_bias)
 
         if verbose:
             print('Done!')
@@ -209,7 +210,7 @@ class Task:
         # params_bounded = np.tanh(params)
         params_bounded = np.clip(mlp_vector, -1.0, 1.0, dtype=np.float32)
 
-        model = FixedMLP(mlp_config)
+        model = FixedMLP(mlp_config) if not mlp_config['hebbian'] else HebbianFixedMLP(mlp_config)
 
         model.update_mlp_weights(params_bounded)
 

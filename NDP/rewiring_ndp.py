@@ -236,7 +236,7 @@ class RewiringNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return np.asarray(sampled_candidate_edges, dtype=np.int32).reshape(-1, 2)
  
     # Choose candidates using the node state similarity
-    def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> list:
+    def get_similar_disconnected_nodes(self, graph:Graphnx, allow_self_loops:bool=False) -> np.ndarray:
         n_nodes = graph.number_of_nodes()
         nodes_states = np.array(graph.nodes_states)
         adjacency_matrix = graph.get_adjacency_matrix()
@@ -272,7 +272,7 @@ class RewiringNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return np.array(candidate_edges, dtype=np.int32)
 
     # Get source and target states from a list of edges
-    def get_states_from_edges(self, edges:np.array, nodes_states:np.array) -> tuple:
+    def get_states_from_edges(self, edges:np.ndarray, nodes_states:np.ndarray) -> tuple:
         node_states = np.asarray(nodes_states)
         edges = np.asarray(edges)
         source = edges[:,0]
@@ -282,14 +282,14 @@ class RewiringNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return source_states, target_states
 
     # Get the model decision from create and remove edge models using their respective threshold values
-    def get_model_decision(self, source_states:torch.tensor, target_states:torch.tensor, model:nn.Module, threshold:float) -> np.array:
+    def get_model_decision(self, source_states:torch.Tensor, target_states:torch.Tensor, model:nn.Module, threshold:float) -> np.ndarray:
         model_decision = model(source_states, target_states).numpy()
         chosen_edges = model_decision > threshold 
         chosen_edges = chosen_edges.ravel()
         return chosen_edges
 
     # Creates new edges using the MLP 
-    def choose_edges_to_create(self, graph:Graphnx) -> list:
+    def choose_edges_to_create(self, graph:Graphnx) -> np.ndarray:
         # Get all possible candidate edges
         if self.add_edge_strategy == 'all_disconnected':
             candidate_edges = self.get_all_disconnected_nodes(graph)
@@ -315,7 +315,7 @@ class RewiringNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
         return edges_to_create
 
     # Removes existing edges using the MLP
-    def choose_edges_to_remove(self, graph:Graphnx) -> list:
+    def choose_edges_to_remove(self, graph:Graphnx) -> np.ndarray:
         edges = np.asarray(list(graph.edges()), dtype=np.int32).reshape(-1, 2)
 
         # Don't remove self-loops

@@ -7,13 +7,13 @@ However, it was too slow to compute stuff as the diameter.
 
 The second version, I change the graph module to use NetworkX.
 This version uses ndp_nx.py and graph_nx.py files.
-Also, ndp_nhcl.py, of which I explain later.  
+Also, rewiring_ndp.py, of which I explain later.  
 
 The third version, in which I'm currently working on, is trying to implement JAX.
 This version uses all the files which have "jax" on the name of the file.
 Update: So far this version is actually slower than my NetworkX version, therefore I'm not working on it anymore.
 
-I have to add that the file, ndp_nhcl, is my own variant for NDP in which the developmental process changes.
+I have to add that the file, rewiring_ndp, is my own variant for NDP in which the developmental process changes.
 Instead of a growing network (node-wise), we have a limited number of nodes and the edges structure is develope.
 Besides that, it can include hebbian learning (both standard NDP and my version of NDP) by using the NDP states ad hebbian paramenters. 
 Since the parameters are attached to each node, the Neuron-centric Hebbian Learning model is being used. 
