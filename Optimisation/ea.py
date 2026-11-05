@@ -465,7 +465,7 @@ class EvolutionaryAlgorithm:
 
 
                 # if self.i % int(self.max_iterations/200) == 0:
-                if self.i % 25 == 0:
+                if self.i % 5 == 0:
                     fitness_values = np.asarray(
                         [individual.fitness for individual in self.population],
                         dtype=float,
