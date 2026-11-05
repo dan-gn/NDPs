@@ -23,7 +23,7 @@ sys.path.append(parent)
 # Import NDP Class
 from NDP.ndp_nx import NeuralDevelopmentalProgram
 from NDP.rewiring_ndp import RewiringNeuralDevelopmentalProgram
-from Baseline.fixed_mlp import FixedMLP
+from Baseline.fixed_mlp import FixedMLP, HebbianFixedMLP
 
 # Import optimisation algorithms
 from Optimisation.cma_es import CMA_ES
@@ -74,7 +74,7 @@ def experiment(task:Task, optimisation_algorithm:str='EA', seed:int=None, stop_o
     elif ndp_params['model'] in ('rewiring_ndp', 'hebbian_ndp'):
         model = RewiringNeuralDevelopmentalProgram(ndp_params)
     elif ndp_params['model'] == 'fixed_mlp':
-        model = FixedMLP(ndp_params)
+        model = FixedMLP(ndp_params) if not ndp_params['hebbian'] else HebbianFixedMLP(ndp_params)
         evaluate_ndp = task.evaluate_fixed_mlp
     else:
         raise ValueError('Model on task should be standard_ndp, rewiring_ndp or fixed_mlp.')
