@@ -146,7 +146,7 @@ class RewiringNeuralDevelopmentalProgram(NeuralDevelopmentalProgram):
 
         # If random_shared, an initial state is generated ramdomly as it's used for all individuals during optimisation
         elif self.initial_node_state_mode == 'random_shared':
-            raise NotImplementedError("Come on, Daniel! You haven't implemented this yet! Stop procrastinating and just do it!")
+            raise NotImplementedError("This operation is not implemented.")
 
         # The other options are generate a new random or constant (ones) initial state
         else:

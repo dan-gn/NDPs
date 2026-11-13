@@ -1,0 +1,61 @@
+task,model_label,evaluation_set,attained,total
+Acrobot-v1,DE,Testing,2,30
+Acrobot-v1,DE,Training,28,30
+Acrobot-v1,DE + HL,Testing,1,30
+Acrobot-v1,DE + HL,Training,17,30
+Acrobot-v1,NDP,Testing,0,30
+Acrobot-v1,NDP,Training,0,30
+Acrobot-v1,NDP + HL,Testing,0,30
+Acrobot-v1,NDP + HL,Training,2,30
+Acrobot-v1,R-NDP,Testing,0,30
+Acrobot-v1,R-NDP,Training,18,30
+Acrobot-v1,R-NDP + HL,Testing,1,30
+Acrobot-v1,R-NDP + HL,Training,13,30
+CartPole-v1,DE,Testing,20,30
+CartPole-v1,DE,Training,24,30
+CartPole-v1,DE + HL,Testing,2,30
+CartPole-v1,DE + HL,Training,7,30
+CartPole-v1,NDP,Testing,29,30
+CartPole-v1,NDP,Training,29,30
+CartPole-v1,NDP + HL,Testing,7,30
+CartPole-v1,NDP + HL,Training,9,30
+CartPole-v1,R-NDP,Testing,29,30
+CartPole-v1,R-NDP,Training,30,30
+CartPole-v1,R-NDP + HL,Testing,18,30
+CartPole-v1,R-NDP + HL,Training,20,30
+LunarLander-v3,DE,Testing,0,30
+LunarLander-v3,DE,Training,0,30
+LunarLander-v3,DE + HL,Testing,0,30
+LunarLander-v3,DE + HL,Training,0,30
+LunarLander-v3,NDP,Testing,0,30
+LunarLander-v3,NDP,Training,0,30
+LunarLander-v3,NDP + HL,Testing,0,30
+LunarLander-v3,NDP + HL,Training,0,30
+LunarLander-v3,R-NDP,Testing,0,30
+LunarLander-v3,R-NDP,Training,3,30
+LunarLander-v3,R-NDP + HL,Testing,0,30
+LunarLander-v3,R-NDP + HL,Training,0,30
+MountainCar-v0,DE,Testing,2,30
+MountainCar-v0,DE,Training,7,30
+MountainCar-v0,DE + HL,Testing,20,30
+MountainCar-v0,DE + HL,Training,21,30
+MountainCar-v0,NDP,Testing,10,30
+MountainCar-v0,NDP,Training,10,30
+MountainCar-v0,NDP + HL,Testing,12,30
+MountainCar-v0,NDP + HL,Training,12,30
+MountainCar-v0,R-NDP,Testing,13,30
+MountainCar-v0,R-NDP,Training,19,30
+MountainCar-v0,R-NDP + HL,Testing,24,30
+MountainCar-v0,R-NDP + HL,Training,24,30
+popgym-PositionOnlyCartPoleEasy-v0,DE,Testing,0,30
+popgym-PositionOnlyCartPoleEasy-v0,DE,Training,0,30
+popgym-PositionOnlyCartPoleEasy-v0,DE + HL,Testing,1,30
+popgym-PositionOnlyCartPoleEasy-v0,DE + HL,Training,10,30
+popgym-PositionOnlyCartPoleEasy-v0,NDP,Testing,5,30
+popgym-PositionOnlyCartPoleEasy-v0,NDP,Training,12,30
+popgym-PositionOnlyCartPoleEasy-v0,NDP + HL,Testing,0,30
+popgym-PositionOnlyCartPoleEasy-v0,NDP + HL,Training,0,30
+popgym-PositionOnlyCartPoleEasy-v0,R-NDP,Testing,23,30
+popgym-PositionOnlyCartPoleEasy-v0,R-NDP,Training,24,30
+popgym-PositionOnlyCartPoleEasy-v0,R-NDP + HL,Testing,0,30
+popgym-PositionOnlyCartPoleEasy-v0,R-NDP + HL,Training,1,30

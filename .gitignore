@@ -2,3 +2,7 @@ __pycache__/
 *.py[cod]
 *.pkl
 *.csv
+
+# Include data and saved models for the paper
+!Results/**/*.csv
+!Results/**/*.pkl

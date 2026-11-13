@@ -208,7 +208,7 @@ class NeuralDevelopmentalProgramJax:
 
         # Minimal network (all inputs connected to outputs) 
         else:
-            raise NotImplementedError("Come on, Daniel! You haven't implemented this yet! Stop procrastinating and just do it!")
+            raise NotImplementedError("This operation is not implemented.")
 
         return graph
 

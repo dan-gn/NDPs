@@ -1,0 +1,1801 @@
+task,seed,model,hebbian,model_label,evaluation_set,fitness
+Acrobot-v1,0,fixed_mlp,False,DE,Training,66.5
+Acrobot-v1,1,fixed_mlp,False,DE,Training,69.6
+Acrobot-v1,2,fixed_mlp,False,DE,Training,71.1
+Acrobot-v1,3,fixed_mlp,False,DE,Training,72.7
+Acrobot-v1,4,fixed_mlp,False,DE,Training,71.7
+Acrobot-v1,5,fixed_mlp,False,DE,Training,74.2
+Acrobot-v1,6,fixed_mlp,False,DE,Training,73.3
+Acrobot-v1,7,fixed_mlp,False,DE,Training,69.0
+Acrobot-v1,8,fixed_mlp,False,DE,Training,68.3
+Acrobot-v1,9,fixed_mlp,False,DE,Training,65.7
+Acrobot-v1,10,fixed_mlp,False,DE,Training,65.9
+Acrobot-v1,11,fixed_mlp,False,DE,Training,67.6
+Acrobot-v1,12,fixed_mlp,False,DE,Training,74.0
+Acrobot-v1,13,fixed_mlp,False,DE,Training,67.0
+Acrobot-v1,14,fixed_mlp,False,DE,Training,66.9
+Acrobot-v1,15,fixed_mlp,False,DE,Training,66.8
+Acrobot-v1,16,fixed_mlp,False,DE,Training,71.7
+Acrobot-v1,17,fixed_mlp,False,DE,Training,67.0
+Acrobot-v1,18,fixed_mlp,False,DE,Training,67.7
+Acrobot-v1,19,fixed_mlp,False,DE,Training,69.4
+Acrobot-v1,20,fixed_mlp,False,DE,Training,66.3
+Acrobot-v1,21,fixed_mlp,False,DE,Training,67.4
+Acrobot-v1,22,fixed_mlp,False,DE,Training,70.7
+Acrobot-v1,23,fixed_mlp,False,DE,Training,67.1
+Acrobot-v1,24,fixed_mlp,False,DE,Training,65.9
+Acrobot-v1,25,fixed_mlp,False,DE,Training,75.3
+Acrobot-v1,26,fixed_mlp,False,DE,Training,69.3
+Acrobot-v1,27,fixed_mlp,False,DE,Training,71.1
+Acrobot-v1,28,fixed_mlp,False,DE,Training,85.0
+Acrobot-v1,29,fixed_mlp,False,DE,Training,65.8
+Acrobot-v1,0,fixed_mlp,True,DE + HL,Training,78.4
+Acrobot-v1,1,fixed_mlp,True,DE + HL,Training,70.4
+Acrobot-v1,2,fixed_mlp,True,DE + HL,Training,77.0
+Acrobot-v1,3,fixed_mlp,True,DE + HL,Training,72.1
+Acrobot-v1,4,fixed_mlp,True,DE + HL,Training,74.0
+Acrobot-v1,5,fixed_mlp,True,DE + HL,Training,71.7
+Acrobot-v1,6,fixed_mlp,True,DE + HL,Training,69.3
+Acrobot-v1,7,fixed_mlp,True,DE + HL,Training,93.7
+Acrobot-v1,8,fixed_mlp,True,DE + HL,Training,83.1
+Acrobot-v1,9,fixed_mlp,True,DE + HL,Training,80.3
+Acrobot-v1,10,fixed_mlp,True,DE + HL,Training,76.2
+Acrobot-v1,11,fixed_mlp,True,DE + HL,Training,68.2
+Acrobot-v1,12,fixed_mlp,True,DE + HL,Training,65.4
+Acrobot-v1,13,fixed_mlp,True,DE + HL,Training,67.6
+Acrobot-v1,14,fixed_mlp,True,DE + HL,Training,93.6
+Acrobot-v1,15,fixed_mlp,True,DE + HL,Training,66.1
+Acrobot-v1,16,fixed_mlp,True,DE + HL,Training,85.2
+Acrobot-v1,17,fixed_mlp,True,DE + HL,Training,65.0
+Acrobot-v1,18,fixed_mlp,True,DE + HL,Training,70.8
+Acrobot-v1,19,fixed_mlp,True,DE + HL,Training,73.8
+Acrobot-v1,20,fixed_mlp,True,DE + HL,Training,77.6
+Acrobot-v1,21,fixed_mlp,True,DE + HL,Training,74.2
+Acrobot-v1,22,fixed_mlp,True,DE + HL,Training,77.8
+Acrobot-v1,23,fixed_mlp,True,DE + HL,Training,69.2
+Acrobot-v1,24,fixed_mlp,True,DE + HL,Training,75.7
+Acrobot-v1,25,fixed_mlp,True,DE + HL,Training,74.8
+Acrobot-v1,26,fixed_mlp,True,DE + HL,Training,78.0
+Acrobot-v1,27,fixed_mlp,True,DE + HL,Training,74.0
+Acrobot-v1,28,fixed_mlp,True,DE + HL,Training,77.0
+Acrobot-v1,29,fixed_mlp,True,DE + HL,Training,73.7
+CartPole-v1,0,fixed_mlp,False,DE,Training,-382.8
+CartPole-v1,1,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,2,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,3,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,4,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,5,fixed_mlp,False,DE,Training,-422.1
+CartPole-v1,6,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,7,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,8,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,9,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,10,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,11,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,12,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,13,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,14,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,15,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,16,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,17,fixed_mlp,False,DE,Training,-387.1
+CartPole-v1,18,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,19,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,20,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,21,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,22,fixed_mlp,False,DE,Training,-499.7
+CartPole-v1,23,fixed_mlp,False,DE,Training,-456.4
+CartPole-v1,24,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,25,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,26,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,27,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,28,fixed_mlp,False,DE,Training,-500.0
+CartPole-v1,29,fixed_mlp,False,DE,Training,-255.0
+CartPole-v1,0,fixed_mlp,True,DE + HL,Training,-500.0
+CartPole-v1,1,fixed_mlp,True,DE + HL,Training,-197.9
+CartPole-v1,2,fixed_mlp,True,DE + HL,Training,-347.4
+CartPole-v1,3,fixed_mlp,True,DE + HL,Training,-244.9
+CartPole-v1,4,fixed_mlp,True,DE + HL,Training,-210.8
+CartPole-v1,5,fixed_mlp,True,DE + HL,Training,-164.1
+CartPole-v1,6,fixed_mlp,True,DE + HL,Training,-348.0
+CartPole-v1,7,fixed_mlp,True,DE + HL,Training,-370.3
+CartPole-v1,8,fixed_mlp,True,DE + HL,Training,-500.0
+CartPole-v1,9,fixed_mlp,True,DE + HL,Training,-359.8
+CartPole-v1,10,fixed_mlp,True,DE + HL,Training,-320.2
+CartPole-v1,11,fixed_mlp,True,DE + HL,Training,-480.6
+CartPole-v1,12,fixed_mlp,True,DE + HL,Training,-500.0
+CartPole-v1,13,fixed_mlp,True,DE + HL,Training,-500.0
+CartPole-v1,14,fixed_mlp,True,DE + HL,Training,-267.1
+CartPole-v1,15,fixed_mlp,True,DE + HL,Training,-231.2
+CartPole-v1,16,fixed_mlp,True,DE + HL,Training,-128.2
+CartPole-v1,17,fixed_mlp,True,DE + HL,Training,-500.0
+CartPole-v1,18,fixed_mlp,True,DE + HL,Training,-256.8
+CartPole-v1,19,fixed_mlp,True,DE + HL,Training,-271.3
+CartPole-v1,20,fixed_mlp,True,DE + HL,Training,-332.0
+CartPole-v1,21,fixed_mlp,True,DE + HL,Training,-442.6
+CartPole-v1,22,fixed_mlp,True,DE + HL,Training,-158.0
+CartPole-v1,23,fixed_mlp,True,DE + HL,Training,-134.9
+CartPole-v1,24,fixed_mlp,True,DE + HL,Training,-500.0
+CartPole-v1,25,fixed_mlp,True,DE + HL,Training,-375.7
+CartPole-v1,26,fixed_mlp,True,DE + HL,Training,-216.2
+CartPole-v1,27,fixed_mlp,True,DE + HL,Training,-397.0
+CartPole-v1,28,fixed_mlp,True,DE + HL,Training,-212.2
+CartPole-v1,29,fixed_mlp,True,DE + HL,Training,-500.0
+LunarLander-v3,0,fixed_mlp,False,DE,Training,-84.05354463762765
+LunarLander-v3,1,fixed_mlp,False,DE,Training,-2.398512825795602
+LunarLander-v3,2,fixed_mlp,False,DE,Training,-22.85883083349849
+LunarLander-v3,3,fixed_mlp,False,DE,Training,-33.79352615604608
+LunarLander-v3,4,fixed_mlp,False,DE,Training,-143.96822662614622
+LunarLander-v3,5,fixed_mlp,False,DE,Training,3.642671162370549
+LunarLander-v3,6,fixed_mlp,False,DE,Training,-85.97057808141209
+LunarLander-v3,7,fixed_mlp,False,DE,Training,-75.97537978817476
+LunarLander-v3,8,fixed_mlp,False,DE,Training,-33.35642023844914
+LunarLander-v3,9,fixed_mlp,False,DE,Training,-66.92641326668934
+LunarLander-v3,10,fixed_mlp,False,DE,Training,-43.3293588175374
+LunarLander-v3,11,fixed_mlp,False,DE,Training,-12.000604498014209
+LunarLander-v3,12,fixed_mlp,False,DE,Training,12.916469554159686
+LunarLander-v3,13,fixed_mlp,False,DE,Training,-44.23025283019886
+LunarLander-v3,14,fixed_mlp,False,DE,Training,-41.32682963530918
+LunarLander-v3,15,fixed_mlp,False,DE,Training,-12.621766124226188
+LunarLander-v3,16,fixed_mlp,False,DE,Training,-160.7913901760197
+LunarLander-v3,17,fixed_mlp,False,DE,Training,19.491737804999417
+LunarLander-v3,18,fixed_mlp,False,DE,Training,-33.304780458535646
+LunarLander-v3,19,fixed_mlp,False,DE,Training,-157.0993146408665
+LunarLander-v3,20,fixed_mlp,False,DE,Training,33.933698086385085
+LunarLander-v3,21,fixed_mlp,False,DE,Training,-32.60530754604844
+LunarLander-v3,22,fixed_mlp,False,DE,Training,-49.38685950388923
+LunarLander-v3,23,fixed_mlp,False,DE,Training,14.359346093484064
+LunarLander-v3,24,fixed_mlp,False,DE,Training,16.032831885032884
+LunarLander-v3,25,fixed_mlp,False,DE,Training,-87.69629823320625
+LunarLander-v3,26,fixed_mlp,False,DE,Training,-34.07203097474458
+LunarLander-v3,27,fixed_mlp,False,DE,Training,38.62971380746827
+LunarLander-v3,28,fixed_mlp,False,DE,Training,21.15393248159016
+LunarLander-v3,29,fixed_mlp,False,DE,Training,-65.76283200592346
+LunarLander-v3,0,fixed_mlp,True,DE + HL,Training,-98.7719138467282
+LunarLander-v3,1,fixed_mlp,True,DE + HL,Training,42.43559254915183
+LunarLander-v3,2,fixed_mlp,True,DE + HL,Training,-5.8985641891758105
+LunarLander-v3,3,fixed_mlp,True,DE + HL,Training,6.146532122740188
+LunarLander-v3,4,fixed_mlp,True,DE + HL,Training,-16.66210330889195
+LunarLander-v3,5,fixed_mlp,True,DE + HL,Training,-51.00368318517234
+LunarLander-v3,6,fixed_mlp,True,DE + HL,Training,54.61305143971928
+LunarLander-v3,7,fixed_mlp,True,DE + HL,Training,-70.26606823812664
+LunarLander-v3,8,fixed_mlp,True,DE + HL,Training,-14.92691412255013
+LunarLander-v3,9,fixed_mlp,True,DE + HL,Training,-20.47378529305185
+LunarLander-v3,10,fixed_mlp,True,DE + HL,Training,-34.30369660002371
+LunarLander-v3,11,fixed_mlp,True,DE + HL,Training,2.763256235421923
+LunarLander-v3,12,fixed_mlp,True,DE + HL,Training,-42.7201472041736
+LunarLander-v3,13,fixed_mlp,True,DE + HL,Training,-50.53195214098362
+LunarLander-v3,14,fixed_mlp,True,DE + HL,Training,-31.81427976334796
+LunarLander-v3,15,fixed_mlp,True,DE + HL,Training,-8.478799742489432
+LunarLander-v3,16,fixed_mlp,True,DE + HL,Training,41.07920029941239
+LunarLander-v3,17,fixed_mlp,True,DE + HL,Training,-72.45809418085976
+LunarLander-v3,18,fixed_mlp,True,DE + HL,Training,-22.05686028774087
+LunarLander-v3,19,fixed_mlp,True,DE + HL,Training,-123.20382589085924
+LunarLander-v3,20,fixed_mlp,True,DE + HL,Training,-34.566060525741776
+LunarLander-v3,21,fixed_mlp,True,DE + HL,Training,28.88418092034108
+LunarLander-v3,22,fixed_mlp,True,DE + HL,Training,-17.175030551715743
+LunarLander-v3,23,fixed_mlp,True,DE + HL,Training,-31.68298375639225
+LunarLander-v3,24,fixed_mlp,True,DE + HL,Training,8.390629740277452
+LunarLander-v3,25,fixed_mlp,True,DE + HL,Training,-11.461853845680093
+LunarLander-v3,26,fixed_mlp,True,DE + HL,Training,36.10578941440738
+LunarLander-v3,27,fixed_mlp,True,DE + HL,Training,3.3298717197060883
+LunarLander-v3,28,fixed_mlp,True,DE + HL,Training,-12.453286618487436
+LunarLander-v3,29,fixed_mlp,True,DE + HL,Training,-32.16660761772931
+MountainCar-v0,0,fixed_mlp,False,DE,Training,118.5
+MountainCar-v0,1,fixed_mlp,False,DE,Training,129.0
+MountainCar-v0,2,fixed_mlp,False,DE,Training,101.4
+MountainCar-v0,3,fixed_mlp,False,DE,Training,207.4
+MountainCar-v0,4,fixed_mlp,False,DE,Training,126.0
+MountainCar-v0,5,fixed_mlp,False,DE,Training,191.6
+MountainCar-v0,6,fixed_mlp,False,DE,Training,123.8
+MountainCar-v0,7,fixed_mlp,False,DE,Training,215.5
+MountainCar-v0,8,fixed_mlp,False,DE,Training,117.9
+MountainCar-v0,9,fixed_mlp,False,DE,Training,400.0
+MountainCar-v0,10,fixed_mlp,False,DE,Training,107.5
+MountainCar-v0,11,fixed_mlp,False,DE,Training,214.8
+MountainCar-v0,12,fixed_mlp,False,DE,Training,104.1
+MountainCar-v0,13,fixed_mlp,False,DE,Training,242.1
+MountainCar-v0,14,fixed_mlp,False,DE,Training,101.5
+MountainCar-v0,15,fixed_mlp,False,DE,Training,180.7
+MountainCar-v0,16,fixed_mlp,False,DE,Training,126.5
+MountainCar-v0,17,fixed_mlp,False,DE,Training,141.1
+MountainCar-v0,18,fixed_mlp,False,DE,Training,190.1
+MountainCar-v0,19,fixed_mlp,False,DE,Training,214.8
+MountainCar-v0,20,fixed_mlp,False,DE,Training,100.7
+MountainCar-v0,21,fixed_mlp,False,DE,Training,190.5
+MountainCar-v0,22,fixed_mlp,False,DE,Training,103.5
+MountainCar-v0,23,fixed_mlp,False,DE,Training,135.5
+MountainCar-v0,24,fixed_mlp,False,DE,Training,128.2
+MountainCar-v0,25,fixed_mlp,False,DE,Training,113.6
+MountainCar-v0,26,fixed_mlp,False,DE,Training,139.4
+MountainCar-v0,27,fixed_mlp,False,DE,Training,400.0
+MountainCar-v0,28,fixed_mlp,False,DE,Training,102.8
+MountainCar-v0,29,fixed_mlp,False,DE,Training,112.4
+MountainCar-v0,0,fixed_mlp,True,DE + HL,Training,100.3
+MountainCar-v0,1,fixed_mlp,True,DE + HL,Training,117.4
+MountainCar-v0,2,fixed_mlp,True,DE + HL,Training,100.4
+MountainCar-v0,3,fixed_mlp,True,DE + HL,Training,113.1
+MountainCar-v0,4,fixed_mlp,True,DE + HL,Training,117.7
+MountainCar-v0,5,fixed_mlp,True,DE + HL,Training,101.7
+MountainCar-v0,6,fixed_mlp,True,DE + HL,Training,114.6
+MountainCar-v0,7,fixed_mlp,True,DE + HL,Training,101.2
+MountainCar-v0,8,fixed_mlp,True,DE + HL,Training,125.9
+MountainCar-v0,9,fixed_mlp,True,DE + HL,Training,101.5
+MountainCar-v0,10,fixed_mlp,True,DE + HL,Training,100.9
+MountainCar-v0,11,fixed_mlp,True,DE + HL,Training,109.4
+MountainCar-v0,12,fixed_mlp,True,DE + HL,Training,112.9
+MountainCar-v0,13,fixed_mlp,True,DE + HL,Training,101.7
+MountainCar-v0,14,fixed_mlp,True,DE + HL,Training,100.5
+MountainCar-v0,15,fixed_mlp,True,DE + HL,Training,103.9
+MountainCar-v0,16,fixed_mlp,True,DE + HL,Training,112.2
+MountainCar-v0,17,fixed_mlp,True,DE + HL,Training,100.9
+MountainCar-v0,18,fixed_mlp,True,DE + HL,Training,100.4
+MountainCar-v0,19,fixed_mlp,True,DE + HL,Training,99.8
+MountainCar-v0,20,fixed_mlp,True,DE + HL,Training,119.0
+MountainCar-v0,21,fixed_mlp,True,DE + HL,Training,99.7
+MountainCar-v0,22,fixed_mlp,True,DE + HL,Training,101.1
+MountainCar-v0,23,fixed_mlp,True,DE + HL,Training,105.0
+MountainCar-v0,24,fixed_mlp,True,DE + HL,Training,116.0
+MountainCar-v0,25,fixed_mlp,True,DE + HL,Training,102.0
+MountainCar-v0,26,fixed_mlp,True,DE + HL,Training,99.3
+MountainCar-v0,27,fixed_mlp,True,DE + HL,Training,101.7
+MountainCar-v0,28,fixed_mlp,True,DE + HL,Training,100.4
+MountainCar-v0,29,fixed_mlp,True,DE + HL,Training,101.0
+popgym-PositionOnlyCartPoleEasy-v0,0,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,1,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,2,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,3,fixed_mlp,False,DE,Training,-0.2625000000000001
+popgym-PositionOnlyCartPoleEasy-v0,4,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,5,fixed_mlp,False,DE,Training,-0.2615000000000002
+popgym-PositionOnlyCartPoleEasy-v0,6,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,7,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,8,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,9,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,10,fixed_mlp,False,DE,Training,-0.2365000000000001
+popgym-PositionOnlyCartPoleEasy-v0,11,fixed_mlp,False,DE,Training,-0.2625000000000001
+popgym-PositionOnlyCartPoleEasy-v0,12,fixed_mlp,False,DE,Training,-0.2570000000000002
+popgym-PositionOnlyCartPoleEasy-v0,13,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,14,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,15,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,16,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,17,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,18,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,19,fixed_mlp,False,DE,Training,-0.2570000000000002
+popgym-PositionOnlyCartPoleEasy-v0,20,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,21,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,23,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,24,fixed_mlp,False,DE,Training,-0.2625000000000001
+popgym-PositionOnlyCartPoleEasy-v0,25,fixed_mlp,False,DE,Training,-0.2570000000000002
+popgym-PositionOnlyCartPoleEasy-v0,26,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,27,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,28,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,fixed_mlp,False,DE,Training,-0.2620000000000001
+popgym-PositionOnlyCartPoleEasy-v0,0,fixed_mlp,True,DE + HL,Training,-0.9950000000000008
+popgym-PositionOnlyCartPoleEasy-v0,1,fixed_mlp,True,DE + HL,Training,-0.7270000000000005
+popgym-PositionOnlyCartPoleEasy-v0,2,fixed_mlp,True,DE + HL,Training,-0.9840000000000004
+popgym-PositionOnlyCartPoleEasy-v0,3,fixed_mlp,True,DE + HL,Training,-0.8490000000000008
+popgym-PositionOnlyCartPoleEasy-v0,4,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,5,fixed_mlp,True,DE + HL,Training,-0.9085000000000008
+popgym-PositionOnlyCartPoleEasy-v0,6,fixed_mlp,True,DE + HL,Training,-0.8505000000000006
+popgym-PositionOnlyCartPoleEasy-v0,7,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,8,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,9,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,10,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,11,fixed_mlp,True,DE + HL,Training,-0.9105000000000004
+popgym-PositionOnlyCartPoleEasy-v0,12,fixed_mlp,True,DE + HL,Training,-0.8835000000000006
+popgym-PositionOnlyCartPoleEasy-v0,13,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,14,fixed_mlp,True,DE + HL,Training,-0.9875000000000004
+popgym-PositionOnlyCartPoleEasy-v0,15,fixed_mlp,True,DE + HL,Training,-0.5860000000000004
+popgym-PositionOnlyCartPoleEasy-v0,16,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,17,fixed_mlp,True,DE + HL,Training,-0.9975000000000004
+popgym-PositionOnlyCartPoleEasy-v0,18,fixed_mlp,True,DE + HL,Training,-0.9375000000000006
+popgym-PositionOnlyCartPoleEasy-v0,19,fixed_mlp,True,DE + HL,Training,-0.6515000000000004
+popgym-PositionOnlyCartPoleEasy-v0,20,fixed_mlp,True,DE + HL,Training,-0.9040000000000004
+popgym-PositionOnlyCartPoleEasy-v0,21,fixed_mlp,True,DE + HL,Training,-0.4205000000000002
+popgym-PositionOnlyCartPoleEasy-v0,22,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,23,fixed_mlp,True,DE + HL,Training,-0.8180000000000005
+popgym-PositionOnlyCartPoleEasy-v0,24,fixed_mlp,True,DE + HL,Training,-0.6780000000000005
+popgym-PositionOnlyCartPoleEasy-v0,25,fixed_mlp,True,DE + HL,Training,-0.7460000000000007
+popgym-PositionOnlyCartPoleEasy-v0,26,fixed_mlp,True,DE + HL,Training,-0.8125000000000006
+popgym-PositionOnlyCartPoleEasy-v0,27,fixed_mlp,True,DE + HL,Training,-0.7045000000000006
+popgym-PositionOnlyCartPoleEasy-v0,28,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,29,fixed_mlp,True,DE + HL,Training,-1.0000000000000004
+Acrobot-v1,0,rewiring_ndp,False,R-NDP,Training,78.6
+Acrobot-v1,1,rewiring_ndp,False,R-NDP,Training,68.4
+Acrobot-v1,10,rewiring_ndp,False,R-NDP,Training,73.2
+Acrobot-v1,11,rewiring_ndp,False,R-NDP,Training,81.6
+Acrobot-v1,12,rewiring_ndp,False,R-NDP,Training,74.8
+Acrobot-v1,13,rewiring_ndp,False,R-NDP,Training,68.4
+Acrobot-v1,14,rewiring_ndp,False,R-NDP,Training,70.6
+Acrobot-v1,15,rewiring_ndp,False,R-NDP,Training,68.8
+Acrobot-v1,16,rewiring_ndp,False,R-NDP,Training,74.3
+Acrobot-v1,17,rewiring_ndp,False,R-NDP,Training,76.4
+Acrobot-v1,18,rewiring_ndp,False,R-NDP,Training,69.1
+Acrobot-v1,19,rewiring_ndp,False,R-NDP,Training,85.0
+Acrobot-v1,2,rewiring_ndp,False,R-NDP,Training,72.3
+Acrobot-v1,20,rewiring_ndp,False,R-NDP,Training,76.4
+Acrobot-v1,21,rewiring_ndp,False,R-NDP,Training,75.6
+Acrobot-v1,22,rewiring_ndp,False,R-NDP,Training,81.5
+Acrobot-v1,23,rewiring_ndp,False,R-NDP,Training,78.9
+Acrobot-v1,24,rewiring_ndp,False,R-NDP,Training,75.2
+Acrobot-v1,25,rewiring_ndp,False,R-NDP,Training,69.1
+Acrobot-v1,26,rewiring_ndp,False,R-NDP,Training,69.3
+Acrobot-v1,27,rewiring_ndp,False,R-NDP,Training,90.8
+Acrobot-v1,28,rewiring_ndp,False,R-NDP,Training,80.9
+Acrobot-v1,29,rewiring_ndp,False,R-NDP,Training,70.6
+Acrobot-v1,3,rewiring_ndp,False,R-NDP,Training,73.1
+Acrobot-v1,4,rewiring_ndp,False,R-NDP,Training,73.5
+Acrobot-v1,5,rewiring_ndp,False,R-NDP,Training,68.0
+Acrobot-v1,6,rewiring_ndp,False,R-NDP,Training,66.5
+Acrobot-v1,7,rewiring_ndp,False,R-NDP,Training,76.8
+Acrobot-v1,8,rewiring_ndp,False,R-NDP,Training,71.1
+Acrobot-v1,9,rewiring_ndp,False,R-NDP,Training,66.5
+Acrobot-v1,0,rewiring_ndp,True,R-NDP + HL,Training,73.5
+Acrobot-v1,1,rewiring_ndp,True,R-NDP + HL,Training,73.1
+Acrobot-v1,10,rewiring_ndp,True,R-NDP + HL,Training,68.6
+Acrobot-v1,11,rewiring_ndp,True,R-NDP + HL,Training,83.5
+Acrobot-v1,12,rewiring_ndp,True,R-NDP + HL,Training,78.5
+Acrobot-v1,13,rewiring_ndp,True,R-NDP + HL,Training,68.9
+Acrobot-v1,14,rewiring_ndp,True,R-NDP + HL,Training,85.2
+Acrobot-v1,15,rewiring_ndp,True,R-NDP + HL,Training,75.3
+Acrobot-v1,16,rewiring_ndp,True,R-NDP + HL,Training,90.4
+Acrobot-v1,17,rewiring_ndp,True,R-NDP + HL,Training,67.5
+Acrobot-v1,18,rewiring_ndp,True,R-NDP + HL,Training,98.9
+Acrobot-v1,19,rewiring_ndp,True,R-NDP + HL,Training,82.5
+Acrobot-v1,2,rewiring_ndp,True,R-NDP + HL,Training,72.2
+Acrobot-v1,20,rewiring_ndp,True,R-NDP + HL,Training,73.7
+Acrobot-v1,21,rewiring_ndp,True,R-NDP + HL,Training,81.0
+Acrobot-v1,22,rewiring_ndp,True,R-NDP + HL,Training,80.9
+Acrobot-v1,23,rewiring_ndp,True,R-NDP + HL,Training,68.2
+Acrobot-v1,24,rewiring_ndp,True,R-NDP + HL,Training,80.2
+Acrobot-v1,25,rewiring_ndp,True,R-NDP + HL,Training,74.0
+Acrobot-v1,26,rewiring_ndp,True,R-NDP + HL,Training,71.3
+Acrobot-v1,27,rewiring_ndp,True,R-NDP + HL,Training,73.3
+Acrobot-v1,28,rewiring_ndp,True,R-NDP + HL,Training,107.4
+Acrobot-v1,29,rewiring_ndp,True,R-NDP + HL,Training,72.9
+Acrobot-v1,3,rewiring_ndp,True,R-NDP + HL,Training,75.3
+Acrobot-v1,4,rewiring_ndp,True,R-NDP + HL,Training,75.7
+Acrobot-v1,5,rewiring_ndp,True,R-NDP + HL,Training,78.7
+Acrobot-v1,6,rewiring_ndp,True,R-NDP + HL,Training,110.1
+Acrobot-v1,7,rewiring_ndp,True,R-NDP + HL,Training,72.4
+Acrobot-v1,8,rewiring_ndp,True,R-NDP + HL,Training,113.3
+Acrobot-v1,9,rewiring_ndp,True,R-NDP + HL,Training,108.1
+Acrobot-v1,0,standard_ndp,False,NDP,Training,82.7
+Acrobot-v1,1,standard_ndp,False,NDP,Training,77.0
+Acrobot-v1,10,standard_ndp,False,NDP,Training,80.1
+Acrobot-v1,11,standard_ndp,False,NDP,Training,78.1
+Acrobot-v1,12,standard_ndp,False,NDP,Training,81.8
+Acrobot-v1,13,standard_ndp,False,NDP,Training,77.0
+Acrobot-v1,14,standard_ndp,False,NDP,Training,78.9
+Acrobot-v1,15,standard_ndp,False,NDP,Training,78.1
+Acrobot-v1,16,standard_ndp,False,NDP,Training,76.9
+Acrobot-v1,17,standard_ndp,False,NDP,Training,84.9
+Acrobot-v1,18,standard_ndp,False,NDP,Training,78.9
+Acrobot-v1,19,standard_ndp,False,NDP,Training,85.7
+Acrobot-v1,2,standard_ndp,False,NDP,Training,84.9
+Acrobot-v1,20,standard_ndp,False,NDP,Training,83.4
+Acrobot-v1,21,standard_ndp,False,NDP,Training,85.0
+Acrobot-v1,22,standard_ndp,False,NDP,Training,78.2
+Acrobot-v1,23,standard_ndp,False,NDP,Training,84.9
+Acrobot-v1,24,standard_ndp,False,NDP,Training,84.9
+Acrobot-v1,25,standard_ndp,False,NDP,Training,79.4
+Acrobot-v1,26,standard_ndp,False,NDP,Training,79.8
+Acrobot-v1,27,standard_ndp,False,NDP,Training,84.9
+Acrobot-v1,28,standard_ndp,False,NDP,Training,85.7
+Acrobot-v1,29,standard_ndp,False,NDP,Training,82.6
+Acrobot-v1,3,standard_ndp,False,NDP,Training,77.3
+Acrobot-v1,4,standard_ndp,False,NDP,Training,81.8
+Acrobot-v1,5,standard_ndp,False,NDP,Training,76.9
+Acrobot-v1,6,standard_ndp,False,NDP,Training,78.4
+Acrobot-v1,7,standard_ndp,False,NDP,Training,80.5
+Acrobot-v1,8,standard_ndp,False,NDP,Training,78.5
+Acrobot-v1,9,standard_ndp,False,NDP,Training,78.1
+Acrobot-v1,0,standard_ndp,True,NDP + HL,Training,83.6
+Acrobot-v1,1,standard_ndp,True,NDP + HL,Training,77.9
+Acrobot-v1,10,standard_ndp,True,NDP + HL,Training,77.8
+Acrobot-v1,11,standard_ndp,True,NDP + HL,Training,71.1
+Acrobot-v1,12,standard_ndp,True,NDP + HL,Training,79.2
+Acrobot-v1,13,standard_ndp,True,NDP + HL,Training,76.9
+Acrobot-v1,14,standard_ndp,True,NDP + HL,Training,80.3
+Acrobot-v1,15,standard_ndp,True,NDP + HL,Training,83.6
+Acrobot-v1,16,standard_ndp,True,NDP + HL,Training,80.4
+Acrobot-v1,17,standard_ndp,True,NDP + HL,Training,88.8
+Acrobot-v1,18,standard_ndp,True,NDP + HL,Training,78.1
+Acrobot-v1,19,standard_ndp,True,NDP + HL,Training,82.7
+Acrobot-v1,2,standard_ndp,True,NDP + HL,Training,84.6
+Acrobot-v1,20,standard_ndp,True,NDP + HL,Training,95.7
+Acrobot-v1,21,standard_ndp,True,NDP + HL,Training,79.6
+Acrobot-v1,22,standard_ndp,True,NDP + HL,Training,94.5
+Acrobot-v1,23,standard_ndp,True,NDP + HL,Training,88.1
+Acrobot-v1,24,standard_ndp,True,NDP + HL,Training,87.5
+Acrobot-v1,25,standard_ndp,True,NDP + HL,Training,85.2
+Acrobot-v1,26,standard_ndp,True,NDP + HL,Training,90.2
+Acrobot-v1,27,standard_ndp,True,NDP + HL,Training,78.5
+Acrobot-v1,28,standard_ndp,True,NDP + HL,Training,77.4
+Acrobot-v1,29,standard_ndp,True,NDP + HL,Training,79.4
+Acrobot-v1,3,standard_ndp,True,NDP + HL,Training,78.9
+Acrobot-v1,4,standard_ndp,True,NDP + HL,Training,96.1
+Acrobot-v1,5,standard_ndp,True,NDP + HL,Training,69.8
+Acrobot-v1,6,standard_ndp,True,NDP + HL,Training,79.0
+Acrobot-v1,7,standard_ndp,True,NDP + HL,Training,80.9
+Acrobot-v1,8,standard_ndp,True,NDP + HL,Training,95.5
+Acrobot-v1,9,standard_ndp,True,NDP + HL,Training,89.7
+CartPole-v1,0,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,1,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,10,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,11,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,12,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,13,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,14,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,15,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,16,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,17,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,18,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,19,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,2,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,20,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,21,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,22,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,23,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,24,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,25,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,26,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,27,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,28,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,29,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,3,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,4,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,5,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,6,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,7,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,8,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,9,rewiring_ndp,False,R-NDP,Training,-500.0
+CartPole-v1,0,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,1,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,10,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,11,rewiring_ndp,True,R-NDP + HL,Training,-312.5
+CartPole-v1,12,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,13,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,14,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,15,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,16,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,17,rewiring_ndp,True,R-NDP + HL,Training,-218.0
+CartPole-v1,18,rewiring_ndp,True,R-NDP + HL,Training,-233.5
+CartPole-v1,19,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,2,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,20,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,21,rewiring_ndp,True,R-NDP + HL,Training,-297.4
+CartPole-v1,22,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,23,rewiring_ndp,True,R-NDP + HL,Training,-303.7
+CartPole-v1,24,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,25,rewiring_ndp,True,R-NDP + HL,Training,-337.5
+CartPole-v1,26,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,27,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,28,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,29,rewiring_ndp,True,R-NDP + HL,Training,-185.2
+CartPole-v1,3,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,4,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,5,rewiring_ndp,True,R-NDP + HL,Training,-276.7
+CartPole-v1,6,rewiring_ndp,True,R-NDP + HL,Training,-272.1
+CartPole-v1,7,rewiring_ndp,True,R-NDP + HL,Training,-362.4
+CartPole-v1,8,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,9,rewiring_ndp,True,R-NDP + HL,Training,-500.0
+CartPole-v1,0,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,1,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,10,standard_ndp,False,NDP,Training,-470.2
+CartPole-v1,11,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,12,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,13,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,14,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,15,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,16,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,17,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,18,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,19,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,2,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,20,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,21,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,22,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,23,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,24,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,25,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,26,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,27,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,28,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,29,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,3,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,4,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,5,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,6,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,7,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,8,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,9,standard_ndp,False,NDP,Training,-500.0
+CartPole-v1,0,standard_ndp,True,NDP + HL,Training,-262.7
+CartPole-v1,1,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,10,standard_ndp,True,NDP + HL,Training,-136.8
+CartPole-v1,11,standard_ndp,True,NDP + HL,Training,-219.5
+CartPole-v1,12,standard_ndp,True,NDP + HL,Training,-272.3
+CartPole-v1,13,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,14,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,15,standard_ndp,True,NDP + HL,Training,-175.0
+CartPole-v1,16,standard_ndp,True,NDP + HL,Training,-345.6
+CartPole-v1,17,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,18,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,19,standard_ndp,True,NDP + HL,Training,-387.7
+CartPole-v1,2,standard_ndp,True,NDP + HL,Training,-68.5
+CartPole-v1,20,standard_ndp,True,NDP + HL,Training,-75.9
+CartPole-v1,21,standard_ndp,True,NDP + HL,Training,-123.8
+CartPole-v1,22,standard_ndp,True,NDP + HL,Training,-400.2
+CartPole-v1,23,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,24,standard_ndp,True,NDP + HL,Training,-80.2
+CartPole-v1,25,standard_ndp,True,NDP + HL,Training,-451.1
+CartPole-v1,26,standard_ndp,True,NDP + HL,Training,-67.8
+CartPole-v1,27,standard_ndp,True,NDP + HL,Training,-339.8
+CartPole-v1,28,standard_ndp,True,NDP + HL,Training,-254.8
+CartPole-v1,29,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,3,standard_ndp,True,NDP + HL,Training,-444.8
+CartPole-v1,4,standard_ndp,True,NDP + HL,Training,-403.0
+CartPole-v1,5,standard_ndp,True,NDP + HL,Training,-201.1
+CartPole-v1,6,standard_ndp,True,NDP + HL,Training,-500.0
+CartPole-v1,7,standard_ndp,True,NDP + HL,Training,-201.1
+CartPole-v1,8,standard_ndp,True,NDP + HL,Training,-219.0
+CartPole-v1,9,standard_ndp,True,NDP + HL,Training,-500.0
+LunarLander-v3,0,rewiring_ndp,False,R-NDP,Training,-161.5344754087602
+LunarLander-v3,1,rewiring_ndp,False,R-NDP,Training,-145.65432476689966
+LunarLander-v3,10,rewiring_ndp,False,R-NDP,Training,-92.75260648482322
+LunarLander-v3,11,rewiring_ndp,False,R-NDP,Training,-84.89426577957033
+LunarLander-v3,12,rewiring_ndp,False,R-NDP,Training,-200.5863443988946
+LunarLander-v3,13,rewiring_ndp,False,R-NDP,Training,25.961415543362573
+LunarLander-v3,14,rewiring_ndp,False,R-NDP,Training,-266.9279251822293
+LunarLander-v3,15,rewiring_ndp,False,R-NDP,Training,-30.19799264004821
+LunarLander-v3,16,rewiring_ndp,False,R-NDP,Training,-112.0746894526474
+LunarLander-v3,17,rewiring_ndp,False,R-NDP,Training,-87.99027990346963
+LunarLander-v3,18,rewiring_ndp,False,R-NDP,Training,21.368167821459704
+LunarLander-v3,19,rewiring_ndp,False,R-NDP,Training,-18.22876832659292
+LunarLander-v3,2,rewiring_ndp,False,R-NDP,Training,16.427381831407004
+LunarLander-v3,20,rewiring_ndp,False,R-NDP,Training,-20.57141212317081
+LunarLander-v3,21,rewiring_ndp,False,R-NDP,Training,-11.61457216791604
+LunarLander-v3,22,rewiring_ndp,False,R-NDP,Training,30.928884016278523
+LunarLander-v3,23,rewiring_ndp,False,R-NDP,Training,-41.77553706087441
+LunarLander-v3,24,rewiring_ndp,False,R-NDP,Training,-70.13491664195237
+LunarLander-v3,25,rewiring_ndp,False,R-NDP,Training,4.959708414545909
+LunarLander-v3,26,rewiring_ndp,False,R-NDP,Training,32.81965719050204
+LunarLander-v3,27,rewiring_ndp,False,R-NDP,Training,-22.79896860295566
+LunarLander-v3,28,rewiring_ndp,False,R-NDP,Training,-52.51979555437665
+LunarLander-v3,29,rewiring_ndp,False,R-NDP,Training,-53.34856662020705
+LunarLander-v3,3,rewiring_ndp,False,R-NDP,Training,-48.776315550332
+LunarLander-v3,4,rewiring_ndp,False,R-NDP,Training,-160.1315458385541
+LunarLander-v3,5,rewiring_ndp,False,R-NDP,Training,-229.04901170553563
+LunarLander-v3,6,rewiring_ndp,False,R-NDP,Training,-25.84505203183255
+LunarLander-v3,7,rewiring_ndp,False,R-NDP,Training,-5.22705362201927
+LunarLander-v3,8,rewiring_ndp,False,R-NDP,Training,35.82354222733899
+LunarLander-v3,9,rewiring_ndp,False,R-NDP,Training,-13.538033896036543
+LunarLander-v3,0,rewiring_ndp,True,R-NDP + HL,Training,67.34726736354114
+LunarLander-v3,1,rewiring_ndp,True,R-NDP + HL,Training,34.18950024148784
+LunarLander-v3,10,rewiring_ndp,True,R-NDP + HL,Training,79.41444731586131
+LunarLander-v3,11,rewiring_ndp,True,R-NDP + HL,Training,27.5556784342153
+LunarLander-v3,12,rewiring_ndp,True,R-NDP + HL,Training,37.58352782093741
+LunarLander-v3,13,rewiring_ndp,True,R-NDP + HL,Training,37.48118689848083
+LunarLander-v3,14,rewiring_ndp,True,R-NDP + HL,Training,26.575141671843124
+LunarLander-v3,15,rewiring_ndp,True,R-NDP + HL,Training,75.78825720219685
+LunarLander-v3,16,rewiring_ndp,True,R-NDP + HL,Training,71.42930135530085
+LunarLander-v3,17,rewiring_ndp,True,R-NDP + HL,Training,73.68112409078603
+LunarLander-v3,18,rewiring_ndp,True,R-NDP + HL,Training,-10.850552260667715
+LunarLander-v3,19,rewiring_ndp,True,R-NDP + HL,Training,59.19373561178868
+LunarLander-v3,2,rewiring_ndp,True,R-NDP + HL,Training,65.82583926206009
+LunarLander-v3,20,rewiring_ndp,True,R-NDP + HL,Training,47.647063627065066
+LunarLander-v3,21,rewiring_ndp,True,R-NDP + HL,Training,58.392603975221945
+LunarLander-v3,22,rewiring_ndp,True,R-NDP + HL,Training,47.51402667594299
+LunarLander-v3,23,rewiring_ndp,True,R-NDP + HL,Training,62.19906068550903
+LunarLander-v3,24,rewiring_ndp,True,R-NDP + HL,Training,7.070547310245485
+LunarLander-v3,25,rewiring_ndp,True,R-NDP + HL,Training,53.81367076237831
+LunarLander-v3,26,rewiring_ndp,True,R-NDP + HL,Training,37.28564216138562
+LunarLander-v3,27,rewiring_ndp,True,R-NDP + HL,Training,91.763089809245
+LunarLander-v3,28,rewiring_ndp,True,R-NDP + HL,Training,21.536695250413025
+LunarLander-v3,29,rewiring_ndp,True,R-NDP + HL,Training,68.44074978262634
+LunarLander-v3,3,rewiring_ndp,True,R-NDP + HL,Training,66.40153504377801
+LunarLander-v3,4,rewiring_ndp,True,R-NDP + HL,Training,81.45784680767775
+LunarLander-v3,5,rewiring_ndp,True,R-NDP + HL,Training,43.81165114510559
+LunarLander-v3,6,rewiring_ndp,True,R-NDP + HL,Training,-36.522555824672864
+LunarLander-v3,7,rewiring_ndp,True,R-NDP + HL,Training,-1.4618073172121142
+LunarLander-v3,8,rewiring_ndp,True,R-NDP + HL,Training,24.07331936054456
+LunarLander-v3,9,rewiring_ndp,True,R-NDP + HL,Training,30.363583735909096
+LunarLander-v3,0,standard_ndp,False,NDP,Training,-24.12126891519428
+LunarLander-v3,1,standard_ndp,False,NDP,Training,-33.06042228424131
+LunarLander-v3,10,standard_ndp,False,NDP,Training,18.86496725985257
+LunarLander-v3,11,standard_ndp,False,NDP,Training,-114.25001183503704
+LunarLander-v3,12,standard_ndp,False,NDP,Training,-53.97508752003074
+LunarLander-v3,13,standard_ndp,False,NDP,Training,-130.09498703686418
+LunarLander-v3,14,standard_ndp,False,NDP,Training,-72.83892245030492
+LunarLander-v3,15,standard_ndp,False,NDP,Training,8.865636039988498
+LunarLander-v3,16,standard_ndp,False,NDP,Training,-63.065857359818594
+LunarLander-v3,17,standard_ndp,False,NDP,Training,-10.332113686216818
+LunarLander-v3,18,standard_ndp,False,NDP,Training,-2.2755205406401573
+LunarLander-v3,19,standard_ndp,False,NDP,Training,-46.25460245499615
+LunarLander-v3,2,standard_ndp,False,NDP,Training,-9.24789274916631
+LunarLander-v3,20,standard_ndp,False,NDP,Training,-20.37018719957304
+LunarLander-v3,21,standard_ndp,False,NDP,Training,-8.92008880939063
+LunarLander-v3,22,standard_ndp,False,NDP,Training,-35.373475266350326
+LunarLander-v3,23,standard_ndp,False,NDP,Training,-72.57574495154901
+LunarLander-v3,24,standard_ndp,False,NDP,Training,-1.8512113338526035
+LunarLander-v3,25,standard_ndp,False,NDP,Training,-12.936565298870203
+LunarLander-v3,26,standard_ndp,False,NDP,Training,-47.82508604873495
+LunarLander-v3,27,standard_ndp,False,NDP,Training,-103.37621101477006
+LunarLander-v3,28,standard_ndp,False,NDP,Training,-5.192788542233615
+LunarLander-v3,29,standard_ndp,False,NDP,Training,-7.23142882936254
+LunarLander-v3,3,standard_ndp,False,NDP,Training,-25.650610275226587
+LunarLander-v3,4,standard_ndp,False,NDP,Training,-167.4914198594384
+LunarLander-v3,5,standard_ndp,False,NDP,Training,-22.90671168283537
+LunarLander-v3,6,standard_ndp,False,NDP,Training,-42.654632445318896
+LunarLander-v3,7,standard_ndp,False,NDP,Training,-11.988813223181836
+LunarLander-v3,8,standard_ndp,False,NDP,Training,-91.20375243455024
+LunarLander-v3,9,standard_ndp,False,NDP,Training,48.330426485439936
+LunarLander-v3,0,standard_ndp,True,NDP + HL,Training,-0.085363867551344
+LunarLander-v3,1,standard_ndp,True,NDP + HL,Training,4.229403114946363
+LunarLander-v3,10,standard_ndp,True,NDP + HL,Training,48.88761896731465
+LunarLander-v3,11,standard_ndp,True,NDP + HL,Training,-6.159215333692887
+LunarLander-v3,12,standard_ndp,True,NDP + HL,Training,11.5702564424624
+LunarLander-v3,13,standard_ndp,True,NDP + HL,Training,-58.98391143966597
+LunarLander-v3,14,standard_ndp,True,NDP + HL,Training,-14.363906459655428
+LunarLander-v3,15,standard_ndp,True,NDP + HL,Training,-5.865208682091756
+LunarLander-v3,16,standard_ndp,True,NDP + HL,Training,39.99840172942344
+LunarLander-v3,17,standard_ndp,True,NDP + HL,Training,-25.54597992005913
+LunarLander-v3,18,standard_ndp,True,NDP + HL,Training,11.640853695107143
+LunarLander-v3,19,standard_ndp,True,NDP + HL,Training,34.43602608451073
+LunarLander-v3,2,standard_ndp,True,NDP + HL,Training,-16.406662130567998
+LunarLander-v3,20,standard_ndp,True,NDP + HL,Training,39.49869617638657
+LunarLander-v3,21,standard_ndp,True,NDP + HL,Training,-12.225620971599374
+LunarLander-v3,22,standard_ndp,True,NDP + HL,Training,43.40011077450048
+LunarLander-v3,23,standard_ndp,True,NDP + HL,Training,15.443438305737825
+LunarLander-v3,24,standard_ndp,True,NDP + HL,Training,-52.05943202168305
+LunarLander-v3,25,standard_ndp,True,NDP + HL,Training,27.90786055051913
+LunarLander-v3,26,standard_ndp,True,NDP + HL,Training,-58.33030342446657
+LunarLander-v3,27,standard_ndp,True,NDP + HL,Training,103.10353707351268
+LunarLander-v3,28,standard_ndp,True,NDP + HL,Training,40.99892389245665
+LunarLander-v3,29,standard_ndp,True,NDP + HL,Training,-12.206801980730624
+LunarLander-v3,3,standard_ndp,True,NDP + HL,Training,-68.8130256635325
+LunarLander-v3,4,standard_ndp,True,NDP + HL,Training,-32.21130913940753
+LunarLander-v3,5,standard_ndp,True,NDP + HL,Training,-111.49982707379058
+LunarLander-v3,6,standard_ndp,True,NDP + HL,Training,-10.970269373998788
+LunarLander-v3,7,standard_ndp,True,NDP + HL,Training,13.684745787782877
+LunarLander-v3,8,standard_ndp,True,NDP + HL,Training,-24.690236036894152
+LunarLander-v3,9,standard_ndp,True,NDP + HL,Training,39.98289384505205
+MountainCar-v0,0,rewiring_ndp,False,R-NDP,Training,108.6
+MountainCar-v0,1,rewiring_ndp,False,R-NDP,Training,109.9
+MountainCar-v0,10,rewiring_ndp,False,R-NDP,Training,106.2
+MountainCar-v0,11,rewiring_ndp,False,R-NDP,Training,106.7
+MountainCar-v0,12,rewiring_ndp,False,R-NDP,Training,106.4
+MountainCar-v0,13,rewiring_ndp,False,R-NDP,Training,120.4
+MountainCar-v0,14,rewiring_ndp,False,R-NDP,Training,103.7
+MountainCar-v0,15,rewiring_ndp,False,R-NDP,Training,120.3
+MountainCar-v0,16,rewiring_ndp,False,R-NDP,Training,113.6
+MountainCar-v0,17,rewiring_ndp,False,R-NDP,Training,106.3
+MountainCar-v0,18,rewiring_ndp,False,R-NDP,Training,109.9
+MountainCar-v0,19,rewiring_ndp,False,R-NDP,Training,118.6
+MountainCar-v0,2,rewiring_ndp,False,R-NDP,Training,106.4
+MountainCar-v0,20,rewiring_ndp,False,R-NDP,Training,104.0
+MountainCar-v0,21,rewiring_ndp,False,R-NDP,Training,108.6
+MountainCar-v0,22,rewiring_ndp,False,R-NDP,Training,114.2
+MountainCar-v0,23,rewiring_ndp,False,R-NDP,Training,106.3
+MountainCar-v0,24,rewiring_ndp,False,R-NDP,Training,127.3
+MountainCar-v0,25,rewiring_ndp,False,R-NDP,Training,112.3
+MountainCar-v0,26,rewiring_ndp,False,R-NDP,Training,106.3
+MountainCar-v0,27,rewiring_ndp,False,R-NDP,Training,106.3
+MountainCar-v0,28,rewiring_ndp,False,R-NDP,Training,106.5
+MountainCar-v0,29,rewiring_ndp,False,R-NDP,Training,105.3
+MountainCar-v0,3,rewiring_ndp,False,R-NDP,Training,111.2
+MountainCar-v0,4,rewiring_ndp,False,R-NDP,Training,106.4
+MountainCar-v0,5,rewiring_ndp,False,R-NDP,Training,116.5
+MountainCar-v0,6,rewiring_ndp,False,R-NDP,Training,120.0
+MountainCar-v0,7,rewiring_ndp,False,R-NDP,Training,106.3
+MountainCar-v0,8,rewiring_ndp,False,R-NDP,Training,106.3
+MountainCar-v0,9,rewiring_ndp,False,R-NDP,Training,120.3
+MountainCar-v0,0,rewiring_ndp,True,R-NDP + HL,Training,103.9
+MountainCar-v0,1,rewiring_ndp,True,R-NDP + HL,Training,101.0
+MountainCar-v0,10,rewiring_ndp,True,R-NDP + HL,Training,118.2
+MountainCar-v0,11,rewiring_ndp,True,R-NDP + HL,Training,101.4
+MountainCar-v0,12,rewiring_ndp,True,R-NDP + HL,Training,109.3
+MountainCar-v0,13,rewiring_ndp,True,R-NDP + HL,Training,100.2
+MountainCar-v0,14,rewiring_ndp,True,R-NDP + HL,Training,107.6
+MountainCar-v0,15,rewiring_ndp,True,R-NDP + HL,Training,107.1
+MountainCar-v0,16,rewiring_ndp,True,R-NDP + HL,Training,101.3
+MountainCar-v0,17,rewiring_ndp,True,R-NDP + HL,Training,101.4
+MountainCar-v0,18,rewiring_ndp,True,R-NDP + HL,Training,117.3
+MountainCar-v0,19,rewiring_ndp,True,R-NDP + HL,Training,103.8
+MountainCar-v0,2,rewiring_ndp,True,R-NDP + HL,Training,119.1
+MountainCar-v0,20,rewiring_ndp,True,R-NDP + HL,Training,103.9
+MountainCar-v0,21,rewiring_ndp,True,R-NDP + HL,Training,102.1
+MountainCar-v0,22,rewiring_ndp,True,R-NDP + HL,Training,101.0
+MountainCar-v0,23,rewiring_ndp,True,R-NDP + HL,Training,102.3
+MountainCar-v0,24,rewiring_ndp,True,R-NDP + HL,Training,108.8
+MountainCar-v0,25,rewiring_ndp,True,R-NDP + HL,Training,104.2
+MountainCar-v0,26,rewiring_ndp,True,R-NDP + HL,Training,108.2
+MountainCar-v0,27,rewiring_ndp,True,R-NDP + HL,Training,101.2
+MountainCar-v0,28,rewiring_ndp,True,R-NDP + HL,Training,101.0
+MountainCar-v0,29,rewiring_ndp,True,R-NDP + HL,Training,100.2
+MountainCar-v0,3,rewiring_ndp,True,R-NDP + HL,Training,107.0
+MountainCar-v0,4,rewiring_ndp,True,R-NDP + HL,Training,113.6
+MountainCar-v0,5,rewiring_ndp,True,R-NDP + HL,Training,107.0
+MountainCar-v0,6,rewiring_ndp,True,R-NDP + HL,Training,107.2
+MountainCar-v0,7,rewiring_ndp,True,R-NDP + HL,Training,112.2
+MountainCar-v0,8,rewiring_ndp,True,R-NDP + HL,Training,125.9
+MountainCar-v0,9,rewiring_ndp,True,R-NDP + HL,Training,104.2
+MountainCar-v0,0,standard_ndp,False,NDP,Training,109.8
+MountainCar-v0,1,standard_ndp,False,NDP,Training,108.4
+MountainCar-v0,10,standard_ndp,False,NDP,Training,106.7
+MountainCar-v0,11,standard_ndp,False,NDP,Training,124.4
+MountainCar-v0,12,standard_ndp,False,NDP,Training,135.4
+MountainCar-v0,13,standard_ndp,False,NDP,Training,133.4
+MountainCar-v0,14,standard_ndp,False,NDP,Training,102.2
+MountainCar-v0,15,standard_ndp,False,NDP,Training,125.6
+MountainCar-v0,16,standard_ndp,False,NDP,Training,114.4
+MountainCar-v0,17,standard_ndp,False,NDP,Training,176.9
+MountainCar-v0,18,standard_ndp,False,NDP,Training,136.8
+MountainCar-v0,19,standard_ndp,False,NDP,Training,120.7
+MountainCar-v0,2,standard_ndp,False,NDP,Training,106.2
+MountainCar-v0,20,standard_ndp,False,NDP,Training,105.8
+MountainCar-v0,21,standard_ndp,False,NDP,Training,104.9
+MountainCar-v0,22,standard_ndp,False,NDP,Training,156.9
+MountainCar-v0,23,standard_ndp,False,NDP,Training,135.9
+MountainCar-v0,24,standard_ndp,False,NDP,Training,104.1
+MountainCar-v0,25,standard_ndp,False,NDP,Training,122.4
+MountainCar-v0,26,standard_ndp,False,NDP,Training,102.3
+MountainCar-v0,27,standard_ndp,False,NDP,Training,137.5
+MountainCar-v0,28,standard_ndp,False,NDP,Training,130.0
+MountainCar-v0,29,standard_ndp,False,NDP,Training,106.2
+MountainCar-v0,3,standard_ndp,False,NDP,Training,111.6
+MountainCar-v0,4,standard_ndp,False,NDP,Training,129.4
+MountainCar-v0,5,standard_ndp,False,NDP,Training,121.4
+MountainCar-v0,6,standard_ndp,False,NDP,Training,110.5
+MountainCar-v0,7,standard_ndp,False,NDP,Training,131.2
+MountainCar-v0,8,standard_ndp,False,NDP,Training,132.4
+MountainCar-v0,9,standard_ndp,False,NDP,Training,142.5
+MountainCar-v0,0,standard_ndp,True,NDP + HL,Training,101.1
+MountainCar-v0,1,standard_ndp,True,NDP + HL,Training,120.1
+MountainCar-v0,10,standard_ndp,True,NDP + HL,Training,131.6
+MountainCar-v0,11,standard_ndp,True,NDP + HL,Training,130.4
+MountainCar-v0,12,standard_ndp,True,NDP + HL,Training,127.2
+MountainCar-v0,13,standard_ndp,True,NDP + HL,Training,101.2
+MountainCar-v0,14,standard_ndp,True,NDP + HL,Training,136.4
+MountainCar-v0,15,standard_ndp,True,NDP + HL,Training,102.4
+MountainCar-v0,16,standard_ndp,True,NDP + HL,Training,118.9
+MountainCar-v0,17,standard_ndp,True,NDP + HL,Training,104.6
+MountainCar-v0,18,standard_ndp,True,NDP + HL,Training,120.0
+MountainCar-v0,19,standard_ndp,True,NDP + HL,Training,102.1
+MountainCar-v0,2,standard_ndp,True,NDP + HL,Training,101.7
+MountainCar-v0,20,standard_ndp,True,NDP + HL,Training,101.6
+MountainCar-v0,21,standard_ndp,True,NDP + HL,Training,142.3
+MountainCar-v0,22,standard_ndp,True,NDP + HL,Training,164.8
+MountainCar-v0,23,standard_ndp,True,NDP + HL,Training,113.7
+MountainCar-v0,24,standard_ndp,True,NDP + HL,Training,129.0
+MountainCar-v0,25,standard_ndp,True,NDP + HL,Training,102.3
+MountainCar-v0,26,standard_ndp,True,NDP + HL,Training,107.7
+MountainCar-v0,27,standard_ndp,True,NDP + HL,Training,102.3
+MountainCar-v0,28,standard_ndp,True,NDP + HL,Training,110.7
+MountainCar-v0,29,standard_ndp,True,NDP + HL,Training,123.9
+MountainCar-v0,3,standard_ndp,True,NDP + HL,Training,102.5
+MountainCar-v0,4,standard_ndp,True,NDP + HL,Training,103.6
+MountainCar-v0,5,standard_ndp,True,NDP + HL,Training,136.3
+MountainCar-v0,6,standard_ndp,True,NDP + HL,Training,140.8
+MountainCar-v0,7,standard_ndp,True,NDP + HL,Training,126.6
+MountainCar-v0,8,standard_ndp,True,NDP + HL,Training,132.1
+MountainCar-v0,9,standard_ndp,True,NDP + HL,Training,117.5
+popgym-PositionOnlyCartPoleEasy-v0,0,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,1,rewiring_ndp,False,R-NDP,Training,-0.7150000000000005
+popgym-PositionOnlyCartPoleEasy-v0,10,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,11,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,12,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,13,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,14,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,15,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,16,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,17,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,18,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,19,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,2,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,20,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,21,rewiring_ndp,False,R-NDP,Training,-0.4760000000000003
+popgym-PositionOnlyCartPoleEasy-v0,22,rewiring_ndp,False,R-NDP,Training,-0.4545000000000002
+popgym-PositionOnlyCartPoleEasy-v0,23,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,24,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,25,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,26,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,27,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,28,rewiring_ndp,False,R-NDP,Training,-0.5430000000000004
+popgym-PositionOnlyCartPoleEasy-v0,29,rewiring_ndp,False,R-NDP,Training,-0.8710000000000007
+popgym-PositionOnlyCartPoleEasy-v0,3,rewiring_ndp,False,R-NDP,Training,-0.7510000000000006
+popgym-PositionOnlyCartPoleEasy-v0,4,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,5,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,6,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,7,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,8,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,9,rewiring_ndp,False,R-NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,0,rewiring_ndp,True,R-NDP + HL,Training,-0.2855000000000001
+popgym-PositionOnlyCartPoleEasy-v0,1,rewiring_ndp,True,R-NDP + HL,Training,-0.2840000000000001
+popgym-PositionOnlyCartPoleEasy-v0,10,rewiring_ndp,True,R-NDP + HL,Training,-0.3590000000000002
+popgym-PositionOnlyCartPoleEasy-v0,11,rewiring_ndp,True,R-NDP + HL,Training,-0.3540000000000002
+popgym-PositionOnlyCartPoleEasy-v0,12,rewiring_ndp,True,R-NDP + HL,Training,-0.3220000000000002
+popgym-PositionOnlyCartPoleEasy-v0,13,rewiring_ndp,True,R-NDP + HL,Training,-0.3185000000000001
+popgym-PositionOnlyCartPoleEasy-v0,14,rewiring_ndp,True,R-NDP + HL,Training,-0.2655000000000002
+popgym-PositionOnlyCartPoleEasy-v0,15,rewiring_ndp,True,R-NDP + HL,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,16,rewiring_ndp,True,R-NDP + HL,Training,-0.3570000000000002
+popgym-PositionOnlyCartPoleEasy-v0,17,rewiring_ndp,True,R-NDP + HL,Training,-0.4885000000000003
+popgym-PositionOnlyCartPoleEasy-v0,18,rewiring_ndp,True,R-NDP + HL,Training,-0.7185000000000005
+popgym-PositionOnlyCartPoleEasy-v0,19,rewiring_ndp,True,R-NDP + HL,Training,-0.3005000000000001
+popgym-PositionOnlyCartPoleEasy-v0,2,rewiring_ndp,True,R-NDP + HL,Training,-0.2330000000000001
+popgym-PositionOnlyCartPoleEasy-v0,20,rewiring_ndp,True,R-NDP + HL,Training,-0.3560000000000002
+popgym-PositionOnlyCartPoleEasy-v0,21,rewiring_ndp,True,R-NDP + HL,Training,-0.2775000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,rewiring_ndp,True,R-NDP + HL,Training,-0.4640000000000003
+popgym-PositionOnlyCartPoleEasy-v0,23,rewiring_ndp,True,R-NDP + HL,Training,-0.3765000000000002
+popgym-PositionOnlyCartPoleEasy-v0,24,rewiring_ndp,True,R-NDP + HL,Training,-0.3170000000000001
+popgym-PositionOnlyCartPoleEasy-v0,25,rewiring_ndp,True,R-NDP + HL,Training,-0.2865000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,rewiring_ndp,True,R-NDP + HL,Training,-0.5480000000000003
+popgym-PositionOnlyCartPoleEasy-v0,27,rewiring_ndp,True,R-NDP + HL,Training,-0.3860000000000002
+popgym-PositionOnlyCartPoleEasy-v0,28,rewiring_ndp,True,R-NDP + HL,Training,-0.2570000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,rewiring_ndp,True,R-NDP + HL,Training,-0.3125000000000001
+popgym-PositionOnlyCartPoleEasy-v0,3,rewiring_ndp,True,R-NDP + HL,Training,-0.6630000000000006
+popgym-PositionOnlyCartPoleEasy-v0,4,rewiring_ndp,True,R-NDP + HL,Training,-0.3220000000000002
+popgym-PositionOnlyCartPoleEasy-v0,5,rewiring_ndp,True,R-NDP + HL,Training,-0.3425000000000001
+popgym-PositionOnlyCartPoleEasy-v0,6,rewiring_ndp,True,R-NDP + HL,Training,-0.4125000000000002
+popgym-PositionOnlyCartPoleEasy-v0,7,rewiring_ndp,True,R-NDP + HL,Training,-0.4475000000000002
+popgym-PositionOnlyCartPoleEasy-v0,8,rewiring_ndp,True,R-NDP + HL,Training,-0.3390000000000002
+popgym-PositionOnlyCartPoleEasy-v0,9,rewiring_ndp,True,R-NDP + HL,Training,-0.3460000000000002
+popgym-PositionOnlyCartPoleEasy-v0,0,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,1,standard_ndp,False,NDP,Training,-0.8370000000000006
+popgym-PositionOnlyCartPoleEasy-v0,10,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,11,standard_ndp,False,NDP,Training,-0.9560000000000006
+popgym-PositionOnlyCartPoleEasy-v0,12,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,13,standard_ndp,False,NDP,Training,-0.9405000000000004
+popgym-PositionOnlyCartPoleEasy-v0,14,standard_ndp,False,NDP,Training,-0.7180000000000006
+popgym-PositionOnlyCartPoleEasy-v0,15,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,16,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,17,standard_ndp,False,NDP,Training,-0.6790000000000005
+popgym-PositionOnlyCartPoleEasy-v0,18,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,19,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,2,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,20,standard_ndp,False,NDP,Training,-0.9495000000000008
+popgym-PositionOnlyCartPoleEasy-v0,21,standard_ndp,False,NDP,Training,-0.2715000000000002
+popgym-PositionOnlyCartPoleEasy-v0,22,standard_ndp,False,NDP,Training,-0.9610000000000006
+popgym-PositionOnlyCartPoleEasy-v0,23,standard_ndp,False,NDP,Training,-0.8930000000000007
+popgym-PositionOnlyCartPoleEasy-v0,24,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,25,standard_ndp,False,NDP,Training,-0.2460000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,standard_ndp,False,NDP,Training,-0.5805000000000003
+popgym-PositionOnlyCartPoleEasy-v0,27,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,28,standard_ndp,False,NDP,Training,-0.2915000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,3,standard_ndp,False,NDP,Training,-0.234
+popgym-PositionOnlyCartPoleEasy-v0,4,standard_ndp,False,NDP,Training,-0.2980000000000001
+popgym-PositionOnlyCartPoleEasy-v0,5,standard_ndp,False,NDP,Training,-0.7590000000000006
+popgym-PositionOnlyCartPoleEasy-v0,6,standard_ndp,False,NDP,Training,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,7,standard_ndp,False,NDP,Training,-0.6125000000000005
+popgym-PositionOnlyCartPoleEasy-v0,8,standard_ndp,False,NDP,Training,-0.9410000000000008
+popgym-PositionOnlyCartPoleEasy-v0,9,standard_ndp,False,NDP,Training,-0.8065000000000004
+popgym-PositionOnlyCartPoleEasy-v0,0,standard_ndp,True,NDP + HL,Training,-0.3185000000000001
+popgym-PositionOnlyCartPoleEasy-v0,1,standard_ndp,True,NDP + HL,Training,-0.3045000000000001
+popgym-PositionOnlyCartPoleEasy-v0,10,standard_ndp,True,NDP + HL,Training,-0.2735000000000002
+popgym-PositionOnlyCartPoleEasy-v0,11,standard_ndp,True,NDP + HL,Training,-0.2905000000000002
+popgym-PositionOnlyCartPoleEasy-v0,12,standard_ndp,True,NDP + HL,Training,-0.6370000000000003
+popgym-PositionOnlyCartPoleEasy-v0,13,standard_ndp,True,NDP + HL,Training,-0.3220000000000002
+popgym-PositionOnlyCartPoleEasy-v0,14,standard_ndp,True,NDP + HL,Training,-0.2735000000000002
+popgym-PositionOnlyCartPoleEasy-v0,15,standard_ndp,True,NDP + HL,Training,-0.3290000000000002
+popgym-PositionOnlyCartPoleEasy-v0,16,standard_ndp,True,NDP + HL,Training,-0.2920000000000001
+popgym-PositionOnlyCartPoleEasy-v0,17,standard_ndp,True,NDP + HL,Training,-0.2735000000000002
+popgym-PositionOnlyCartPoleEasy-v0,18,standard_ndp,True,NDP + HL,Training,-0.3275000000000002
+popgym-PositionOnlyCartPoleEasy-v0,19,standard_ndp,True,NDP + HL,Training,-0.2860000000000001
+popgym-PositionOnlyCartPoleEasy-v0,2,standard_ndp,True,NDP + HL,Training,-0.3890000000000002
+popgym-PositionOnlyCartPoleEasy-v0,20,standard_ndp,True,NDP + HL,Training,-0.3655000000000002
+popgym-PositionOnlyCartPoleEasy-v0,21,standard_ndp,True,NDP + HL,Training,-0.2865000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,standard_ndp,True,NDP + HL,Training,-0.4250000000000002
+popgym-PositionOnlyCartPoleEasy-v0,23,standard_ndp,True,NDP + HL,Training,-0.2745000000000001
+popgym-PositionOnlyCartPoleEasy-v0,24,standard_ndp,True,NDP + HL,Training,-0.3785000000000002
+popgym-PositionOnlyCartPoleEasy-v0,25,standard_ndp,True,NDP + HL,Training,-0.3565000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,standard_ndp,True,NDP + HL,Training,-0.4855000000000004
+popgym-PositionOnlyCartPoleEasy-v0,27,standard_ndp,True,NDP + HL,Training,-0.3035000000000002
+popgym-PositionOnlyCartPoleEasy-v0,28,standard_ndp,True,NDP + HL,Training,-0.2800000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,standard_ndp,True,NDP + HL,Training,-0.3290000000000002
+popgym-PositionOnlyCartPoleEasy-v0,3,standard_ndp,True,NDP + HL,Training,-0.2810000000000001
+popgym-PositionOnlyCartPoleEasy-v0,4,standard_ndp,True,NDP + HL,Training,-0.3250000000000002
+popgym-PositionOnlyCartPoleEasy-v0,5,standard_ndp,True,NDP + HL,Training,-0.3020000000000001
+popgym-PositionOnlyCartPoleEasy-v0,6,standard_ndp,True,NDP + HL,Training,-0.2825000000000001
+popgym-PositionOnlyCartPoleEasy-v0,7,standard_ndp,True,NDP + HL,Training,-0.2735000000000002
+popgym-PositionOnlyCartPoleEasy-v0,8,standard_ndp,True,NDP + HL,Training,-0.2980000000000001
+popgym-PositionOnlyCartPoleEasy-v0,9,standard_ndp,True,NDP + HL,Training,-0.3230000000000001
+Acrobot-v1,0,fixed_mlp,False,DE,Testing,80.3
+Acrobot-v1,1,fixed_mlp,False,DE,Testing,83.5
+Acrobot-v1,2,fixed_mlp,False,DE,Testing,80.6
+Acrobot-v1,3,fixed_mlp,False,DE,Testing,81.3
+Acrobot-v1,4,fixed_mlp,False,DE,Testing,81.0
+Acrobot-v1,5,fixed_mlp,False,DE,Testing,80.9
+Acrobot-v1,6,fixed_mlp,False,DE,Testing,99.3
+Acrobot-v1,7,fixed_mlp,False,DE,Testing,88.4
+Acrobot-v1,8,fixed_mlp,False,DE,Testing,94.2
+Acrobot-v1,9,fixed_mlp,False,DE,Testing,85.8
+Acrobot-v1,10,fixed_mlp,False,DE,Testing,67.6
+Acrobot-v1,11,fixed_mlp,False,DE,Testing,82.2
+Acrobot-v1,12,fixed_mlp,False,DE,Testing,89.8
+Acrobot-v1,13,fixed_mlp,False,DE,Testing,77.1
+Acrobot-v1,14,fixed_mlp,False,DE,Testing,78.5
+Acrobot-v1,15,fixed_mlp,False,DE,Testing,72.9
+Acrobot-v1,16,fixed_mlp,False,DE,Testing,83.7
+Acrobot-v1,17,fixed_mlp,False,DE,Testing,76.1
+Acrobot-v1,18,fixed_mlp,False,DE,Testing,104.0
+Acrobot-v1,19,fixed_mlp,False,DE,Testing,95.0
+Acrobot-v1,20,fixed_mlp,False,DE,Testing,82.9
+Acrobot-v1,21,fixed_mlp,False,DE,Testing,93.4
+Acrobot-v1,22,fixed_mlp,False,DE,Testing,99.8
+Acrobot-v1,23,fixed_mlp,False,DE,Testing,86.7
+Acrobot-v1,24,fixed_mlp,False,DE,Testing,94.5
+Acrobot-v1,25,fixed_mlp,False,DE,Testing,110.2
+Acrobot-v1,26,fixed_mlp,False,DE,Testing,81.0
+Acrobot-v1,27,fixed_mlp,False,DE,Testing,83.9
+Acrobot-v1,28,fixed_mlp,False,DE,Testing,101.4
+Acrobot-v1,29,fixed_mlp,False,DE,Testing,79.2
+Acrobot-v1,0,fixed_mlp,True,DE + HL,Testing,93.6
+Acrobot-v1,1,fixed_mlp,True,DE + HL,Testing,95.9
+Acrobot-v1,2,fixed_mlp,True,DE + HL,Testing,94.9
+Acrobot-v1,3,fixed_mlp,True,DE + HL,Testing,84.8
+Acrobot-v1,4,fixed_mlp,True,DE + HL,Testing,122.7
+Acrobot-v1,5,fixed_mlp,True,DE + HL,Testing,94.3
+Acrobot-v1,6,fixed_mlp,True,DE + HL,Testing,89.1
+Acrobot-v1,7,fixed_mlp,True,DE + HL,Testing,120.5
+Acrobot-v1,8,fixed_mlp,True,DE + HL,Testing,89.7
+Acrobot-v1,9,fixed_mlp,True,DE + HL,Testing,106.1
+Acrobot-v1,10,fixed_mlp,True,DE + HL,Testing,114.7
+Acrobot-v1,11,fixed_mlp,True,DE + HL,Testing,74.0
+Acrobot-v1,12,fixed_mlp,True,DE + HL,Testing,88.7
+Acrobot-v1,13,fixed_mlp,True,DE + HL,Testing,80.0
+Acrobot-v1,14,fixed_mlp,True,DE + HL,Testing,116.3
+Acrobot-v1,15,fixed_mlp,True,DE + HL,Testing,76.8
+Acrobot-v1,16,fixed_mlp,True,DE + HL,Testing,107.7
+Acrobot-v1,17,fixed_mlp,True,DE + HL,Testing,80.3
+Acrobot-v1,18,fixed_mlp,True,DE + HL,Testing,85.1
+Acrobot-v1,19,fixed_mlp,True,DE + HL,Testing,111.4
+Acrobot-v1,20,fixed_mlp,True,DE + HL,Testing,93.9
+Acrobot-v1,21,fixed_mlp,True,DE + HL,Testing,94.6
+Acrobot-v1,22,fixed_mlp,True,DE + HL,Testing,105.1
+Acrobot-v1,23,fixed_mlp,True,DE + HL,Testing,98.2
+Acrobot-v1,24,fixed_mlp,True,DE + HL,Testing,109.2
+Acrobot-v1,25,fixed_mlp,True,DE + HL,Testing,91.7
+Acrobot-v1,26,fixed_mlp,True,DE + HL,Testing,83.5
+Acrobot-v1,27,fixed_mlp,True,DE + HL,Testing,87.7
+Acrobot-v1,28,fixed_mlp,True,DE + HL,Testing,100.9
+Acrobot-v1,29,fixed_mlp,True,DE + HL,Testing,95.8
+CartPole-v1,0,fixed_mlp,False,DE,Testing,-359.1
+CartPole-v1,1,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,2,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,3,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,4,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,5,fixed_mlp,False,DE,Testing,-424.3
+CartPole-v1,6,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,7,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,8,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,9,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,10,fixed_mlp,False,DE,Testing,-423.5
+CartPole-v1,11,fixed_mlp,False,DE,Testing,-495.9
+CartPole-v1,12,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,13,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,14,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,15,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,16,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,17,fixed_mlp,False,DE,Testing,-270.7
+CartPole-v1,18,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,19,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,20,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,21,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,22,fixed_mlp,False,DE,Testing,-475.9
+CartPole-v1,23,fixed_mlp,False,DE,Testing,-424.9
+CartPole-v1,24,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,25,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,26,fixed_mlp,False,DE,Testing,-500.0
+CartPole-v1,27,fixed_mlp,False,DE,Testing,-454.9
+CartPole-v1,28,fixed_mlp,False,DE,Testing,-481.6
+CartPole-v1,29,fixed_mlp,False,DE,Testing,-317.6
+CartPole-v1,0,fixed_mlp,True,DE + HL,Testing,-500.0
+CartPole-v1,1,fixed_mlp,True,DE + HL,Testing,-134.9
+CartPole-v1,2,fixed_mlp,True,DE + HL,Testing,-240.2
+CartPole-v1,3,fixed_mlp,True,DE + HL,Testing,-107.5
+CartPole-v1,4,fixed_mlp,True,DE + HL,Testing,-110.2
+CartPole-v1,5,fixed_mlp,True,DE + HL,Testing,-113.9
+CartPole-v1,6,fixed_mlp,True,DE + HL,Testing,-248.4
+CartPole-v1,7,fixed_mlp,True,DE + HL,Testing,-299.8
+CartPole-v1,8,fixed_mlp,True,DE + HL,Testing,-460.3
+CartPole-v1,9,fixed_mlp,True,DE + HL,Testing,-195.3
+CartPole-v1,10,fixed_mlp,True,DE + HL,Testing,-200.5
+CartPole-v1,11,fixed_mlp,True,DE + HL,Testing,-434.5
+CartPole-v1,12,fixed_mlp,True,DE + HL,Testing,-391.0
+CartPole-v1,13,fixed_mlp,True,DE + HL,Testing,-375.2
+CartPole-v1,14,fixed_mlp,True,DE + HL,Testing,-168.5
+CartPole-v1,15,fixed_mlp,True,DE + HL,Testing,-167.5
+CartPole-v1,16,fixed_mlp,True,DE + HL,Testing,-108.6
+CartPole-v1,17,fixed_mlp,True,DE + HL,Testing,-409.2
+CartPole-v1,18,fixed_mlp,True,DE + HL,Testing,-140.8
+CartPole-v1,19,fixed_mlp,True,DE + HL,Testing,-151.2
+CartPole-v1,20,fixed_mlp,True,DE + HL,Testing,-218.0
+CartPole-v1,21,fixed_mlp,True,DE + HL,Testing,-402.9
+CartPole-v1,22,fixed_mlp,True,DE + HL,Testing,-135.2
+CartPole-v1,23,fixed_mlp,True,DE + HL,Testing,-99.6
+CartPole-v1,24,fixed_mlp,True,DE + HL,Testing,-500.0
+CartPole-v1,25,fixed_mlp,True,DE + HL,Testing,-254.3
+CartPole-v1,26,fixed_mlp,True,DE + HL,Testing,-136.6
+CartPole-v1,27,fixed_mlp,True,DE + HL,Testing,-215.8
+CartPole-v1,28,fixed_mlp,True,DE + HL,Testing,-159.2
+CartPole-v1,29,fixed_mlp,True,DE + HL,Testing,-467.2
+LunarLander-v3,0,fixed_mlp,False,DE,Testing,40.09105359393881
+LunarLander-v3,1,fixed_mlp,False,DE,Testing,61.01084840439942
+LunarLander-v3,2,fixed_mlp,False,DE,Testing,101.40503330960271
+LunarLander-v3,3,fixed_mlp,False,DE,Testing,70.54197969704325
+LunarLander-v3,4,fixed_mlp,False,DE,Testing,-27.353710013493536
+LunarLander-v3,5,fixed_mlp,False,DE,Testing,121.46473843325175
+LunarLander-v3,6,fixed_mlp,False,DE,Testing,34.890087100902846
+LunarLander-v3,7,fixed_mlp,False,DE,Testing,52.87085050430297
+LunarLander-v3,8,fixed_mlp,False,DE,Testing,62.27574543076644
+LunarLander-v3,9,fixed_mlp,False,DE,Testing,19.24222631718687
+LunarLander-v3,10,fixed_mlp,False,DE,Testing,161.71491273725312
+LunarLander-v3,11,fixed_mlp,False,DE,Testing,185.8545680241201
+LunarLander-v3,12,fixed_mlp,False,DE,Testing,121.28906415417065
+LunarLander-v3,13,fixed_mlp,False,DE,Testing,109.33849817347928
+LunarLander-v3,14,fixed_mlp,False,DE,Testing,39.64441895103416
+LunarLander-v3,15,fixed_mlp,False,DE,Testing,156.45120924287605
+LunarLander-v3,16,fixed_mlp,False,DE,Testing,31.62285248170477
+LunarLander-v3,17,fixed_mlp,False,DE,Testing,151.44478299012246
+LunarLander-v3,18,fixed_mlp,False,DE,Testing,156.76574348317615
+LunarLander-v3,19,fixed_mlp,False,DE,Testing,26.88163960265378
+LunarLander-v3,20,fixed_mlp,False,DE,Testing,85.2219954837169
+LunarLander-v3,21,fixed_mlp,False,DE,Testing,65.39369186550437
+LunarLander-v3,22,fixed_mlp,False,DE,Testing,73.8177163638249
+LunarLander-v3,23,fixed_mlp,False,DE,Testing,84.82080534349417
+LunarLander-v3,24,fixed_mlp,False,DE,Testing,92.29881154127332
+LunarLander-v3,25,fixed_mlp,False,DE,Testing,105.7807334284372
+LunarLander-v3,26,fixed_mlp,False,DE,Testing,73.61918118520722
+LunarLander-v3,27,fixed_mlp,False,DE,Testing,87.67687754943319
+LunarLander-v3,28,fixed_mlp,False,DE,Testing,70.97834948645527
+LunarLander-v3,29,fixed_mlp,False,DE,Testing,52.593588799521214
+LunarLander-v3,0,fixed_mlp,True,DE + HL,Testing,127.85515750090832
+LunarLander-v3,1,fixed_mlp,True,DE + HL,Testing,135.35458424782334
+LunarLander-v3,2,fixed_mlp,True,DE + HL,Testing,151.0408528345782
+LunarLander-v3,3,fixed_mlp,True,DE + HL,Testing,84.84447373022864
+LunarLander-v3,4,fixed_mlp,True,DE + HL,Testing,113.26846805694508
+LunarLander-v3,5,fixed_mlp,True,DE + HL,Testing,105.52969222533524
+LunarLander-v3,6,fixed_mlp,True,DE + HL,Testing,147.45184392004748
+LunarLander-v3,7,fixed_mlp,True,DE + HL,Testing,127.77063934192654
+LunarLander-v3,8,fixed_mlp,True,DE + HL,Testing,104.82848987790884
+LunarLander-v3,9,fixed_mlp,True,DE + HL,Testing,114.17006905744331
+LunarLander-v3,10,fixed_mlp,True,DE + HL,Testing,54.53353240208397
+LunarLander-v3,11,fixed_mlp,True,DE + HL,Testing,110.25564977727744
+LunarLander-v3,12,fixed_mlp,True,DE + HL,Testing,91.43803823454628
+LunarLander-v3,13,fixed_mlp,True,DE + HL,Testing,63.45018312664946
+LunarLander-v3,14,fixed_mlp,True,DE + HL,Testing,137.97877467154282
+LunarLander-v3,15,fixed_mlp,True,DE + HL,Testing,129.73508560620024
+LunarLander-v3,16,fixed_mlp,True,DE + HL,Testing,134.57721523339055
+LunarLander-v3,17,fixed_mlp,True,DE + HL,Testing,72.89141083370896
+LunarLander-v3,18,fixed_mlp,True,DE + HL,Testing,103.02487563612878
+LunarLander-v3,19,fixed_mlp,True,DE + HL,Testing,85.77492253206283
+LunarLander-v3,20,fixed_mlp,True,DE + HL,Testing,113.62036560085843
+LunarLander-v3,21,fixed_mlp,True,DE + HL,Testing,113.34437601129468
+LunarLander-v3,22,fixed_mlp,True,DE + HL,Testing,124.52871167841344
+LunarLander-v3,23,fixed_mlp,True,DE + HL,Testing,124.80790472743588
+LunarLander-v3,24,fixed_mlp,True,DE + HL,Testing,163.98513416392626
+LunarLander-v3,25,fixed_mlp,True,DE + HL,Testing,97.97731603053072
+LunarLander-v3,26,fixed_mlp,True,DE + HL,Testing,101.2221883755274
+LunarLander-v3,27,fixed_mlp,True,DE + HL,Testing,127.0842406278968
+LunarLander-v3,28,fixed_mlp,True,DE + HL,Testing,149.98747057633938
+LunarLander-v3,29,fixed_mlp,True,DE + HL,Testing,116.624735753215
+MountainCar-v0,0,fixed_mlp,False,DE,Testing,118.3
+MountainCar-v0,1,fixed_mlp,False,DE,Testing,138.4
+MountainCar-v0,2,fixed_mlp,False,DE,Testing,111.7
+MountainCar-v0,3,fixed_mlp,False,DE,Testing,229.8
+MountainCar-v0,4,fixed_mlp,False,DE,Testing,134.0
+MountainCar-v0,5,fixed_mlp,False,DE,Testing,190.9
+MountainCar-v0,6,fixed_mlp,False,DE,Testing,126.4
+MountainCar-v0,7,fixed_mlp,False,DE,Testing,214.9
+MountainCar-v0,8,fixed_mlp,False,DE,Testing,117.4
+MountainCar-v0,9,fixed_mlp,False,DE,Testing,400.0
+MountainCar-v0,10,fixed_mlp,False,DE,Testing,110.2
+MountainCar-v0,11,fixed_mlp,False,DE,Testing,234.0
+MountainCar-v0,12,fixed_mlp,False,DE,Testing,106.5
+MountainCar-v0,13,fixed_mlp,False,DE,Testing,284.8
+MountainCar-v0,14,fixed_mlp,False,DE,Testing,141.2
+MountainCar-v0,15,fixed_mlp,False,DE,Testing,180.7
+MountainCar-v0,16,fixed_mlp,False,DE,Testing,139.7
+MountainCar-v0,17,fixed_mlp,False,DE,Testing,143.3
+MountainCar-v0,18,fixed_mlp,False,DE,Testing,189.3
+MountainCar-v0,19,fixed_mlp,False,DE,Testing,194.1
+MountainCar-v0,20,fixed_mlp,False,DE,Testing,110.2
+MountainCar-v0,21,fixed_mlp,False,DE,Testing,190.2
+MountainCar-v0,22,fixed_mlp,False,DE,Testing,116.0
+MountainCar-v0,23,fixed_mlp,False,DE,Testing,137.3
+MountainCar-v0,24,fixed_mlp,False,DE,Testing,129.6
+MountainCar-v0,25,fixed_mlp,False,DE,Testing,112.8
+MountainCar-v0,26,fixed_mlp,False,DE,Testing,139.5
+MountainCar-v0,27,fixed_mlp,False,DE,Testing,400.0
+MountainCar-v0,28,fixed_mlp,False,DE,Testing,103.2
+MountainCar-v0,29,fixed_mlp,False,DE,Testing,112.4
+MountainCar-v0,0,fixed_mlp,True,DE + HL,Testing,100.7
+MountainCar-v0,1,fixed_mlp,True,DE + HL,Testing,118.6
+MountainCar-v0,2,fixed_mlp,True,DE + HL,Testing,101.0
+MountainCar-v0,3,fixed_mlp,True,DE + HL,Testing,113.1
+MountainCar-v0,4,fixed_mlp,True,DE + HL,Testing,121.7
+MountainCar-v0,5,fixed_mlp,True,DE + HL,Testing,102.9
+MountainCar-v0,6,fixed_mlp,True,DE + HL,Testing,114.9
+MountainCar-v0,7,fixed_mlp,True,DE + HL,Testing,101.8
+MountainCar-v0,8,fixed_mlp,True,DE + HL,Testing,126.8
+MountainCar-v0,9,fixed_mlp,True,DE + HL,Testing,101.7
+MountainCar-v0,10,fixed_mlp,True,DE + HL,Testing,101.3
+MountainCar-v0,11,fixed_mlp,True,DE + HL,Testing,111.3
+MountainCar-v0,12,fixed_mlp,True,DE + HL,Testing,116.0
+MountainCar-v0,13,fixed_mlp,True,DE + HL,Testing,102.2
+MountainCar-v0,14,fixed_mlp,True,DE + HL,Testing,100.9
+MountainCar-v0,15,fixed_mlp,True,DE + HL,Testing,104.4
+MountainCar-v0,16,fixed_mlp,True,DE + HL,Testing,112.2
+MountainCar-v0,17,fixed_mlp,True,DE + HL,Testing,101.3
+MountainCar-v0,18,fixed_mlp,True,DE + HL,Testing,100.9
+MountainCar-v0,19,fixed_mlp,True,DE + HL,Testing,100.3
+MountainCar-v0,20,fixed_mlp,True,DE + HL,Testing,119.0
+MountainCar-v0,21,fixed_mlp,True,DE + HL,Testing,100.8
+MountainCar-v0,22,fixed_mlp,True,DE + HL,Testing,101.7
+MountainCar-v0,23,fixed_mlp,True,DE + HL,Testing,105.4
+MountainCar-v0,24,fixed_mlp,True,DE + HL,Testing,117.0
+MountainCar-v0,25,fixed_mlp,True,DE + HL,Testing,102.1
+MountainCar-v0,26,fixed_mlp,True,DE + HL,Testing,100.2
+MountainCar-v0,27,fixed_mlp,True,DE + HL,Testing,102.2
+MountainCar-v0,28,fixed_mlp,True,DE + HL,Testing,100.8
+MountainCar-v0,29,fixed_mlp,True,DE + HL,Testing,101.4
+popgym-PositionOnlyCartPoleEasy-v0,0,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,1,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,2,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,3,fixed_mlp,False,DE,Testing,-0.2270000000000001
+popgym-PositionOnlyCartPoleEasy-v0,4,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,5,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,6,fixed_mlp,False,DE,Testing,-0.2360000000000001
+popgym-PositionOnlyCartPoleEasy-v0,7,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,8,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,9,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,10,fixed_mlp,False,DE,Testing,-0.2270000000000001
+popgym-PositionOnlyCartPoleEasy-v0,11,fixed_mlp,False,DE,Testing,-0.2270000000000001
+popgym-PositionOnlyCartPoleEasy-v0,12,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,13,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,14,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,15,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,16,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,17,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,18,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,19,fixed_mlp,False,DE,Testing,-0.2360000000000001
+popgym-PositionOnlyCartPoleEasy-v0,20,fixed_mlp,False,DE,Testing,-0.2360000000000001
+popgym-PositionOnlyCartPoleEasy-v0,21,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,23,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,24,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,25,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,fixed_mlp,False,DE,Testing,-0.2415000000000001
+popgym-PositionOnlyCartPoleEasy-v0,27,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,28,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,fixed_mlp,False,DE,Testing,-0.2325000000000001
+popgym-PositionOnlyCartPoleEasy-v0,0,fixed_mlp,True,DE + HL,Testing,-0.8535000000000006
+popgym-PositionOnlyCartPoleEasy-v0,1,fixed_mlp,True,DE + HL,Testing,-0.4645000000000003
+popgym-PositionOnlyCartPoleEasy-v0,2,fixed_mlp,True,DE + HL,Testing,-0.6370000000000003
+popgym-PositionOnlyCartPoleEasy-v0,3,fixed_mlp,True,DE + HL,Testing,-0.4960000000000004
+popgym-PositionOnlyCartPoleEasy-v0,4,fixed_mlp,True,DE + HL,Testing,-0.9385000000000006
+popgym-PositionOnlyCartPoleEasy-v0,5,fixed_mlp,True,DE + HL,Testing,-0.7025000000000006
+popgym-PositionOnlyCartPoleEasy-v0,6,fixed_mlp,True,DE + HL,Testing,-0.5700000000000004
+popgym-PositionOnlyCartPoleEasy-v0,7,fixed_mlp,True,DE + HL,Testing,-0.9350000000000004
+popgym-PositionOnlyCartPoleEasy-v0,8,fixed_mlp,True,DE + HL,Testing,-0.9300000000000008
+popgym-PositionOnlyCartPoleEasy-v0,9,fixed_mlp,True,DE + HL,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,10,fixed_mlp,True,DE + HL,Testing,-0.7295000000000005
+popgym-PositionOnlyCartPoleEasy-v0,11,fixed_mlp,True,DE + HL,Testing,-0.6040000000000004
+popgym-PositionOnlyCartPoleEasy-v0,12,fixed_mlp,True,DE + HL,Testing,-0.6470000000000005
+popgym-PositionOnlyCartPoleEasy-v0,13,fixed_mlp,True,DE + HL,Testing,-0.9950000000000008
+popgym-PositionOnlyCartPoleEasy-v0,14,fixed_mlp,True,DE + HL,Testing,-0.7930000000000006
+popgym-PositionOnlyCartPoleEasy-v0,15,fixed_mlp,True,DE + HL,Testing,-0.3900000000000002
+popgym-PositionOnlyCartPoleEasy-v0,16,fixed_mlp,True,DE + HL,Testing,-0.9395000000000004
+popgym-PositionOnlyCartPoleEasy-v0,17,fixed_mlp,True,DE + HL,Testing,-0.7595000000000006
+popgym-PositionOnlyCartPoleEasy-v0,18,fixed_mlp,True,DE + HL,Testing,-0.7995000000000005
+popgym-PositionOnlyCartPoleEasy-v0,19,fixed_mlp,True,DE + HL,Testing,-0.3865000000000002
+popgym-PositionOnlyCartPoleEasy-v0,20,fixed_mlp,True,DE + HL,Testing,-0.6860000000000005
+popgym-PositionOnlyCartPoleEasy-v0,21,fixed_mlp,True,DE + HL,Testing,-0.3145000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,fixed_mlp,True,DE + HL,Testing,-0.8285000000000006
+popgym-PositionOnlyCartPoleEasy-v0,23,fixed_mlp,True,DE + HL,Testing,-0.3895000000000002
+popgym-PositionOnlyCartPoleEasy-v0,24,fixed_mlp,True,DE + HL,Testing,-0.4535000000000003
+popgym-PositionOnlyCartPoleEasy-v0,25,fixed_mlp,True,DE + HL,Testing,-0.4750000000000002
+popgym-PositionOnlyCartPoleEasy-v0,26,fixed_mlp,True,DE + HL,Testing,-0.4815000000000003
+popgym-PositionOnlyCartPoleEasy-v0,27,fixed_mlp,True,DE + HL,Testing,-0.4410000000000003
+popgym-PositionOnlyCartPoleEasy-v0,28,fixed_mlp,True,DE + HL,Testing,-0.7930000000000006
+popgym-PositionOnlyCartPoleEasy-v0,29,fixed_mlp,True,DE + HL,Testing,-0.8700000000000004
+Acrobot-v1,0,rewiring_ndp,False,R-NDP,Testing,86.7
+Acrobot-v1,1,rewiring_ndp,False,R-NDP,Testing,86.4
+Acrobot-v1,10,rewiring_ndp,False,R-NDP,Testing,83.8
+Acrobot-v1,11,rewiring_ndp,False,R-NDP,Testing,89.2
+Acrobot-v1,12,rewiring_ndp,False,R-NDP,Testing,82.0
+Acrobot-v1,13,rewiring_ndp,False,R-NDP,Testing,87.9
+Acrobot-v1,14,rewiring_ndp,False,R-NDP,Testing,78.8
+Acrobot-v1,15,rewiring_ndp,False,R-NDP,Testing,83.2
+Acrobot-v1,16,rewiring_ndp,False,R-NDP,Testing,83.7
+Acrobot-v1,17,rewiring_ndp,False,R-NDP,Testing,84.3
+Acrobot-v1,18,rewiring_ndp,False,R-NDP,Testing,85.3
+Acrobot-v1,19,rewiring_ndp,False,R-NDP,Testing,92.7
+Acrobot-v1,2,rewiring_ndp,False,R-NDP,Testing,85.4
+Acrobot-v1,20,rewiring_ndp,False,R-NDP,Testing,111.0
+Acrobot-v1,21,rewiring_ndp,False,R-NDP,Testing,102.4
+Acrobot-v1,22,rewiring_ndp,False,R-NDP,Testing,100.2
+Acrobot-v1,23,rewiring_ndp,False,R-NDP,Testing,89.6
+Acrobot-v1,24,rewiring_ndp,False,R-NDP,Testing,84.2
+Acrobot-v1,25,rewiring_ndp,False,R-NDP,Testing,131.1
+Acrobot-v1,26,rewiring_ndp,False,R-NDP,Testing,84.0
+Acrobot-v1,27,rewiring_ndp,False,R-NDP,Testing,98.8
+Acrobot-v1,28,rewiring_ndp,False,R-NDP,Testing,88.4
+Acrobot-v1,29,rewiring_ndp,False,R-NDP,Testing,80.5
+Acrobot-v1,3,rewiring_ndp,False,R-NDP,Testing,79.1
+Acrobot-v1,4,rewiring_ndp,False,R-NDP,Testing,88.1
+Acrobot-v1,5,rewiring_ndp,False,R-NDP,Testing,77.4
+Acrobot-v1,6,rewiring_ndp,False,R-NDP,Testing,81.7
+Acrobot-v1,7,rewiring_ndp,False,R-NDP,Testing,75.3
+Acrobot-v1,8,rewiring_ndp,False,R-NDP,Testing,92.3
+Acrobot-v1,9,rewiring_ndp,False,R-NDP,Testing,79.3
+Acrobot-v1,0,rewiring_ndp,True,R-NDP + HL,Testing,81.2
+Acrobot-v1,1,rewiring_ndp,True,R-NDP + HL,Testing,91.1
+Acrobot-v1,10,rewiring_ndp,True,R-NDP + HL,Testing,71.8
+Acrobot-v1,11,rewiring_ndp,True,R-NDP + HL,Testing,93.7
+Acrobot-v1,12,rewiring_ndp,True,R-NDP + HL,Testing,89.5
+Acrobot-v1,13,rewiring_ndp,True,R-NDP + HL,Testing,93.8
+Acrobot-v1,14,rewiring_ndp,True,R-NDP + HL,Testing,95.4
+Acrobot-v1,15,rewiring_ndp,True,R-NDP + HL,Testing,87.9
+Acrobot-v1,16,rewiring_ndp,True,R-NDP + HL,Testing,101.3
+Acrobot-v1,17,rewiring_ndp,True,R-NDP + HL,Testing,75.7
+Acrobot-v1,18,rewiring_ndp,True,R-NDP + HL,Testing,133.6
+Acrobot-v1,19,rewiring_ndp,True,R-NDP + HL,Testing,94.2
+Acrobot-v1,2,rewiring_ndp,True,R-NDP + HL,Testing,89.4
+Acrobot-v1,20,rewiring_ndp,True,R-NDP + HL,Testing,83.7
+Acrobot-v1,21,rewiring_ndp,True,R-NDP + HL,Testing,99.2
+Acrobot-v1,22,rewiring_ndp,True,R-NDP + HL,Testing,97.2
+Acrobot-v1,23,rewiring_ndp,True,R-NDP + HL,Testing,90.5
+Acrobot-v1,24,rewiring_ndp,True,R-NDP + HL,Testing,123.7
+Acrobot-v1,25,rewiring_ndp,True,R-NDP + HL,Testing,91.6
+Acrobot-v1,26,rewiring_ndp,True,R-NDP + HL,Testing,90.7
+Acrobot-v1,27,rewiring_ndp,True,R-NDP + HL,Testing,105.7
+Acrobot-v1,28,rewiring_ndp,True,R-NDP + HL,Testing,103.4
+Acrobot-v1,29,rewiring_ndp,True,R-NDP + HL,Testing,86.4
+Acrobot-v1,3,rewiring_ndp,True,R-NDP + HL,Testing,99.2
+Acrobot-v1,4,rewiring_ndp,True,R-NDP + HL,Testing,82.6
+Acrobot-v1,5,rewiring_ndp,True,R-NDP + HL,Testing,84.8
+Acrobot-v1,6,rewiring_ndp,True,R-NDP + HL,Testing,174.5
+Acrobot-v1,7,rewiring_ndp,True,R-NDP + HL,Testing,80.2
+Acrobot-v1,8,rewiring_ndp,True,R-NDP + HL,Testing,152.4
+Acrobot-v1,9,rewiring_ndp,True,R-NDP + HL,Testing,165.0
+Acrobot-v1,0,standard_ndp,False,NDP,Testing,96.0
+Acrobot-v1,1,standard_ndp,False,NDP,Testing,106.6
+Acrobot-v1,10,standard_ndp,False,NDP,Testing,109.8
+Acrobot-v1,11,standard_ndp,False,NDP,Testing,91.8
+Acrobot-v1,12,standard_ndp,False,NDP,Testing,88.4
+Acrobot-v1,13,standard_ndp,False,NDP,Testing,100.8
+Acrobot-v1,14,standard_ndp,False,NDP,Testing,106.0
+Acrobot-v1,15,standard_ndp,False,NDP,Testing,96.4
+Acrobot-v1,16,standard_ndp,False,NDP,Testing,99.6
+Acrobot-v1,17,standard_ndp,False,NDP,Testing,109.1
+Acrobot-v1,18,standard_ndp,False,NDP,Testing,93.1
+Acrobot-v1,19,standard_ndp,False,NDP,Testing,113.9
+Acrobot-v1,2,standard_ndp,False,NDP,Testing,109.1
+Acrobot-v1,20,standard_ndp,False,NDP,Testing,87.5
+Acrobot-v1,21,standard_ndp,False,NDP,Testing,112.8
+Acrobot-v1,22,standard_ndp,False,NDP,Testing,90.9
+Acrobot-v1,23,standard_ndp,False,NDP,Testing,107.0
+Acrobot-v1,24,standard_ndp,False,NDP,Testing,106.7
+Acrobot-v1,25,standard_ndp,False,NDP,Testing,92.7
+Acrobot-v1,26,standard_ndp,False,NDP,Testing,91.2
+Acrobot-v1,27,standard_ndp,False,NDP,Testing,108.6
+Acrobot-v1,28,standard_ndp,False,NDP,Testing,113.9
+Acrobot-v1,29,standard_ndp,False,NDP,Testing,83.8
+Acrobot-v1,3,standard_ndp,False,NDP,Testing,92.3
+Acrobot-v1,4,standard_ndp,False,NDP,Testing,98.1
+Acrobot-v1,5,standard_ndp,False,NDP,Testing,88.3
+Acrobot-v1,6,standard_ndp,False,NDP,Testing,106.0
+Acrobot-v1,7,standard_ndp,False,NDP,Testing,86.6
+Acrobot-v1,8,standard_ndp,False,NDP,Testing,92.0
+Acrobot-v1,9,standard_ndp,False,NDP,Testing,96.4
+Acrobot-v1,0,standard_ndp,True,NDP + HL,Testing,101.6
+Acrobot-v1,1,standard_ndp,True,NDP + HL,Testing,81.5
+Acrobot-v1,10,standard_ndp,True,NDP + HL,Testing,82.1
+Acrobot-v1,11,standard_ndp,True,NDP + HL,Testing,88.7
+Acrobot-v1,12,standard_ndp,True,NDP + HL,Testing,140.0
+Acrobot-v1,13,standard_ndp,True,NDP + HL,Testing,93.3
+Acrobot-v1,14,standard_ndp,True,NDP + HL,Testing,87.3
+Acrobot-v1,15,standard_ndp,True,NDP + HL,Testing,95.4
+Acrobot-v1,16,standard_ndp,True,NDP + HL,Testing,90.1
+Acrobot-v1,17,standard_ndp,True,NDP + HL,Testing,104.0
+Acrobot-v1,18,standard_ndp,True,NDP + HL,Testing,91.5
+Acrobot-v1,19,standard_ndp,True,NDP + HL,Testing,91.1
+Acrobot-v1,2,standard_ndp,True,NDP + HL,Testing,92.8
+Acrobot-v1,20,standard_ndp,True,NDP + HL,Testing,96.2
+Acrobot-v1,21,standard_ndp,True,NDP + HL,Testing,102.7
+Acrobot-v1,22,standard_ndp,True,NDP + HL,Testing,109.5
+Acrobot-v1,23,standard_ndp,True,NDP + HL,Testing,90.8
+Acrobot-v1,24,standard_ndp,True,NDP + HL,Testing,105.2
+Acrobot-v1,25,standard_ndp,True,NDP + HL,Testing,94.5
+Acrobot-v1,26,standard_ndp,True,NDP + HL,Testing,152.4
+Acrobot-v1,27,standard_ndp,True,NDP + HL,Testing,83.2
+Acrobot-v1,28,standard_ndp,True,NDP + HL,Testing,84.5
+Acrobot-v1,29,standard_ndp,True,NDP + HL,Testing,80.8
+Acrobot-v1,3,standard_ndp,True,NDP + HL,Testing,92.0
+Acrobot-v1,4,standard_ndp,True,NDP + HL,Testing,96.2
+Acrobot-v1,5,standard_ndp,True,NDP + HL,Testing,86.3
+Acrobot-v1,6,standard_ndp,True,NDP + HL,Testing,101.8
+Acrobot-v1,7,standard_ndp,True,NDP + HL,Testing,94.2
+Acrobot-v1,8,standard_ndp,True,NDP + HL,Testing,98.1
+Acrobot-v1,9,standard_ndp,True,NDP + HL,Testing,105.5
+CartPole-v1,0,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,1,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,10,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,11,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,12,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,13,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,14,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,15,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,16,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,17,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,18,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,19,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,2,rewiring_ndp,False,R-NDP,Testing,-496.0
+CartPole-v1,20,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,21,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,22,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,23,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,24,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,25,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,26,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,27,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,28,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,29,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,3,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,4,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,5,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,6,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,7,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,8,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,9,rewiring_ndp,False,R-NDP,Testing,-500.0
+CartPole-v1,0,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,1,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,10,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,11,rewiring_ndp,True,R-NDP + HL,Testing,-280.2
+CartPole-v1,12,rewiring_ndp,True,R-NDP + HL,Testing,-453.1
+CartPole-v1,13,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,14,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,15,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,16,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,17,rewiring_ndp,True,R-NDP + HL,Testing,-265.7
+CartPole-v1,18,rewiring_ndp,True,R-NDP + HL,Testing,-166.6
+CartPole-v1,19,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,2,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,20,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,21,rewiring_ndp,True,R-NDP + HL,Testing,-334.8
+CartPole-v1,22,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,23,rewiring_ndp,True,R-NDP + HL,Testing,-288.2
+CartPole-v1,24,rewiring_ndp,True,R-NDP + HL,Testing,-493.4
+CartPole-v1,25,rewiring_ndp,True,R-NDP + HL,Testing,-251.7
+CartPole-v1,26,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,27,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,28,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,29,rewiring_ndp,True,R-NDP + HL,Testing,-288.2
+CartPole-v1,3,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,4,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,5,rewiring_ndp,True,R-NDP + HL,Testing,-139.8
+CartPole-v1,6,rewiring_ndp,True,R-NDP + HL,Testing,-196.5
+CartPole-v1,7,rewiring_ndp,True,R-NDP + HL,Testing,-313.7
+CartPole-v1,8,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,9,rewiring_ndp,True,R-NDP + HL,Testing,-500.0
+CartPole-v1,0,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,1,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,10,standard_ndp,False,NDP,Testing,-489.9
+CartPole-v1,11,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,12,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,13,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,14,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,15,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,16,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,17,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,18,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,19,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,2,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,20,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,21,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,22,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,23,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,24,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,25,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,26,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,27,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,28,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,29,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,3,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,4,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,5,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,6,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,7,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,8,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,9,standard_ndp,False,NDP,Testing,-500.0
+CartPole-v1,0,standard_ndp,True,NDP + HL,Testing,-237.3
+CartPole-v1,1,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,10,standard_ndp,True,NDP + HL,Testing,-159.4
+CartPole-v1,11,standard_ndp,True,NDP + HL,Testing,-212.1
+CartPole-v1,12,standard_ndp,True,NDP + HL,Testing,-215.5
+CartPole-v1,13,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,14,standard_ndp,True,NDP + HL,Testing,-469.4
+CartPole-v1,15,standard_ndp,True,NDP + HL,Testing,-198.0
+CartPole-v1,16,standard_ndp,True,NDP + HL,Testing,-330.7
+CartPole-v1,17,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,18,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,19,standard_ndp,True,NDP + HL,Testing,-317.5
+CartPole-v1,2,standard_ndp,True,NDP + HL,Testing,-58.7
+CartPole-v1,20,standard_ndp,True,NDP + HL,Testing,-66.3
+CartPole-v1,21,standard_ndp,True,NDP + HL,Testing,-124.6
+CartPole-v1,22,standard_ndp,True,NDP + HL,Testing,-414.6
+CartPole-v1,23,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,24,standard_ndp,True,NDP + HL,Testing,-60.4
+CartPole-v1,25,standard_ndp,True,NDP + HL,Testing,-409.6
+CartPole-v1,26,standard_ndp,True,NDP + HL,Testing,-58.1
+CartPole-v1,27,standard_ndp,True,NDP + HL,Testing,-345.4
+CartPole-v1,28,standard_ndp,True,NDP + HL,Testing,-205.6
+CartPole-v1,29,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,3,standard_ndp,True,NDP + HL,Testing,-448.7
+CartPole-v1,4,standard_ndp,True,NDP + HL,Testing,-352.6
+CartPole-v1,5,standard_ndp,True,NDP + HL,Testing,-221.7
+CartPole-v1,6,standard_ndp,True,NDP + HL,Testing,-500.0
+CartPole-v1,7,standard_ndp,True,NDP + HL,Testing,-218.9
+CartPole-v1,8,standard_ndp,True,NDP + HL,Testing,-171.9
+CartPole-v1,9,standard_ndp,True,NDP + HL,Testing,-456.8
+LunarLander-v3,0,rewiring_ndp,False,R-NDP,Testing,-79.61521072599115
+LunarLander-v3,1,rewiring_ndp,False,R-NDP,Testing,50.58522129652588
+LunarLander-v3,10,rewiring_ndp,False,R-NDP,Testing,-5.699832521984758
+LunarLander-v3,11,rewiring_ndp,False,R-NDP,Testing,-40.10855945282435
+LunarLander-v3,12,rewiring_ndp,False,R-NDP,Testing,-122.12024705296956
+LunarLander-v3,13,rewiring_ndp,False,R-NDP,Testing,116.25554492626485
+LunarLander-v3,14,rewiring_ndp,False,R-NDP,Testing,-145.80386663963634
+LunarLander-v3,15,rewiring_ndp,False,R-NDP,Testing,57.707974098007625
+LunarLander-v3,16,rewiring_ndp,False,R-NDP,Testing,17.488478263880936
+LunarLander-v3,17,rewiring_ndp,False,R-NDP,Testing,54.37528453188333
+LunarLander-v3,18,rewiring_ndp,False,R-NDP,Testing,95.70876141553036
+LunarLander-v3,19,rewiring_ndp,False,R-NDP,Testing,92.69967932109056
+LunarLander-v3,2,rewiring_ndp,False,R-NDP,Testing,138.7363963644305
+LunarLander-v3,20,rewiring_ndp,False,R-NDP,Testing,34.94486347401051
+LunarLander-v3,21,rewiring_ndp,False,R-NDP,Testing,57.1960263516364
+LunarLander-v3,22,rewiring_ndp,False,R-NDP,Testing,111.92177609720048
+LunarLander-v3,23,rewiring_ndp,False,R-NDP,Testing,73.76496262402881
+LunarLander-v3,24,rewiring_ndp,False,R-NDP,Testing,18.06768028099867
+LunarLander-v3,25,rewiring_ndp,False,R-NDP,Testing,79.30854586886943
+LunarLander-v3,26,rewiring_ndp,False,R-NDP,Testing,127.77012430822442
+LunarLander-v3,27,rewiring_ndp,False,R-NDP,Testing,95.1287826958935
+LunarLander-v3,28,rewiring_ndp,False,R-NDP,Testing,18.058976956919345
+LunarLander-v3,29,rewiring_ndp,False,R-NDP,Testing,66.65015320824821
+LunarLander-v3,3,rewiring_ndp,False,R-NDP,Testing,42.48358558809899
+LunarLander-v3,4,rewiring_ndp,False,R-NDP,Testing,11.053699638858689
+LunarLander-v3,5,rewiring_ndp,False,R-NDP,Testing,-157.1118672597863
+LunarLander-v3,6,rewiring_ndp,False,R-NDP,Testing,95.09159208630948
+LunarLander-v3,7,rewiring_ndp,False,R-NDP,Testing,65.66616860808068
+LunarLander-v3,8,rewiring_ndp,False,R-NDP,Testing,113.30262866507924
+LunarLander-v3,9,rewiring_ndp,False,R-NDP,Testing,140.65791524710033
+LunarLander-v3,0,rewiring_ndp,True,R-NDP + HL,Testing,108.57812899377517
+LunarLander-v3,1,rewiring_ndp,True,R-NDP + HL,Testing,114.86404792485112
+LunarLander-v3,10,rewiring_ndp,True,R-NDP + HL,Testing,88.4238791129979
+LunarLander-v3,11,rewiring_ndp,True,R-NDP + HL,Testing,54.58677487051365
+LunarLander-v3,12,rewiring_ndp,True,R-NDP + HL,Testing,154.2864572805507
+LunarLander-v3,13,rewiring_ndp,True,R-NDP + HL,Testing,100.74739000080504
+LunarLander-v3,14,rewiring_ndp,True,R-NDP + HL,Testing,65.82745355381122
+LunarLander-v3,15,rewiring_ndp,True,R-NDP + HL,Testing,139.19024062352702
+LunarLander-v3,16,rewiring_ndp,True,R-NDP + HL,Testing,149.05486701351057
+LunarLander-v3,17,rewiring_ndp,True,R-NDP + HL,Testing,126.8446462735416
+LunarLander-v3,18,rewiring_ndp,True,R-NDP + HL,Testing,33.21857953813837
+LunarLander-v3,19,rewiring_ndp,True,R-NDP + HL,Testing,158.2094863125939
+LunarLander-v3,2,rewiring_ndp,True,R-NDP + HL,Testing,94.6226236353953
+LunarLander-v3,20,rewiring_ndp,True,R-NDP + HL,Testing,147.16906379238293
+LunarLander-v3,21,rewiring_ndp,True,R-NDP + HL,Testing,71.12504185885108
+LunarLander-v3,22,rewiring_ndp,True,R-NDP + HL,Testing,78.34788679236401
+LunarLander-v3,23,rewiring_ndp,True,R-NDP + HL,Testing,95.27970437536564
+LunarLander-v3,24,rewiring_ndp,True,R-NDP + HL,Testing,46.13081297058462
+LunarLander-v3,25,rewiring_ndp,True,R-NDP + HL,Testing,141.5437898788228
+LunarLander-v3,26,rewiring_ndp,True,R-NDP + HL,Testing,134.5030974083851
+LunarLander-v3,27,rewiring_ndp,True,R-NDP + HL,Testing,142.29635583116948
+LunarLander-v3,28,rewiring_ndp,True,R-NDP + HL,Testing,182.8002894477084
+LunarLander-v3,29,rewiring_ndp,True,R-NDP + HL,Testing,133.4368382584927
+LunarLander-v3,3,rewiring_ndp,True,R-NDP + HL,Testing,109.0542686042306
+LunarLander-v3,4,rewiring_ndp,True,R-NDP + HL,Testing,180.6571554232918
+LunarLander-v3,5,rewiring_ndp,True,R-NDP + HL,Testing,118.35172357095374
+LunarLander-v3,6,rewiring_ndp,True,R-NDP + HL,Testing,28.20910086121311
+LunarLander-v3,7,rewiring_ndp,True,R-NDP + HL,Testing,97.75033887555443
+LunarLander-v3,8,rewiring_ndp,True,R-NDP + HL,Testing,169.47725889595168
+LunarLander-v3,9,rewiring_ndp,True,R-NDP + HL,Testing,87.94134172072658
+LunarLander-v3,0,standard_ndp,False,NDP,Testing,48.5474290035035
+LunarLander-v3,1,standard_ndp,False,NDP,Testing,58.55979236148788
+LunarLander-v3,10,standard_ndp,False,NDP,Testing,74.4313325803242
+LunarLander-v3,11,standard_ndp,False,NDP,Testing,-22.946640867021863
+LunarLander-v3,12,standard_ndp,False,NDP,Testing,39.718338218620985
+LunarLander-v3,13,standard_ndp,False,NDP,Testing,-2.350967939756532
+LunarLander-v3,14,standard_ndp,False,NDP,Testing,-12.016389453512724
+LunarLander-v3,15,standard_ndp,False,NDP,Testing,60.68925619113352
+LunarLander-v3,16,standard_ndp,False,NDP,Testing,73.20877038591915
+LunarLander-v3,17,standard_ndp,False,NDP,Testing,42.52150546969808
+LunarLander-v3,18,standard_ndp,False,NDP,Testing,69.52036641434084
+LunarLander-v3,19,standard_ndp,False,NDP,Testing,60.333738999822856
+LunarLander-v3,2,standard_ndp,False,NDP,Testing,65.04005375671298
+LunarLander-v3,20,standard_ndp,False,NDP,Testing,130.7329031327751
+LunarLander-v3,21,standard_ndp,False,NDP,Testing,53.66734516496574
+LunarLander-v3,22,standard_ndp,False,NDP,Testing,39.42007541675544
+LunarLander-v3,23,standard_ndp,False,NDP,Testing,26.2513058425126
+LunarLander-v3,24,standard_ndp,False,NDP,Testing,59.328406688171086
+LunarLander-v3,25,standard_ndp,False,NDP,Testing,50.2265137989792
+LunarLander-v3,26,standard_ndp,False,NDP,Testing,16.240326205172245
+LunarLander-v3,27,standard_ndp,False,NDP,Testing,2.970660776746621
+LunarLander-v3,28,standard_ndp,False,NDP,Testing,76.88629513422259
+LunarLander-v3,29,standard_ndp,False,NDP,Testing,71.46959101014691
+LunarLander-v3,3,standard_ndp,False,NDP,Testing,46.021063255904615
+LunarLander-v3,4,standard_ndp,False,NDP,Testing,-96.4206984186408
+LunarLander-v3,5,standard_ndp,False,NDP,Testing,45.08331166766367
+LunarLander-v3,6,standard_ndp,False,NDP,Testing,63.86751605613864
+LunarLander-v3,7,standard_ndp,False,NDP,Testing,55.5554532005666
+LunarLander-v3,8,standard_ndp,False,NDP,Testing,14.262795882326396
+LunarLander-v3,9,standard_ndp,False,NDP,Testing,48.75374235928082
+LunarLander-v3,0,standard_ndp,True,NDP + HL,Testing,57.587974776419365
+LunarLander-v3,1,standard_ndp,True,NDP + HL,Testing,103.70767753440948
+LunarLander-v3,10,standard_ndp,True,NDP + HL,Testing,104.33684707967484
+LunarLander-v3,11,standard_ndp,True,NDP + HL,Testing,157.75895293365625
+LunarLander-v3,12,standard_ndp,True,NDP + HL,Testing,133.24807792821886
+LunarLander-v3,13,standard_ndp,True,NDP + HL,Testing,33.94282248954308
+LunarLander-v3,14,standard_ndp,True,NDP + HL,Testing,76.34183950565361
+LunarLander-v3,15,standard_ndp,True,NDP + HL,Testing,81.07571656373658
+LunarLander-v3,16,standard_ndp,True,NDP + HL,Testing,105.73112426427404
+LunarLander-v3,17,standard_ndp,True,NDP + HL,Testing,112.9471631546344
+LunarLander-v3,18,standard_ndp,True,NDP + HL,Testing,112.88507013158274
+LunarLander-v3,19,standard_ndp,True,NDP + HL,Testing,149.17644346514905
+LunarLander-v3,2,standard_ndp,True,NDP + HL,Testing,81.64838854315249
+LunarLander-v3,20,standard_ndp,True,NDP + HL,Testing,72.12312238881717
+LunarLander-v3,21,standard_ndp,True,NDP + HL,Testing,50.73492692162945
+LunarLander-v3,22,standard_ndp,True,NDP + HL,Testing,123.3044649668412
+LunarLander-v3,23,standard_ndp,True,NDP + HL,Testing,57.78272434962405
+LunarLander-v3,24,standard_ndp,True,NDP + HL,Testing,44.714139547843466
+LunarLander-v3,25,standard_ndp,True,NDP + HL,Testing,96.2849740570032
+LunarLander-v3,26,standard_ndp,True,NDP + HL,Testing,15.392256942627077
+LunarLander-v3,27,standard_ndp,True,NDP + HL,Testing,165.85169937187766
+LunarLander-v3,28,standard_ndp,True,NDP + HL,Testing,107.33051463600148
+LunarLander-v3,29,standard_ndp,True,NDP + HL,Testing,48.22658080752708
+LunarLander-v3,3,standard_ndp,True,NDP + HL,Testing,53.132211990362194
+LunarLander-v3,4,standard_ndp,True,NDP + HL,Testing,125.30717647835324
+LunarLander-v3,5,standard_ndp,True,NDP + HL,Testing,-35.6798000568127
+LunarLander-v3,6,standard_ndp,True,NDP + HL,Testing,119.0795916288912
+LunarLander-v3,7,standard_ndp,True,NDP + HL,Testing,84.34377061130138
+LunarLander-v3,8,standard_ndp,True,NDP + HL,Testing,86.96730179186571
+LunarLander-v3,9,standard_ndp,True,NDP + HL,Testing,115.50785156542766
+MountainCar-v0,0,rewiring_ndp,False,R-NDP,Testing,110.3
+MountainCar-v0,1,rewiring_ndp,False,R-NDP,Testing,111.3
+MountainCar-v0,10,rewiring_ndp,False,R-NDP,Testing,106.2
+MountainCar-v0,11,rewiring_ndp,False,R-NDP,Testing,107.7
+MountainCar-v0,12,rewiring_ndp,False,R-NDP,Testing,106.4
+MountainCar-v0,13,rewiring_ndp,False,R-NDP,Testing,119.5
+MountainCar-v0,14,rewiring_ndp,False,R-NDP,Testing,103.7
+MountainCar-v0,15,rewiring_ndp,False,R-NDP,Testing,120.9
+MountainCar-v0,16,rewiring_ndp,False,R-NDP,Testing,115.7
+MountainCar-v0,17,rewiring_ndp,False,R-NDP,Testing,112.8
+MountainCar-v0,18,rewiring_ndp,False,R-NDP,Testing,110.4
+MountainCar-v0,19,rewiring_ndp,False,R-NDP,Testing,118.7
+MountainCar-v0,2,rewiring_ndp,False,R-NDP,Testing,107.0
+MountainCar-v0,20,rewiring_ndp,False,R-NDP,Testing,104.7
+MountainCar-v0,21,rewiring_ndp,False,R-NDP,Testing,116.0
+MountainCar-v0,22,rewiring_ndp,False,R-NDP,Testing,113.7
+MountainCar-v0,23,rewiring_ndp,False,R-NDP,Testing,111.6
+MountainCar-v0,24,rewiring_ndp,False,R-NDP,Testing,128.5
+MountainCar-v0,25,rewiring_ndp,False,R-NDP,Testing,116.1
+MountainCar-v0,26,rewiring_ndp,False,R-NDP,Testing,106.1
+MountainCar-v0,27,rewiring_ndp,False,R-NDP,Testing,106.1
+MountainCar-v0,28,rewiring_ndp,False,R-NDP,Testing,106.8
+MountainCar-v0,29,rewiring_ndp,False,R-NDP,Testing,105.5
+MountainCar-v0,3,rewiring_ndp,False,R-NDP,Testing,125.4
+MountainCar-v0,4,rewiring_ndp,False,R-NDP,Testing,106.4
+MountainCar-v0,5,rewiring_ndp,False,R-NDP,Testing,115.6
+MountainCar-v0,6,rewiring_ndp,False,R-NDP,Testing,125.2
+MountainCar-v0,7,rewiring_ndp,False,R-NDP,Testing,106.1
+MountainCar-v0,8,rewiring_ndp,False,R-NDP,Testing,106.9
+MountainCar-v0,9,rewiring_ndp,False,R-NDP,Testing,120.9
+MountainCar-v0,0,rewiring_ndp,True,R-NDP + HL,Testing,105.4
+MountainCar-v0,1,rewiring_ndp,True,R-NDP + HL,Testing,101.5
+MountainCar-v0,10,rewiring_ndp,True,R-NDP + HL,Testing,117.3
+MountainCar-v0,11,rewiring_ndp,True,R-NDP + HL,Testing,101.5
+MountainCar-v0,12,rewiring_ndp,True,R-NDP + HL,Testing,109.3
+MountainCar-v0,13,rewiring_ndp,True,R-NDP + HL,Testing,100.8
+MountainCar-v0,14,rewiring_ndp,True,R-NDP + HL,Testing,107.4
+MountainCar-v0,15,rewiring_ndp,True,R-NDP + HL,Testing,107.7
+MountainCar-v0,16,rewiring_ndp,True,R-NDP + HL,Testing,101.4
+MountainCar-v0,17,rewiring_ndp,True,R-NDP + HL,Testing,101.6
+MountainCar-v0,18,rewiring_ndp,True,R-NDP + HL,Testing,122.2
+MountainCar-v0,19,rewiring_ndp,True,R-NDP + HL,Testing,104.1
+MountainCar-v0,2,rewiring_ndp,True,R-NDP + HL,Testing,118.9
+MountainCar-v0,20,rewiring_ndp,True,R-NDP + HL,Testing,104.2
+MountainCar-v0,21,rewiring_ndp,True,R-NDP + HL,Testing,102.5
+MountainCar-v0,22,rewiring_ndp,True,R-NDP + HL,Testing,101.2
+MountainCar-v0,23,rewiring_ndp,True,R-NDP + HL,Testing,103.1
+MountainCar-v0,24,rewiring_ndp,True,R-NDP + HL,Testing,109.4
+MountainCar-v0,25,rewiring_ndp,True,R-NDP + HL,Testing,104.8
+MountainCar-v0,26,rewiring_ndp,True,R-NDP + HL,Testing,108.2
+MountainCar-v0,27,rewiring_ndp,True,R-NDP + HL,Testing,101.6
+MountainCar-v0,28,rewiring_ndp,True,R-NDP + HL,Testing,101.4
+MountainCar-v0,29,rewiring_ndp,True,R-NDP + HL,Testing,100.8
+MountainCar-v0,3,rewiring_ndp,True,R-NDP + HL,Testing,109.3
+MountainCar-v0,4,rewiring_ndp,True,R-NDP + HL,Testing,114.6
+MountainCar-v0,5,rewiring_ndp,True,R-NDP + HL,Testing,107.2
+MountainCar-v0,6,rewiring_ndp,True,R-NDP + HL,Testing,108.0
+MountainCar-v0,7,rewiring_ndp,True,R-NDP + HL,Testing,112.3
+MountainCar-v0,8,rewiring_ndp,True,R-NDP + HL,Testing,118.8
+MountainCar-v0,9,rewiring_ndp,True,R-NDP + HL,Testing,104.4
+MountainCar-v0,0,standard_ndp,False,NDP,Testing,109.2
+MountainCar-v0,1,standard_ndp,False,NDP,Testing,109.1
+MountainCar-v0,10,standard_ndp,False,NDP,Testing,107.3
+MountainCar-v0,11,standard_ndp,False,NDP,Testing,129.2
+MountainCar-v0,12,standard_ndp,False,NDP,Testing,133.8
+MountainCar-v0,13,standard_ndp,False,NDP,Testing,133.4
+MountainCar-v0,14,standard_ndp,False,NDP,Testing,102.6
+MountainCar-v0,15,standard_ndp,False,NDP,Testing,124.5
+MountainCar-v0,16,standard_ndp,False,NDP,Testing,142.5
+MountainCar-v0,17,standard_ndp,False,NDP,Testing,201.3
+MountainCar-v0,18,standard_ndp,False,NDP,Testing,136.9
+MountainCar-v0,19,standard_ndp,False,NDP,Testing,121.2
+MountainCar-v0,2,standard_ndp,False,NDP,Testing,105.9
+MountainCar-v0,20,standard_ndp,False,NDP,Testing,106.5
+MountainCar-v0,21,standard_ndp,False,NDP,Testing,105.0
+MountainCar-v0,22,standard_ndp,False,NDP,Testing,167.7
+MountainCar-v0,23,standard_ndp,False,NDP,Testing,136.4
+MountainCar-v0,24,standard_ndp,False,NDP,Testing,104.1
+MountainCar-v0,25,standard_ndp,False,NDP,Testing,122.6
+MountainCar-v0,26,standard_ndp,False,NDP,Testing,102.2
+MountainCar-v0,27,standard_ndp,False,NDP,Testing,139.2
+MountainCar-v0,28,standard_ndp,False,NDP,Testing,130.2
+MountainCar-v0,29,standard_ndp,False,NDP,Testing,106.6
+MountainCar-v0,3,standard_ndp,False,NDP,Testing,110.7
+MountainCar-v0,4,standard_ndp,False,NDP,Testing,128.8
+MountainCar-v0,5,standard_ndp,False,NDP,Testing,123.4
+MountainCar-v0,6,standard_ndp,False,NDP,Testing,110.6
+MountainCar-v0,7,standard_ndp,False,NDP,Testing,128.6
+MountainCar-v0,8,standard_ndp,False,NDP,Testing,132.6
+MountainCar-v0,9,standard_ndp,False,NDP,Testing,145.3
+MountainCar-v0,0,standard_ndp,True,NDP + HL,Testing,101.4
+MountainCar-v0,1,standard_ndp,True,NDP + HL,Testing,119.4
+MountainCar-v0,10,standard_ndp,True,NDP + HL,Testing,132.5
+MountainCar-v0,11,standard_ndp,True,NDP + HL,Testing,131.9
+MountainCar-v0,12,standard_ndp,True,NDP + HL,Testing,154.0
+MountainCar-v0,13,standard_ndp,True,NDP + HL,Testing,101.4
+MountainCar-v0,14,standard_ndp,True,NDP + HL,Testing,161.7
+MountainCar-v0,15,standard_ndp,True,NDP + HL,Testing,102.5
+MountainCar-v0,16,standard_ndp,True,NDP + HL,Testing,118.5
+MountainCar-v0,17,standard_ndp,True,NDP + HL,Testing,104.7
+MountainCar-v0,18,standard_ndp,True,NDP + HL,Testing,149.4
+MountainCar-v0,19,standard_ndp,True,NDP + HL,Testing,102.1
+MountainCar-v0,2,standard_ndp,True,NDP + HL,Testing,101.6
+MountainCar-v0,20,standard_ndp,True,NDP + HL,Testing,101.8
+MountainCar-v0,21,standard_ndp,True,NDP + HL,Testing,167.7
+MountainCar-v0,22,standard_ndp,True,NDP + HL,Testing,165.5
+MountainCar-v0,23,standard_ndp,True,NDP + HL,Testing,114.7
+MountainCar-v0,24,standard_ndp,True,NDP + HL,Testing,128.7
+MountainCar-v0,25,standard_ndp,True,NDP + HL,Testing,102.4
+MountainCar-v0,26,standard_ndp,True,NDP + HL,Testing,107.5
+MountainCar-v0,27,standard_ndp,True,NDP + HL,Testing,102.5
+MountainCar-v0,28,standard_ndp,True,NDP + HL,Testing,110.6
+MountainCar-v0,29,standard_ndp,True,NDP + HL,Testing,124.1
+MountainCar-v0,3,standard_ndp,True,NDP + HL,Testing,104.5
+MountainCar-v0,4,standard_ndp,True,NDP + HL,Testing,103.6
+MountainCar-v0,5,standard_ndp,True,NDP + HL,Testing,137.1
+MountainCar-v0,6,standard_ndp,True,NDP + HL,Testing,140.6
+MountainCar-v0,7,standard_ndp,True,NDP + HL,Testing,136.2
+MountainCar-v0,8,standard_ndp,True,NDP + HL,Testing,158.8
+MountainCar-v0,9,standard_ndp,True,NDP + HL,Testing,118.1
+popgym-PositionOnlyCartPoleEasy-v0,0,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,1,rewiring_ndp,False,R-NDP,Testing,-0.5945000000000003
+popgym-PositionOnlyCartPoleEasy-v0,10,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,11,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,12,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,13,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,14,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,15,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,16,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,17,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,18,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,19,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,2,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,20,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,21,rewiring_ndp,False,R-NDP,Testing,-0.3725000000000002
+popgym-PositionOnlyCartPoleEasy-v0,22,rewiring_ndp,False,R-NDP,Testing,-0.2925000000000001
+popgym-PositionOnlyCartPoleEasy-v0,23,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,24,rewiring_ndp,False,R-NDP,Testing,-0.9585000000000006
+popgym-PositionOnlyCartPoleEasy-v0,25,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,26,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,27,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,28,rewiring_ndp,False,R-NDP,Testing,-0.2555000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,rewiring_ndp,False,R-NDP,Testing,-0.7580000000000006
+popgym-PositionOnlyCartPoleEasy-v0,3,rewiring_ndp,False,R-NDP,Testing,-0.4660000000000003
+popgym-PositionOnlyCartPoleEasy-v0,4,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,5,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,6,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,7,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,8,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,9,rewiring_ndp,False,R-NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,0,rewiring_ndp,True,R-NDP + HL,Testing,-0.1895
+popgym-PositionOnlyCartPoleEasy-v0,1,rewiring_ndp,True,R-NDP + HL,Testing,-0.2320000000000001
+popgym-PositionOnlyCartPoleEasy-v0,10,rewiring_ndp,True,R-NDP + HL,Testing,-0.2395000000000001
+popgym-PositionOnlyCartPoleEasy-v0,11,rewiring_ndp,True,R-NDP + HL,Testing,-0.1885
+popgym-PositionOnlyCartPoleEasy-v0,12,rewiring_ndp,True,R-NDP + HL,Testing,-0.2405000000000001
+popgym-PositionOnlyCartPoleEasy-v0,13,rewiring_ndp,True,R-NDP + HL,Testing,-0.2450000000000001
+popgym-PositionOnlyCartPoleEasy-v0,14,rewiring_ndp,True,R-NDP + HL,Testing,-0.198
+popgym-PositionOnlyCartPoleEasy-v0,15,rewiring_ndp,True,R-NDP + HL,Testing,-0.7960000000000006
+popgym-PositionOnlyCartPoleEasy-v0,16,rewiring_ndp,True,R-NDP + HL,Testing,-0.2420000000000001
+popgym-PositionOnlyCartPoleEasy-v0,17,rewiring_ndp,True,R-NDP + HL,Testing,-0.3280000000000002
+popgym-PositionOnlyCartPoleEasy-v0,18,rewiring_ndp,True,R-NDP + HL,Testing,-0.4410000000000003
+popgym-PositionOnlyCartPoleEasy-v0,19,rewiring_ndp,True,R-NDP + HL,Testing,-0.159
+popgym-PositionOnlyCartPoleEasy-v0,2,rewiring_ndp,True,R-NDP + HL,Testing,-0.1935000000000001
+popgym-PositionOnlyCartPoleEasy-v0,20,rewiring_ndp,True,R-NDP + HL,Testing,-0.2205
+popgym-PositionOnlyCartPoleEasy-v0,21,rewiring_ndp,True,R-NDP + HL,Testing,-0.2035000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,rewiring_ndp,True,R-NDP + HL,Testing,-0.3180000000000001
+popgym-PositionOnlyCartPoleEasy-v0,23,rewiring_ndp,True,R-NDP + HL,Testing,-0.2250000000000001
+popgym-PositionOnlyCartPoleEasy-v0,24,rewiring_ndp,True,R-NDP + HL,Testing,-0.2355000000000001
+popgym-PositionOnlyCartPoleEasy-v0,25,rewiring_ndp,True,R-NDP + HL,Testing,-0.1610000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,rewiring_ndp,True,R-NDP + HL,Testing,-0.6130000000000004
+popgym-PositionOnlyCartPoleEasy-v0,27,rewiring_ndp,True,R-NDP + HL,Testing,-0.1945
+popgym-PositionOnlyCartPoleEasy-v0,28,rewiring_ndp,True,R-NDP + HL,Testing,-0.1855
+popgym-PositionOnlyCartPoleEasy-v0,29,rewiring_ndp,True,R-NDP + HL,Testing,-0.2445000000000001
+popgym-PositionOnlyCartPoleEasy-v0,3,rewiring_ndp,True,R-NDP + HL,Testing,-0.4390000000000003
+popgym-PositionOnlyCartPoleEasy-v0,4,rewiring_ndp,True,R-NDP + HL,Testing,-0.1965000000000001
+popgym-PositionOnlyCartPoleEasy-v0,5,rewiring_ndp,True,R-NDP + HL,Testing,-0.2370000000000001
+popgym-PositionOnlyCartPoleEasy-v0,6,rewiring_ndp,True,R-NDP + HL,Testing,-0.2835000000000001
+popgym-PositionOnlyCartPoleEasy-v0,7,rewiring_ndp,True,R-NDP + HL,Testing,-0.2095000000000001
+popgym-PositionOnlyCartPoleEasy-v0,8,rewiring_ndp,True,R-NDP + HL,Testing,-0.2200000000000001
+popgym-PositionOnlyCartPoleEasy-v0,9,rewiring_ndp,True,R-NDP + HL,Testing,-0.2175000000000001
+popgym-PositionOnlyCartPoleEasy-v0,0,standard_ndp,False,NDP,Testing,-0.8915000000000006
+popgym-PositionOnlyCartPoleEasy-v0,1,standard_ndp,False,NDP,Testing,-0.8450000000000006
+popgym-PositionOnlyCartPoleEasy-v0,10,standard_ndp,False,NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,11,standard_ndp,False,NDP,Testing,-0.9045000000000004
+popgym-PositionOnlyCartPoleEasy-v0,12,standard_ndp,False,NDP,Testing,-0.9705000000000006
+popgym-PositionOnlyCartPoleEasy-v0,13,standard_ndp,False,NDP,Testing,-0.6300000000000004
+popgym-PositionOnlyCartPoleEasy-v0,14,standard_ndp,False,NDP,Testing,-0.5760000000000003
+popgym-PositionOnlyCartPoleEasy-v0,15,standard_ndp,False,NDP,Testing,-0.8950000000000007
+popgym-PositionOnlyCartPoleEasy-v0,16,standard_ndp,False,NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,17,standard_ndp,False,NDP,Testing,-0.6580000000000006
+popgym-PositionOnlyCartPoleEasy-v0,18,standard_ndp,False,NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,19,standard_ndp,False,NDP,Testing,-0.9140000000000006
+popgym-PositionOnlyCartPoleEasy-v0,2,standard_ndp,False,NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,20,standard_ndp,False,NDP,Testing,-0.7800000000000005
+popgym-PositionOnlyCartPoleEasy-v0,21,standard_ndp,False,NDP,Testing,-0.3565000000000002
+popgym-PositionOnlyCartPoleEasy-v0,22,standard_ndp,False,NDP,Testing,-0.6080000000000003
+popgym-PositionOnlyCartPoleEasy-v0,23,standard_ndp,False,NDP,Testing,-0.6270000000000004
+popgym-PositionOnlyCartPoleEasy-v0,24,standard_ndp,False,NDP,Testing,-0.8275000000000006
+popgym-PositionOnlyCartPoleEasy-v0,25,standard_ndp,False,NDP,Testing,-0.2500000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,standard_ndp,False,NDP,Testing,-0.4860000000000003
+popgym-PositionOnlyCartPoleEasy-v0,27,standard_ndp,False,NDP,Testing,-0.9945000000000006
+popgym-PositionOnlyCartPoleEasy-v0,28,standard_ndp,False,NDP,Testing,-0.1700000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,standard_ndp,False,NDP,Testing,-1.0000000000000004
+popgym-PositionOnlyCartPoleEasy-v0,3,standard_ndp,False,NDP,Testing,-0.1865
+popgym-PositionOnlyCartPoleEasy-v0,4,standard_ndp,False,NDP,Testing,-0.2550000000000001
+popgym-PositionOnlyCartPoleEasy-v0,5,standard_ndp,False,NDP,Testing,-0.6200000000000003
+popgym-PositionOnlyCartPoleEasy-v0,6,standard_ndp,False,NDP,Testing,-0.8540000000000006
+popgym-PositionOnlyCartPoleEasy-v0,7,standard_ndp,False,NDP,Testing,-0.6340000000000005
+popgym-PositionOnlyCartPoleEasy-v0,8,standard_ndp,False,NDP,Testing,-0.6055000000000004
+popgym-PositionOnlyCartPoleEasy-v0,9,standard_ndp,False,NDP,Testing,-0.7640000000000005
+popgym-PositionOnlyCartPoleEasy-v0,0,standard_ndp,True,NDP + HL,Testing,-0.1875
+popgym-PositionOnlyCartPoleEasy-v0,1,standard_ndp,True,NDP + HL,Testing,-0.1825
+popgym-PositionOnlyCartPoleEasy-v0,10,standard_ndp,True,NDP + HL,Testing,-0.1980000000000001
+popgym-PositionOnlyCartPoleEasy-v0,11,standard_ndp,True,NDP + HL,Testing,-0.1805000000000001
+popgym-PositionOnlyCartPoleEasy-v0,12,standard_ndp,True,NDP + HL,Testing,-0.5230000000000004
+popgym-PositionOnlyCartPoleEasy-v0,13,standard_ndp,True,NDP + HL,Testing,-0.1990000000000001
+popgym-PositionOnlyCartPoleEasy-v0,14,standard_ndp,True,NDP + HL,Testing,-0.2065000000000001
+popgym-PositionOnlyCartPoleEasy-v0,15,standard_ndp,True,NDP + HL,Testing,-0.2060000000000001
+popgym-PositionOnlyCartPoleEasy-v0,16,standard_ndp,True,NDP + HL,Testing,-0.2230000000000001
+popgym-PositionOnlyCartPoleEasy-v0,17,standard_ndp,True,NDP + HL,Testing,-0.1875
+popgym-PositionOnlyCartPoleEasy-v0,18,standard_ndp,True,NDP + HL,Testing,-0.182
+popgym-PositionOnlyCartPoleEasy-v0,19,standard_ndp,True,NDP + HL,Testing,-0.2020000000000001
+popgym-PositionOnlyCartPoleEasy-v0,2,standard_ndp,True,NDP + HL,Testing,-0.2520000000000001
+popgym-PositionOnlyCartPoleEasy-v0,20,standard_ndp,True,NDP + HL,Testing,-0.2185
+popgym-PositionOnlyCartPoleEasy-v0,21,standard_ndp,True,NDP + HL,Testing,-0.2065000000000001
+popgym-PositionOnlyCartPoleEasy-v0,22,standard_ndp,True,NDP + HL,Testing,-0.3065000000000001
+popgym-PositionOnlyCartPoleEasy-v0,23,standard_ndp,True,NDP + HL,Testing,-0.2020000000000001
+popgym-PositionOnlyCartPoleEasy-v0,24,standard_ndp,True,NDP + HL,Testing,-0.2570000000000001
+popgym-PositionOnlyCartPoleEasy-v0,25,standard_ndp,True,NDP + HL,Testing,-0.2360000000000001
+popgym-PositionOnlyCartPoleEasy-v0,26,standard_ndp,True,NDP + HL,Testing,-0.3445000000000002
+popgym-PositionOnlyCartPoleEasy-v0,27,standard_ndp,True,NDP + HL,Testing,-0.1955000000000001
+popgym-PositionOnlyCartPoleEasy-v0,28,standard_ndp,True,NDP + HL,Testing,-0.2060000000000001
+popgym-PositionOnlyCartPoleEasy-v0,29,standard_ndp,True,NDP + HL,Testing,-0.2065000000000001
+popgym-PositionOnlyCartPoleEasy-v0,3,standard_ndp,True,NDP + HL,Testing,-0.2140000000000001
+popgym-PositionOnlyCartPoleEasy-v0,4,standard_ndp,True,NDP + HL,Testing,-0.1905
+popgym-PositionOnlyCartPoleEasy-v0,5,standard_ndp,True,NDP + HL,Testing,-0.186
+popgym-PositionOnlyCartPoleEasy-v0,6,standard_ndp,True,NDP + HL,Testing,-0.1925000000000001
+popgym-PositionOnlyCartPoleEasy-v0,7,standard_ndp,True,NDP + HL,Testing,-0.2065000000000001
+popgym-PositionOnlyCartPoleEasy-v0,8,standard_ndp,True,NDP + HL,Testing,-0.2305000000000001
+popgym-PositionOnlyCartPoleEasy-v0,9,standard_ndp,True,NDP + HL,Testing,-0.1905

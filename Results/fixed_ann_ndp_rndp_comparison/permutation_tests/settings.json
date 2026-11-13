@@ -1,5 +1,5 @@
 {
-  "input": "\\\\wsl.localhost\\Ubuntu-24.04\\home\\danny\\projects\\NDPs\\Results\\fixed_ann_ndp_rndp_comparison\\combined_fitness_results.csv",
+  "input": "Results/fixed_ann_ndp_rndp_comparison/combined_fitness_results.csv",
   "permutations_per_test": 99999,
   "random_seed": 20261111,
   "alpha": 0.05,
