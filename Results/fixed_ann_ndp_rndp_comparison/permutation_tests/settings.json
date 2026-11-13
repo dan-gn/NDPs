@@ -1,0 +1,14 @@
+{
+  "input": "\\\\wsl.localhost\\Ubuntu-24.04\\home\\danny\\projects\\NDPs\\Results\\fixed_ann_ndp_rndp_comparison\\combined_fitness_results.csv",
+  "permutations_per_test": 99999,
+  "random_seed": 20261111,
+  "alpha": 0.05,
+  "statistic": "mean(first) - mean(second)",
+  "alternative": "two-sided",
+  "permutation_type": "independent",
+  "multiple_testing": "Holm, separately within each family of 15 tests",
+  "p_value_convention": "SciPy: twice the smaller one-sided p, plus-one correction",
+  "numpy_version": "1.26.4",
+  "scipy_version": "1.12.0",
+  "tests": 30
+}

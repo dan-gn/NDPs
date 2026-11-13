@@ -28,8 +28,8 @@ REQUIRED_COLUMNS = {
 }
 
 MODEL_ORDER = [
-    "FixedANN",
-    "FixedANN+HL",
+    "DE",
+    "DE + HL",
     "NDP",
     "NDP + HL",
     "R-NDP",
@@ -37,8 +37,8 @@ MODEL_ORDER = [
 ]
 
 MODEL_LABELS = {
-    ("fixed_mlp", False): "FixedANN",
-    ("fixed_mlp", True): "FixedANN+HL",
+    ("fixed_mlp", False): "DE",
+    ("fixed_mlp", True): "DE + HL",
     ("rewiring_ndp", False): "R-NDP",
     ("rewiring_ndp", True): "R-NDP + HL",
     ("standard_ndp", False): "NDP",
@@ -216,7 +216,9 @@ def draw_task_panel(
     ]
     if not present_models:
         present_models = MODEL_ORDER.copy()
-    centres = np.arange(len(present_models), dtype=float)
+    centres = np.arange(len(present_models), dtype=float) * 1.15
+    family_indices = [MODEL_ORDER.index(label) // 2 for label in present_models]
+    centres += 0.25 * (np.array(family_indices) - family_indices[0])
     width = 0.32
     offsets = {"Training": -width / 1.8, "Testing": width / 1.8}
 
@@ -242,7 +244,7 @@ def draw_task_panel(
             widths=width,
             patch_artist=True,
             showfliers=show_outliers,
-            medianprops={"color": "black", "linewidth": 1.4},
+            medianprops={"color": "black", "linewidth": 1.8},
             whiskerprops={"color": "#555555", "linewidth": 1.0},
             capprops={"color": "#555555", "linewidth": 1.0},
             boxprops={"edgecolor": "#333333", "linewidth": 1.0},
@@ -277,21 +279,10 @@ def draw_task_panel(
     if target is not None:
         axis.axhline(
             target,
-            color="#B22222",
+            color="#4A4A4A",
             linestyle="--",
             linewidth=1.4,
             zorder=1,
-        )
-        axis.annotate(
-            f"Target = {target:g}",
-            xy=(1.0, target),
-            xycoords=("axes fraction", "data"),
-            xytext=(-4, 4),
-            textcoords="offset points",
-            ha="right",
-            va="bottom",
-            color="#8B1A1A",
-            fontsize=9,
         )
 
     if task_results.empty:
@@ -309,7 +300,7 @@ def draw_task_panel(
 
     axis.set_title(TASK_LABELS.get(task_name, task_name))
     axis.set_xticks(centres, present_models, rotation=18, ha="right")
-    axis.grid(axis="y", color="#D9D9D9", linewidth=0.7, alpha=0.8)
+    axis.grid(axis="y", color="#D9D9D9", linewidth=0.7, alpha=0.5)
     axis.set_axisbelow(True)
     axis.spines[["top", "right"]].set_visible(False)
 
@@ -328,7 +319,7 @@ def plot_results(
         {
             "font.family": "serif",
             "font.size": 10,
-            "axes.titlesize": 11,
+            "axes.titlesize": 12,
             "axes.labelsize": 10,
         }
     )
@@ -346,7 +337,8 @@ def plot_results(
         axis = figure.add_subplot(grid[row, start:start + 2])
         task_results = long_results[long_results["task"] == task_name]
         draw_task_panel(axis, task_results, task_name, show_outliers)
-        axis.set_ylabel("Fitness (lower is better)")
+        if index % n_columns == 0:
+            axis.set_ylabel("Fitness (lower is better)")
 
     legend = [
         Patch(facecolor=colour, edgecolor="#333333", label=label)
@@ -356,7 +348,7 @@ def plot_results(
         Line2D(
             [0],
             [0],
-            color="#B22222",
+            color="#4A4A4A",
             linestyle="--",
             linewidth=1.4,
             label="Target",
@@ -365,7 +357,7 @@ def plot_results(
     figure.legend(
         handles=legend,
         loc="outside upper center",
-        ncol=2,
+        ncol=3,
         frameon=False,
     )
     if title:

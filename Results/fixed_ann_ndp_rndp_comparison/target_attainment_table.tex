@@ -1,0 +1,46 @@
+% Requires \usepackage{booktabs}
+\begin{table}[t]
+\centering
+\caption{Number of evolutionary runs meeting the fitness target for each task during training and held-out testing. A run meets the target if its fitness is at or below the task threshold.}
+\label{tab:target-attainment}
+\begin{tabular}{llrr}
+\toprule
+Task & Method & Training & Testing \\
+\midrule
+CartPole & DE & 24/30 & 20/30 \\
+ & DE + HL & 7/30 & 2/30 \\
+ & NDP & 29/30 & 29/30 \\
+ & NDP + HL & 9/30 & 7/30 \\
+ & R-NDP & 30/30 & 29/30 \\
+ & R-NDP + HL & 20/30 & 18/30 \\
+\addlinespace
+PositionOnlyCartPole & DE & 0/30 & 0/30 \\
+ & DE + HL & 10/30 & 1/30 \\
+ & NDP & 12/30 & 5/30 \\
+ & NDP + HL & 0/30 & 0/30 \\
+ & R-NDP & 24/30 & 23/30 \\
+ & R-NDP + HL & 1/30 & 0/30 \\
+\addlinespace
+Acrobot & DE & 28/30 & 2/30 \\
+ & DE + HL & 17/30 & 1/30 \\
+ & NDP & 0/30 & 0/30 \\
+ & NDP + HL & 2/30 & 0/30 \\
+ & R-NDP & 18/30 & 0/30 \\
+ & R-NDP + HL & 13/30 & 1/30 \\
+\addlinespace
+MountainCar & DE & 7/30 & 2/30 \\
+ & DE + HL & 21/30 & 20/30 \\
+ & NDP & 10/30 & 10/30 \\
+ & NDP + HL & 12/30 & 12/30 \\
+ & R-NDP & 19/30 & 13/30 \\
+ & R-NDP + HL & 24/30 & 24/30 \\
+\addlinespace
+LunarLander & DE & 0/30 & 0/30 \\
+ & DE + HL & 0/30 & 0/30 \\
+ & NDP & 0/30 & 0/30 \\
+ & NDP + HL & 0/30 & 0/30 \\
+ & R-NDP & 3/30 & 0/30 \\
+ & R-NDP + HL & 0/30 & 0/30 \\
+\bottomrule
+\end{tabular}
+\end{table}
